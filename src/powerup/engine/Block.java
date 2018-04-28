@@ -6,56 +6,29 @@ import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Transparency;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.net.URL;
-
-import javax.imageio.ImageIO;
 
 import powerup.field.FieldObject;
+import powerup.field.Robot;
 
 public class Block {
 	
 	public static int BLOCKSIZE = 50;
 	
 	private Image image;
-	protected int height=0,width=0;
+	private BufferedImage[] imageArray;
 	protected String name;
 	private FieldObject fieldObject;
 	
-	public int getHeight() {return height;}
-	public int getWidth() {return width;}
-		
-	
-	public Image getImage(String ref) {
-		
-		BufferedImage sourceImage = null;
-		
-		try {
-			URL url = this.getClass().getClassLoader().getResource(ref);
-			
-			if (url == null) {
-				throw new RuntimeException("Can't find ref: "+ref);
-			}
-			
-			sourceImage = ImageIO.read(url);
-			height = sourceImage.getHeight();
-			width = sourceImage.getWidth();
-			System.out.println("read image "+ref+" width:"+width+" height:"+height);
-			
-		} catch (IOException e) {
-			throw new RuntimeException("Failed to load: "+ref);
-		}
-		
+	public Image setImage(BufferedImage sourceImage) {
 		GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
-		Image image = gc.createCompatibleImage(width,height,Transparency.BITMASK);
+		Image image = gc.createCompatibleImage(sourceImage.getWidth(),sourceImage.getHeight(),Transparency.BITMASK);
 		image.getGraphics().drawImage(sourceImage,0,0,null);
-		
-		
 		return image;
 	}	
-	
-	public Block(String ref, FieldObject fo) {
-		this.image = getImage(ref);
+
+	public Block(BufferedImage[] images, FieldObject fo) {
+		this.imageArray = images;
+		this.image = setImage(images[0]);
 		this.fieldObject = fo;
 	}
 	
@@ -63,6 +36,16 @@ public class Block {
 		//update x and y from field object
 		int x=(fieldObject.getCol())*BLOCKSIZE;
 		int y=(fieldObject.getRow())*BLOCKSIZE;
+		
+		if (fieldObject != null && fieldObject instanceof Robot) {
+			Robot r = (Robot) fieldObject;
+			if (r.hasCube()) {
+				this.image = setImage(imageArray[0]);
+			} else {
+				this.image = setImage(imageArray[1]);
+			}
+			
+		} 
 		g.drawImage(image,x,y,null);
 		//System.out.println("draw "+fieldObject.getName()+" x:"+x+" y:"+y);
 	}

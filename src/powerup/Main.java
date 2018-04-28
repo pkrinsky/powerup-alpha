@@ -8,9 +8,13 @@ import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
@@ -44,6 +48,24 @@ public class Main extends Canvas {
 	private int HEIGHT = Field.ROWS*Block.BLOCKSIZE;
 	private int WIDTH = Field.COLS*Block.BLOCKSIZE;
 	
+	private BufferedImage[] imageArray = new BufferedImage[10];
+	
+	public BufferedImage getImage(String filename) {
+		BufferedImage sourceImage = null;
+		
+		try {
+			URL url = this.getClass().getClassLoader().getResource(filename);
+			if (url == null) {
+				throw new RuntimeException("Can't find filename: "+filename);
+			}
+			sourceImage = ImageIO.read(url);
+			System.out.println("read image "+filename+" width:"+sourceImage.getWidth()+" height:"+sourceImage.getHeight());
+		} catch (IOException e) {
+			throw new RuntimeException("Failed to load: "+filename);
+		}
+		
+		return sourceImage;
+	}
 	
 	private void setup() {
 		JFrame container = new JFrame("Powerup");
@@ -97,11 +119,19 @@ public class Main extends Canvas {
 		int col1 = Field.COL1;
 		int col3 = Field.COL3;
 				
+		imageArray[0] = getImage("robot-red.png");
+		imageArray[1] = getImage("robot-red-cube.png");
+		imageArray[2] = getImage("block-red-50.png");
+		imageArray[3] = getImage("block-blue-50.png");
+		imageArray[4] = getImage("robot-blue.png");
+		imageArray[5] = getImage("robot-blue-cube.png");
+		imageArray[6] = getImage("block-yellow-50.png");
+		imageArray[7] = getImage("block-gray-50.png");
 		
 		robotControllerList.add(new RobotController(new RobotRex("RexBM",Robot.BLUE,gamedata,Field.MIDDLE)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
+		//robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotBR",Robot.BLUE,gamedata,Field.RIGHT)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
+		//robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotRM",Robot.RED,gamedata,Field.MIDDLE)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotRR",Robot.RED,gamedata,Field.RIGHT)));
 		myController = robotControllerList.get(0);
@@ -110,7 +140,7 @@ public class Main extends Canvas {
 			field.setup(rc.getRobot());	
 		}
 		
-		field.setup(col2,3,new Scale("RS","R")); 
+		field.setup(col2,3,new Scale("RS",Robot.RED)); 
 		field.setup(col2,4,new Wall());
 		field.setup(col2,5,new Wall());
 		field.setup(col2,6,new Wall());
@@ -118,23 +148,23 @@ public class Main extends Canvas {
 		field.setup(col2,8,new Wall());
 		field.setup(col2,9,new Wall());
 		field.setup(col2,10,new Wall());
-		field.setup(col2,11,new Scale("BS","B"));
+		field.setup(col2,11,new Scale("BS",Robot.BLUE));
 
-		field.setup(col1,4,new Scale("BNS","B"));
+		field.setup(col1,4,new Scale("BNS",Robot.BLUE));
 		field.setup(col1,5,new Wall());
 		field.setup(col1,6,new Wall());
 		field.setup(col1,7,new Wall());
 		field.setup(col1,8,new Wall());
 		field.setup(col1,9,new Wall());
-		field.setup(col1,10,new Scale("RFS","R"));
+		field.setup(col1,10,new Scale("RFS",Robot.RED));
 
-		field.setup(col3,4,new Scale("BFS","B"));
+		field.setup(col3,4,new Scale("BFS",Robot.BLUE));
 		field.setup(col3,5,new Wall());
 		field.setup(col3,6,new Wall());
 		field.setup(col3,7,new Wall());
 		field.setup(col3,8,new Wall());
 		field.setup(col3,9,new Wall());
-		field.setup(col3,10,new Scale("RNS","R"));
+		field.setup(col3,10,new Scale("RNS",Robot.RED));
 		
 		
 		for (int i=0;i<5;i++) {
@@ -148,34 +178,48 @@ public class Main extends Canvas {
 		field.print();
 
 		// init all the blocks based on the field info
-		String image = "";
 		for (int r=0;r<Field.ROWS;r++) {
 			for (int c=0;c<Field.COLS;c++) {
 				FieldObject fo = field.getFieldObject(c,r);
 				if (fo != null) {
 					if (fo instanceof Scale) {
 						Scale s = (Scale) fo;
-						if (s.getAlliance().equals("R")) {
-							image = "block-red-50.png";
+						if (s.getAlliance().equals(Robot.RED)) {
+							BufferedImage[] i = new BufferedImage[1];
+							i[0] = imageArray[2];
+							blocks.add(new Block(i,fo));	
 						} else {
-							image = "block-blue-50.png";
+							BufferedImage[] i = new BufferedImage[1];
+							i[0] = imageArray[3];
+							blocks.add(new Block(i,fo));
 						}
-						blocks.add(new Block(image,fo));	
+							
 					}
 					if (field.getFieldObject(c,r) instanceof Robot) {
 						Robot s = (Robot) fo;
-						if (s.getAlliance().equalsIgnoreCase("R")) {
-							image = "robot-red.png";
+						if (s.getAlliance().equalsIgnoreCase(Robot.RED)) {
+							BufferedImage[] i = new BufferedImage[2];
+							i[0] = imageArray[1];
+							i[1] = imageArray[0];
+							blocks.add(new Block(i,fo));
 						} else {
-							image = "robot.png";
+							BufferedImage[] i = new BufferedImage[2];
+							i[0] = imageArray[5];
+							i[1] = imageArray[4];
+							blocks.add(new Block(i,fo));
 						}
-						blocks.add(new Block(image,fo));	
+							
 					}
 					if (fo instanceof Cube) {
-						blocks.add(new Block("block-yellow-50.png",fo));	
+						BufferedImage[] i = new BufferedImage[1];
+						i[0] = imageArray[6];
+						blocks.add(new Block(i,fo));
 					}
 					if (fo instanceof Wall) {
-						blocks.add(new Block("block-gray-50.png",fo));	
+						BufferedImage[] i = new BufferedImage[1];
+						i[0] = imageArray[7];
+						blocks.add(new Block(i,fo));
+							
 					}
 				}
 			}
