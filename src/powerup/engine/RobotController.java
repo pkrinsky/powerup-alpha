@@ -84,6 +84,7 @@ public class RobotController {
 			System.out.println("RobotController.found scale");
 			if(robot.hasCube() == true) {
 				robot.setHasCube(false);
+				robot.shotMade();
 				scale.setNumCubes(1);
 				System.out.println("NumCubes="+ scale.getNumCubes());
 				

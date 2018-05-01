@@ -18,6 +18,7 @@ public class Robot extends FieldObject  {
 	protected boolean hasCube = true;
 	protected String gamedata = null;
 	protected char startPosition;
+	protected int shotsMade = 0;
 	
 	public Robot(String name, String alliance, String gamedata, char start) {
 		this.name = name;
@@ -98,6 +99,14 @@ public class Robot extends FieldObject  {
 
 	public char getStartPosition() {
 		return startPosition;
+	}
+	
+	public void shotMade() {
+		shotsMade++;
+	}
+	
+	public int getShotsMade() {
+		return shotsMade;
 	}
 
 

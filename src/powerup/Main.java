@@ -33,22 +33,23 @@ import powerup.robot.RobotRex;
 @SuppressWarnings("serial")
 public class Main extends Canvas {
 	
+	private static final long GAME_SECS = 60;
+	private static final int SCORE_AREA = 100;
+	private static final int HEIGHT = (Field.ROWS*Block.BLOCKSIZE)+SCORE_AREA;
+	private static final int WIDTH = Field.COLS*Block.BLOCKSIZE;
+	private static final int SCORE_POSITION_X = (WIDTH/2)-20;
+	private static final int SCORE_POSITION_Y = HEIGHT-80;
+
 	private boolean gameRunning = true;
 	private BufferStrategy strategy;
-	List<Block> blocks = new ArrayList<Block>();
 	private List<RobotController> robotControllerList= new ArrayList<RobotController>();
-	
+	private List<Block> blocks = new ArrayList<Block>();
 	private Field field = new Field();
 	private RobotController myController = null;
-	private long GAME_SECS = 60;
 	private long gameSecs = GAME_SECS;
 	private long lastScoreSecs = 0;
 	private int redScore = 0;
 	private int blueScore = 0;
-	
-	private int HEIGHT = Field.ROWS*Block.BLOCKSIZE;
-	private int WIDTH = Field.COLS*Block.BLOCKSIZE;
-	
 	private BufferedImage[] imageArray = new BufferedImage[10];
 	
 	public BufferedImage getImage(String filename) {
@@ -243,14 +244,15 @@ public class Main extends Canvas {
 
 	public void gameLoop() {
 		long starttime = System.currentTimeMillis();
-
 		while (gameRunning) {
 
 			// init the graphics system to redraw the map
 			Graphics2D g = (Graphics2D) strategy.getDrawGraphics();
+			g.setColor(Color.DARK_GRAY);
+			g.fillRect(0,HEIGHT-SCORE_AREA,WIDTH,HEIGHT);
 			g.setColor(Color.black);
-			g.fillRect(0,0,WIDTH,HEIGHT);
-			g.setColor(Color.white);
+			g.fillRect(0,0,WIDTH,HEIGHT-SCORE_AREA);
+			
 			
 			// if there is time left calc the score and move the robots
 			if (gameSecs > 0) {
@@ -261,16 +263,11 @@ public class Main extends Canvas {
 					lastScoreSecs = gameSecs;
 				}
 					
-				g.drawString("Blue "+blueScore+" Red "+redScore+" Time "+gameSecs, WIDTH-400,20);
-				
 				// move the robots
 				for (RobotController r:robotControllerList) {
 					r.move(field);
 				}
-			} else {
-				g.drawString("Game Over. Blue "+blueScore+" Red "+redScore, WIDTH-400,20);
-			}
-				
+			}	
 			// draw the blocks
 			blocks.removeIf(b -> b.getFieldObject().isDeleted() == true);
 			for (Block b:blocks) {
@@ -312,6 +309,7 @@ public class Main extends Canvas {
 
 	private void drawLabels(Graphics2D g) {
 		Scale r = (Scale) field.find("RS");
+		String stats = "";
 		g.drawString(""+r.getNumCubes(),r.getCol()*Block.BLOCKSIZE+10,r.getRow()*Block.BLOCKSIZE+20);
 		
 		r = (Scale) field.find("BS");
@@ -332,10 +330,34 @@ public class Main extends Canvas {
 		g.setColor(Color.black);
 		for (RobotController rc:robotControllerList) {
 			Robot robot = rc.getRobot();
-			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);	
+			stats = stats+robot.getName()+": makes="+robot.getShotsMade()+"     ";
+			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
 		}
 		
+		// draw stats and score
+		g.setColor(Color.white);
+		g.drawString(stats, SCORE_POSITION_X-250, SCORE_POSITION_Y+50);
+		drawCenterX(g,"Blue "+blueScore,SCORE_POSITION_Y,-100);
+		drawCenterX(g,"Red "+redScore, SCORE_POSITION_Y,100);
+		drawCenterX(g,"Time "+gameSecs, SCORE_POSITION_Y,0);
 		
+		if (gameSecs < 1) {
+			if (blueScore > redScore) {
+				drawCenterX(g,"Blue is the winner!", SCORE_POSITION_Y+25,0);
+			}
+			if (redScore > blueScore) {
+				drawCenterX(g,"Red is the winner!", SCORE_POSITION_Y+25,0);
+			}
+			if (blueScore == redScore) {
+				drawCenterX(g,"Tie Game!", SCORE_POSITION_Y+25,0);
+			}
+		}
+	}
+	
+	private void drawCenterX(Graphics2D g, String s, int y, int offset) {
+		int fontSize = g.getFont().getSize();
+		int x = (WIDTH/2)-(s.length()*fontSize/2/2)-offset;
+		g.drawString(s,x,y);
 	}
 	
 	public static void main(String argv[]) {
