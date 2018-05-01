@@ -115,6 +115,7 @@ public class Main extends Canvas {
 		
 		// need to randomize this
 		// [close switch][scale][far switch]
+		
 		String gamedata = "LRL";
 		
 		int col2 = Field.COL2;
