@@ -3,10 +3,10 @@ package powerup.field;
 public class Field {
 	public static final int COLS=23;
 	public static final int ROWS=15;
-	public static final int COL2 = 12;
-	public static final int COL1 = COL2-6;
-	public static final int COL3 = COL2+6;
-	public static final int ROW2 = 8;
+	public static final int COL2 = 11;
+	public static final int COL1 = 5;
+	public static final int COL3 = COLS-6;
+	public static final int ROW2 = 7;
 	public static final int ROW1 = ROW2-6;
 	public static final int ROW3 = ROW2+6;
 	public static final char LEFT = 'L';

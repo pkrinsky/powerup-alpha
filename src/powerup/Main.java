@@ -41,8 +41,8 @@ public class Main extends Canvas {
 	private Field field = new Field();
 	private RobotController myController = null;
 	private long GAME_SECS = 60;
-	private long gamesecs = GAME_SECS;
-	private long lastscore = 0;
+	private long gameSecs = GAME_SECS;
+	private long lastScoreSecs = 0;
 	private int redScore = 0;
 	private int blueScore = 0;
 	
@@ -131,12 +131,12 @@ public class Main extends Canvas {
 		imageArray[6] = getImage("block-yellow-50.png");
 		imageArray[7] = getImage("block-gray-50.png");
 		
-		robotControllerList.add(new RobotController(new RobotRex("RexBM",Robot.BLUE,gamedata,Field.MIDDLE)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotBR",Robot.BLUE,gamedata,Field.RIGHT)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotRM",Robot.RED,gamedata,Field.MIDDLE)));
-		robotControllerList.add(new RobotController(new Autobot("AutobotRR",Robot.RED,gamedata,Field.RIGHT)));
+		robotControllerList.add(new RobotController(new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE)));
+		robotControllerList.add(new RobotController(new Autobot("002",Robot.BLUE,gamedata,Field.LEFT)));
+		robotControllerList.add(new RobotController(new Autobot("003",Robot.BLUE,gamedata,Field.RIGHT)));
+		robotControllerList.add(new RobotController(new Autobot("004",Robot.RED,gamedata,Field.LEFT)));
+		robotControllerList.add(new RobotController(new Autobot("005",Robot.RED,gamedata,Field.MIDDLE)));
+		robotControllerList.add(new RobotController(new Autobot("006",Robot.RED,gamedata,Field.RIGHT)));
 		myController = robotControllerList.get(0);
 		
 		for (RobotController rc:robotControllerList) {
@@ -252,27 +252,33 @@ public class Main extends Canvas {
 			g.fillRect(0,0,WIDTH,HEIGHT);
 			g.setColor(Color.white);
 			
-			// calc and display the score
-			gamesecs = GAME_SECS - (System.currentTimeMillis()-starttime)/1000;
-			if (gamesecs != lastscore) {
-				calcScore();
-				lastscore = gamesecs;
+			// if there is time left calc the score and move the robots
+			if (gameSecs > 0) {
+				// calc and display the score but only do it once a second
+				gameSecs = GAME_SECS - (System.currentTimeMillis()-starttime)/1000;
+				if (gameSecs != lastScoreSecs) {
+					calcScore();
+					lastScoreSecs = gameSecs;
+				}
+					
+				g.drawString("Blue "+blueScore+" Red "+redScore+" Time "+gameSecs, WIDTH-400,20);
+				
+				// move the robots
+				for (RobotController r:robotControllerList) {
+					r.move(field);
+				}
+			} else {
+				g.drawString("Game Over. Blue "+blueScore+" Red "+redScore, WIDTH-400,20);
 			}
-			g.drawString("Blue "+blueScore+" Red "+redScore+" Time "+gamesecs, WIDTH-400,20);
-			
-			// move the robots
-			for (RobotController r:robotControllerList) {
-				r.move(field);
-			}
-			
+				
 			// draw the blocks
 			blocks.removeIf(b -> b.getFieldObject().isDeleted() == true);
 			for (Block b:blocks) {
 				b.draw(g);
 			}
 			
-			//do this last so the numbers show on top
-			printCubes(g);
+			//do this last so the labels show on top
+			drawLabels(g);
 			
 			// show the redrawn map
 			g.dispose();
@@ -304,7 +310,7 @@ public class Main extends Canvas {
 		}
 	}
 
-	private void printCubes(Graphics2D g) {
+	private void drawLabels(Graphics2D g) {
 		Scale r = (Scale) field.find("RS");
 		g.drawString(""+r.getNumCubes(),r.getCol()*Block.BLOCKSIZE+10,r.getRow()*Block.BLOCKSIZE+20);
 		
@@ -322,6 +328,14 @@ public class Main extends Canvas {
 		
 		r = (Scale) field.find("BNS");
 		g.drawString(""+r.getNumCubes(),(r.getCol()*Block.BLOCKSIZE+10),r.getRow()*Block.BLOCKSIZE+20);
+		
+		g.setColor(Color.black);
+		for (RobotController rc:robotControllerList) {
+			Robot robot = rc.getRobot();
+			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);	
+		}
+		
+		
 	}
 	
 	public static void main(String argv[]) {
