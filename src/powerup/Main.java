@@ -114,6 +114,7 @@ public class Main extends Canvas {
 		
 		// need to randomize this
 		// [close switch][scale][far switch]
+		
 		String gamedata = "LRL";
 		
 		int col2 = Field.COL2;
@@ -130,9 +131,9 @@ public class Main extends Canvas {
 		imageArray[7] = getImage("block-gray-50.png");
 		
 		robotControllerList.add(new RobotController(new RobotRex("RexBM",Robot.BLUE,gamedata,Field.MIDDLE)));
-		//robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
+		robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotBR",Robot.BLUE,gamedata,Field.RIGHT)));
-		//robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
+		robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotRM",Robot.RED,gamedata,Field.MIDDLE)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotRR",Robot.RED,gamedata,Field.RIGHT)));
 		myController = robotControllerList.get(0);

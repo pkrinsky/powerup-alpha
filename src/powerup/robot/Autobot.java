@@ -13,16 +13,16 @@ public class Autobot extends Robot {
 	public int move(Field field) {
 		int thismove = Robot.STOP;
 		FieldObject target = null;
+		
 		// if we have a cube put it on the switch
 		if (hasCube()) {
 			if(Field.LEFT == startPosition){
-				if( gamedata == "LRL") {
-					target = field.find(alliance+"S");
+				if( gamedata == "LRL" ) {
+					target = field.find(alliance+"NS");
 					System.out.println("Autobot.move "+name+" target scale:"+target.getCol()+" "+target.getRow());
 				} else {
-					target = field.find(alliance+"FS");
-					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());
-
+					target = field.find(alliance+"NS");
+					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());	
 				}
 				if (target.getCol()+1 < getCol()) {
 					thismove = Robot.WEST;
@@ -40,14 +40,20 @@ public class Autobot extends Robot {
 					thismove = Robot.NORTH;
 				}
 			}
+			
 			if(Field.RIGHT == startPosition){
-				if( gamedata == "LRL") {
-					target = field.find(alliance+"FS");
+				if( gamedata == "RLR") {
+					target = field.find(alliance+"S");
 					System.out.println("Autobot.move "+name+" target scale:"+target.getCol()+" "+target.getRow());
+
+				} else if(alliance == BLUE){
+					target = field.find(alliance+"S");	
+					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());
+
 				} else {
 					target = field.find(alliance+"S");
 					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());
-
+					
 				}
 				if (target.getCol()+1 < getCol()) {
 					thismove = Robot.WEST;
@@ -65,7 +71,6 @@ public class Autobot extends Robot {
 					thismove = Robot.NORTH;
 				}
 			}
-
 
 		}
 
