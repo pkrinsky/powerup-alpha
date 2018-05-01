@@ -40,10 +40,11 @@ public class Main extends Canvas {
 	
 	private Field field = new Field();
 	private RobotController myController = null;
+	private long GAME_SECS = 60;
+	private long gamesecs = GAME_SECS;
+	private long lastscore = 0;
 	private int redScore = 0;
 	private int blueScore = 0;
-	private long gamesecs = 0;
-	private long lastscore = 0;
 	
 	private int HEIGHT = Field.ROWS*Block.BLOCKSIZE;
 	private int WIDTH = Field.COLS*Block.BLOCKSIZE;
@@ -130,9 +131,9 @@ public class Main extends Canvas {
 		imageArray[7] = getImage("block-gray-50.png");
 		
 		robotControllerList.add(new RobotController(new RobotRex("RexBM",Robot.BLUE,gamedata,Field.MIDDLE)));
-		//robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
+		robotControllerList.add(new RobotController(new Autobot("AutobotBL",Robot.BLUE,gamedata,Field.LEFT)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotBR",Robot.BLUE,gamedata,Field.RIGHT)));
-		//robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
+		robotControllerList.add(new RobotController(new Autobot("AutobotRL",Robot.RED,gamedata,Field.LEFT)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotRM",Robot.RED,gamedata,Field.MIDDLE)));
 		robotControllerList.add(new RobotController(new Autobot("AutobotRR",Robot.RED,gamedata,Field.RIGHT)));
 		myController = robotControllerList.get(0);
@@ -251,7 +252,7 @@ public class Main extends Canvas {
 			g.setColor(Color.white);
 			
 			// calc and display the score
-			gamesecs = (System.currentTimeMillis()-starttime)/1000;
+			gamesecs = GAME_SECS - (System.currentTimeMillis()-starttime)/1000;
 			if (gamesecs != lastscore) {
 				calcScore();
 				lastscore = gamesecs;
