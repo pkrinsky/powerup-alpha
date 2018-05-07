@@ -14,6 +14,9 @@ public class Field {
 	public static final char LEFT = 'L';
 	public static final char MIDDLE = 'M';
 	public static final char RIGHT = 'R';
+	public static final String DELIM="|";
+	public static final String ROW_DELIM="\n";
+
 	private static final int GAME_SECS = 60;
 
 	private int redScore = 0;
@@ -257,6 +260,43 @@ public class Field {
 	}
 
 
+	public String save() {
+		StringBuffer sb = new StringBuffer();
+		FieldObject fo = null;
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null) {
+					fo = grid[c][r];
+					if (fo instanceof Cube 
+							|| fo instanceof Scale
+							|| fo instanceof Robot) {
+						sb.append(grid[c][r].getClass().getName());
+						sb.append(DELIM);
+						sb.append(grid[c][r].getName());
+						sb.append(DELIM);
+						sb.append(grid[c][r].getCol());
+						sb.append(DELIM);
+						sb.append(grid[c][r].getRow());
+						sb.append(ROW_DELIM);
+					}
+				}
+			}
+		}
+		
+		Util.log(sb.toString());
+		return sb.toString();
+		
+	}
+	
+	public void load(String s) {
+		
+		// mark all the objects that can change as dirty
+		// process all the loaded data
+		// remove anything still marked as dirty as it must have been removed
+		
+
+		
+	}
 
 	
 	
