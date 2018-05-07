@@ -1,5 +1,7 @@
 package powerup.field;
 
+import powerup.engine.Util;
+
 public class Robot extends FieldObject  {
 	
 	public static final int STOP = 0;
@@ -39,7 +41,7 @@ public class Robot extends FieldObject  {
 		return command;
 	}
 	
-	public String getCommandName(int c) {
+	public static String getCommandName(int c) {
 		String name = "unknown";
 		switch (c) {
 			case Robot.NORTH:
@@ -68,7 +70,7 @@ public class Robot extends FieldObject  {
 	}
 
 	public void key(char key) {
-		System.out.println("Robot key:"+key);
+		Util.log("Robot.key:"+key);
 		
 		if (key == 'd') {
 			command = Robot.EAST;
@@ -89,7 +91,7 @@ public class Robot extends FieldObject  {
 			command = Robot.SHOOT;
 		}	
 		
-		System.out.println("Robot command:"+command+ " "+getCommandName(command));
+		Util.log("Robot.key command:"+command+ " "+getCommandName(command));
 				
 	}
 

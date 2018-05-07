@@ -1,10 +1,6 @@
 package powerup.network;
 
-import java.io.IOException;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
-
+import powerup.engine.RobotController;
 import powerup.engine.Util;
 import powerup.field.Field;
 import powerup.field.Robot;
@@ -13,44 +9,60 @@ import powerup.robot.RobotRex;
 public class GameClient {
 	
 	//private List<RobotController> robotControllerList= new ArrayList<RobotController>();
-	private Robot robot = null;
-	private String serverAddress = "localhost";
-	private int serverPort = 9001;
+	private RobotController controller = null;
+	//private String serverAddress = "localhost";
+	//private int serverPort = 9001;
 	private GameServer server = null;
 	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
-		client.send(-1);
+		client.setup();
+		client.gameLoop();
+		//client.send(-1);
 	}
 	
 	public void setup() {
+		Util.log("GameClient.setup");
 		String gamedata = "LRL";
 		server = new GameServer();
 		
-		robot = new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE);
+		controller = new RobotController(new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE));
+		controller.setup();
+		server.addClient(this);
 		
-		//robotControllerList.add(new RobotController(new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE)));
-		//robotControllerList.add(new RobotController(new Autobot("002",Robot.BLUE,gamedata,Field.LEFT)));
-		//robotControllerList.add(new RobotController(new Autobot("003",Robot.BLUE,gamedata,Field.RIGHT)));
-		//robotControllerList.add(new RobotController(new Autobot("004",Robot.RED,gamedata,Field.LEFT)));
-		//robotControllerList.add(new RobotController(new Autobot("005",Robot.RED,gamedata,Field.MIDDLE)));
-		//robotControllerList.add(new RobotController(new Autobot("006",Robot.RED,gamedata,Field.RIGHT)));
-		//myController = robotControllerList.get(0);
-		
-		//for (RobotController rc:robotControllerList) {
-		//	field.setup(rc.getRobot());	
-		//}
+		server.startGame();
+		gameLoop();
 		
 	}
 	
-	public void move(Field field) {
-		int m = robot.move(field);
-		send(m);
-		// move the robots
-		//for (RobotController r:robotControllerList) {
-			//r.move(field);
-		//}
+	private void gameLoop() {
+		Util.log("GameClient.gameLoop");
+		boolean gameRunning = true;
+		Field field = null;
+		String name = controller.getRobot().getName();
+			
+		while (gameRunning) {
+			if (field == null || field.getGameSecs() > 0) {
+				field = server.getField(name);
+				int move = controller.move(field);
+				if (move != Robot.STOP) {
+					server.move(name,move);
+					field = server.getField(name);
+				}
+				controller.drawField(field);
+			}
+
+			// wait for a little then start again
+			try { Thread.sleep(250); } catch (Exception e) {}
+		}
 	}
+	
+	public void move(Field field) {
+		Util.log("GameClient.move");
+		controller.move(field);
+	}
+
+	/*
 	
 	private void send(int command) {
 		// if there is a local server use it otherwise send it across the network
@@ -74,11 +86,20 @@ public class GameClient {
 		} else {
 			server.move(command);
 		}
-
-		
 	}
+		*/
 	
 	public void key(char key) {
-		robot.key(key);
+		controller.key(key);
 	}
+
+	public RobotController getController() {
+		return controller;
+	}
+
+	public void setController(RobotController controller) {
+		this.controller = controller;
+	}
+	
+	
 }
