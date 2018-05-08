@@ -12,26 +12,35 @@ import powerup.field.Wall;
 import powerup.robot.Autobot;
 
 class FieldTest {
+	
+	
+	private Field getStaticField() {
+		// setup test field
+		Field field1 = new Field();
+		field1.set(2,2,new Scale("RS",Robot.RED));
+		field1.set(3,4,new Wall());
+		return field1;
+	}
 
 	@Test
 	void testSaveAndLoad() {
 		
 		// setup test field
-		Field field = new Field();
-		field.set(1, 1, new Cube());
-		field.setup(new Autobot("004",Robot.RED,"LRL",Field.LEFT));
-		field.set(2,2,new Scale("RS",Robot.RED));
-		field.set(3,4,new Wall());
+		Field field1 = getStaticField();
+		field1.set(1, 1, new Cube());
+		Robot robot = new Autobot("004",Robot.RED,"LRL",Field.LEFT);
+		robot.setHasCube(true);
+		field1.setup(robot);
 		
 		// save as string
-		String s1 = field.save();
+		String s1 = field1.save();
 		
 		// create new field and load from string
-		field = new Field();
-		field.load(s1);
+		Field field2 = getStaticField();
+		field2.load(s1);
 		
 		// make sure fields are the same
-		String s2 = field.save();
+		String s2 = field2.save();
 		assertEquals(s1, s2);
 	}
 

@@ -16,7 +16,7 @@ public class Scale extends FieldObject {
 	}
 
 	public void setNumCubes(int numCubes) {
-		this.numCubes = this.numCubes+ numCubes;
+		this.numCubes = numCubes;
 	}
 
 	public String getAlliance() {

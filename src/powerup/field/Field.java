@@ -5,8 +5,6 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import powerup.engine.Util;
-import powerup.robot.Autobot;
-import powerup.robot.RobotRex;
 
 public class Field {
 	public static final int COLS=23;
@@ -256,12 +254,24 @@ public class Field {
 		return gameSecs;
 	}
 
+	private void setRedScore(int redScore) {
+		this.redScore = redScore;
+	}
+
+	private void setBlueScore(int blueScore) {
+		this.blueScore = blueScore;
+	}
+
+	private void setGameSecs(int gameSecs) {
+		this.gameSecs = gameSecs;
+	}
+
 	public void decreaseGameSecs(int i) {
 		long current = System.currentTimeMillis();
 		if (current - lastTick > 1000) {
 			this.gameSecs = this.gameSecs - 1;
 			lastTick = current;
-			Util.log("Field.decreaseGameSecs new time is:"+gameSecs);
+			//Util.log("Field.decreaseGameSecs new time is:"+gameSecs);
 		}
 
 	}
@@ -309,14 +319,30 @@ public class Field {
 	public String save() {
 		StringBuffer sb = new StringBuffer();
 		FieldObject fo = null;
+		
+		sb.append(this.getClass().getName());
+		sb.append(DELIM);
+		sb.append(redScore);
+		sb.append(DELIM);
+		sb.append(blueScore);
+		sb.append(DELIM);
+		sb.append(gameSecs);
+		sb.append(ROW_DELIM);
+		
+		//Util.log("Field.save\n"+sb.toString());
 		for (int r=0;r<Field.ROWS;r++) {
 			for (int c=0;c<Field.COLS;c++) {
 				if (grid[c][r] != null) {
 					fo = grid[c][r];
 					if (fo instanceof Cube 
 							|| fo instanceof Scale
-							|| fo instanceof Robot) {
-						sb.append(grid[c][r].getClass().getName());
+							|| fo instanceof Robot) 
+					{
+						if (fo instanceof Robot) {
+							sb.append("powerup.robot.Robot");
+						} else {
+							sb.append(grid[c][r].getClass().getName());
+						}
 						sb.append(DELIM);
 						sb.append(grid[c][r].getName());
 						sb.append(DELIM);
@@ -336,6 +362,8 @@ public class Field {
 							sb.append(((Robot)(grid[c][r])).getGamedata());
 							sb.append(DELIM);
 							sb.append(((Robot)(grid[c][r])).getStartPosition());
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).hasCube());
 							//Util.log("Field.save\n"+sb.toString());
 						}
 						sb.append(ROW_DELIM);
@@ -350,19 +378,27 @@ public class Field {
 	}
 	
 	public void load(String s) {
+		boolean debug = true;
 		StringTokenizer rowTokens = new StringTokenizer(s, ROW_DELIM);
 		while (rowTokens.hasMoreTokens()) {
 			StringTokenizer fieldTokens = new StringTokenizer(rowTokens.nextToken(), DELIM);
-			//Util.log("***** row *****");
 			List<String> fieldList = new ArrayList<String>();
 			while (fieldTokens.hasMoreTokens()) {
 				fieldList.add(fieldTokens.nextToken());
 			}
-			/*
-			for (String f:fieldList) {
-				Util.log(f);
+			
+			if (debug) {
+				Util.log("Field.load "+fieldList.get(0));
+				for (String f:fieldList) {
+					Util.log(f);
+				}
 			}
-			*/
+			
+			if ("powerup.field.Field".equals(fieldList.get(0))) {
+				setRedScore(new Integer(fieldList.get(1)));
+				setBlueScore(new Integer(fieldList.get(2)));
+				setGameSecs(new Integer(fieldList.get(3)));
+			}
 			if ("powerup.field.Cube".equals(fieldList.get(0))) {
 				// delete if already exists
 				FieldObject fo = find(fieldList.get(1));
@@ -379,51 +415,18 @@ public class Field {
 				Scale o = (Scale) find(fieldList.get(1));
 				o.setNumCubes(new Integer(fieldList.get(5)));
 			}
-			if ("powerup.robot.Autobot".equals(fieldList.get(0))) {
-				FieldObject fo = find(fieldList.get(1));
-				if (fo != null) {
-					// clear out old space
-					grid[fo.getCol()][fo.getRow()] = null;
-					// put in new space
-					fo.setCol(new Integer(fieldList.get(2)));
-					fo.setRow(new Integer(fieldList.get(3)));
-					set(fo.getCol(),fo.getRow(),fo);
+			if ("powerup.robot.Robot".equals(fieldList.get(0))) {
+				Robot o = (Robot) find(fieldList.get(1));
+				if (o != null) {
+					grid[o.getCol()][o.getRow()] = null;
 				} else {
-					Autobot o = new Autobot(fieldList.get(1),fieldList.get(4),fieldList.get(5),fieldList.get(6).charAt(0));
-					Util.log("Field.load setup new robot "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
-					o.setCol(new Integer(fieldList.get(2)));
-					o.setRow(new Integer(fieldList.get(3)));
-					set(o.getCol(),o.getRow(),o);
+					o = new Robot(fieldList.get(1),fieldList.get(4),fieldList.get(5),fieldList.get(6).charAt(0));
 				}
-				
-				//Util.log("Field.load "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
+				o.setCol(new Integer(fieldList.get(2)));
+				o.setRow(new Integer(fieldList.get(3)));
+				o.setHasCube((new Boolean(fieldList.get(7))));
+				set(o.getCol(),o.getRow(),o);
 			}
-			if ("powerup.robot.RobotRex".equals(fieldList.get(0))) {
-				FieldObject fo = find(fieldList.get(1));
-				if (fo != null) {
-					// clear out old space
-					grid[fo.getCol()][fo.getRow()] = null;
-					// put in new space
-					fo.setCol(new Integer(fieldList.get(2)));
-					fo.setRow(new Integer(fieldList.get(3)));
-					set(fo.getCol(),fo.getRow(),fo);
-				} else {
-					RobotRex o = new RobotRex(fieldList.get(1),fieldList.get(4),fieldList.get(5),fieldList.get(6).charAt(0));
-					Util.log("Field.load setup new robot "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
-					o.setCol(new Integer(fieldList.get(2)));
-					o.setRow(new Integer(fieldList.get(3)));
-					set(o.getCol(),o.getRow(),o);
-				}
-				
-				//Util.log("Field.load "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
-			}
-			
 		}
-		
 	}
-
-	
-	
-	
-
 }

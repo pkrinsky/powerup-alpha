@@ -16,7 +16,7 @@ public class Robot extends FieldObject  {
 	public static final String RED = "R";
 	
 	protected String alliance; 
-	protected boolean hasCube = true;
+	protected boolean hasCube = false;
 	protected String gamedata = null;
 	protected char startPosition;
 	protected int shotsMade = 0;
@@ -38,7 +38,11 @@ public class Robot extends FieldObject  {
 	}
 	
 	public int move(Field info) {
-		return command;
+		int thismove = command;
+		
+		// once the move has completed STOP and wait for next command
+		command = Robot.STOP;
+		return thismove;		
 	}
 	
 	public static String getCommandName(int c) {

@@ -13,7 +13,6 @@ import powerup.field.Field;
 import powerup.field.Robot;
 import powerup.field.Scale;
 import powerup.robot.Autobot;
-import powerup.robot.RobotRex;
 
 public class GameServer {
 	
@@ -34,18 +33,14 @@ public class GameServer {
 		
 		String gamedata = "LRL";
 		
-		robotList.add(new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE));
-		//robotList.add(new Autobot("001",Robot.BLUE,gamedata,Field.MIDDLE));
+		robotList.add(new Autobot("001",Robot.BLUE,gamedata,Field.MIDDLE));
 		robotList.add(new Autobot("004",Robot.RED,gamedata,Field.LEFT));
 		robotList.add(new Autobot("005",Robot.RED,gamedata,Field.MIDDLE));
 		robotList.add(new Autobot("006",Robot.RED,gamedata,Field.RIGHT));
 		
 		
-		for (GameClient gc:connectionList) {
-			//field.setup(gc.getController().getRobot());	
-		}
-		
 		for (Robot r:robotList) {
+			r.setHasCube(true);
 			field.setup(r);	
 		}
 		
@@ -108,8 +103,7 @@ public class GameServer {
 	
 	
 	public Field getField(String name) {
-		Util.log("GameServer.getField name:"+name);
-		Util.log("GameServer.getField secs:"+field.getGameSecs());
+		//Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
 		if (field.getGameSecs() > 0) {
 		
 			field.decreaseGameSecs(1);
