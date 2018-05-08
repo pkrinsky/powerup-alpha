@@ -12,8 +12,8 @@ import powerup.field.Cube;
 import powerup.field.Field;
 import powerup.field.Robot;
 import powerup.field.Scale;
-import powerup.field.Wall;
 import powerup.robot.Autobot;
+import powerup.robot.RobotRex;
 
 public class GameServer {
 	
@@ -26,7 +26,7 @@ public class GameServer {
 	public Field setupField() {
 		Util.log("GameServer.setupField");
 		
-		field = new Field();
+		field = Field.getStaticField();
 
 		
 		// need to randomize this
@@ -34,56 +34,26 @@ public class GameServer {
 		
 		String gamedata = "LRL";
 		
-		int col2 = Field.COL2;
-		int col1 = Field.COL1;
-		int col3 = Field.COL3;
-				
+		robotList.add(new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE));
+		//robotList.add(new Autobot("001",Robot.BLUE,gamedata,Field.MIDDLE));
 		robotList.add(new Autobot("004",Robot.RED,gamedata,Field.LEFT));
 		robotList.add(new Autobot("005",Robot.RED,gamedata,Field.MIDDLE));
 		robotList.add(new Autobot("006",Robot.RED,gamedata,Field.RIGHT));
 		
 		
 		for (GameClient gc:connectionList) {
-			field.setup(gc.getController().getRobot());	
+			//field.setup(gc.getController().getRobot());	
 		}
 		
 		for (Robot r:robotList) {
 			field.setup(r);	
 		}
 		
-		
-		field.setup(col2,3,new Scale("RS",Robot.RED)); 
-		field.setup(col2,4,new Wall());
-		field.setup(col2,5,new Wall());
-		field.setup(col2,6,new Wall());
-		field.setup(col2,7,new Wall());
-		field.setup(col2,8,new Wall());
-		field.setup(col2,9,new Wall());
-		field.setup(col2,10,new Wall());
-		field.setup(col2,11,new Scale("BS",Robot.BLUE));
-
-		field.setup(col1,4,new Scale("BNS",Robot.BLUE));
-		field.setup(col1,5,new Wall());
-		field.setup(col1,6,new Wall());
-		field.setup(col1,7,new Wall());
-		field.setup(col1,8,new Wall());
-		field.setup(col1,9,new Wall());
-		field.setup(col1,10,new Scale("RFS",Robot.RED));
-
-		field.setup(col3,4,new Scale("BFS",Robot.BLUE));
-		field.setup(col3,5,new Wall());
-		field.setup(col3,6,new Wall());
-		field.setup(col3,7,new Wall());
-		field.setup(col3,8,new Wall());
-		field.setup(col3,9,new Wall());
-		field.setup(col3,10,new Scale("RNS",Robot.RED));
-		
-		
 		for (int i=0;i<5;i++) {
-			field.setup(col1+1,5+i,new Cube());
-			field.setup(col1-1,5+i,new Cube());
-			field.setup(col3+1,5+i,new Cube());
-			field.setup(col3-1,5+i,new Cube());
+			field.set(Field.COL1+1,5+i,new Cube());
+			field.set(Field.COL1-1,5+i,new Cube());
+			field.set(Field.COL3+1,5+i,new Cube());
+			field.set(Field.COL3-1,5+i,new Cube());
 		}
 		
 		
@@ -139,6 +109,7 @@ public class GameServer {
 	
 	public Field getField(String name) {
 		Util.log("GameServer.getField name:"+name);
+		Util.log("GameServer.getField secs:"+field.getGameSecs());
 		if (field.getGameSecs() > 0) {
 		
 			field.decreaseGameSecs(1);
@@ -157,6 +128,10 @@ public class GameServer {
 			}
 		}
 		return field;
+	}
+	
+	public String getFieldAsString(String name) {
+		return getField(name).save();
 	}
 	
 	public void startGame() {

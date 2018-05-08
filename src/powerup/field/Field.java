@@ -1,6 +1,12 @@
 package powerup.field;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
+
 import powerup.engine.Util;
+import powerup.robot.Autobot;
+import powerup.robot.RobotRex;
 
 public class Field {
 	public static final int COLS=23;
@@ -59,7 +65,8 @@ public class Field {
 		}
 		
 		if (fo == null) {
-			System.out.println("Field.find Cannot find field object with name:"+name);
+			Util.log("WARNING: Field.find cannot find field object with name:"+name);
+			//new Exception().printStackTrace(System.out);
 		}
 		return fo;
 		
@@ -79,11 +86,11 @@ public class Field {
 		
 	}
 	
-	public void setup(int col, int row, FieldObject fo) {
-		System.out.println("Field.setup "+fo.getName()+" at col:"+col+" r:"+row);
+	public void set(int col, int row, FieldObject fo) {
 		fo.setCol(col);
 		fo.setRow(row);
 		if (grid[col][row] == null) {
+			//Util.log("Field.setup "+fo.getName()+" at col:"+col+" r:"+row);
 			grid[col][row] = fo;
 		} else {
 			throw new RuntimeException("Field.setup position already taken by "+grid[col][row].getName()); 
@@ -118,7 +125,7 @@ public class Field {
 			col = COLS-1;
 		}
 		
-		setup(col,row,r);
+		set(col,row,r);
 	}
 	
 	public void remove(int col, int row) {
@@ -155,7 +162,7 @@ public class Field {
 		// tell the field to move it
 		FieldObject fo = find(name);
 		if (move > Robot.STOP) {
-			Util.log("RobotController: "+name+" move:"+Robot.getCommandName(move) + " col:"+ fo.getCol()+ " row:"+ fo.getRow());
+			Util.log("Field.move "+name+" move:"+Robot.getCommandName(move) + " col:"+ fo.getCol()+ " row:"+ fo.getRow());
 		
 			switch (move) {
 				case Robot.NORTH:
@@ -258,6 +265,45 @@ public class Field {
 		}
 
 	}
+	
+	public static Field getStaticField() {
+		Util.log("Field.getStaticField");
+		
+		Field field = new Field();
+		
+		int col2 = Field.COL2;
+		int col1 = Field.COL1;
+		int col3 = Field.COL3;
+				
+		field.set(col2,3,new Scale("RS",Robot.RED)); 
+		field.set(col2,4,new Wall());
+		field.set(col2,5,new Wall());
+		field.set(col2,6,new Wall());
+		field.set(col2,7,new Wall());
+		field.set(col2,8,new Wall());
+		field.set(col2,9,new Wall());
+		field.set(col2,10,new Wall());
+		field.set(col2,11,new Scale("BS",Robot.BLUE));
+
+		field.set(col1,4,new Scale("BNS",Robot.BLUE));
+		field.set(col1,5,new Wall());
+		field.set(col1,6,new Wall());
+		field.set(col1,7,new Wall());
+		field.set(col1,8,new Wall());
+		field.set(col1,9,new Wall());
+		field.set(col1,10,new Scale("RFS",Robot.RED));
+
+		field.set(col3,4,new Scale("BFS",Robot.BLUE));
+		field.set(col3,5,new Wall());
+		field.set(col3,6,new Wall());
+		field.set(col3,7,new Wall());
+		field.set(col3,8,new Wall());
+		field.set(col3,9,new Wall());
+		field.set(col3,10,new Scale("RNS",Robot.RED));
+		
+		return field;
+	}	
+	
 
 
 	public String save() {
@@ -277,24 +323,102 @@ public class Field {
 						sb.append(grid[c][r].getCol());
 						sb.append(DELIM);
 						sb.append(grid[c][r].getRow());
+						if (fo instanceof Scale ) {
+							sb.append(DELIM);
+							sb.append(((Scale)(grid[c][r])).getAlliance());
+							sb.append(DELIM);
+							sb.append(((Scale)(grid[c][r])).getNumCubes());
+						}
+						if (fo instanceof Robot ) {
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).getAlliance());
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).getGamedata());
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).getStartPosition());
+							//Util.log("Field.save\n"+sb.toString());
+						}
 						sb.append(ROW_DELIM);
 					}
 				}
 			}
 		}
 		
-		Util.log(sb.toString());
+		
 		return sb.toString();
 		
 	}
 	
 	public void load(String s) {
-		
-		// mark all the objects that can change as dirty
-		// process all the loaded data
-		// remove anything still marked as dirty as it must have been removed
-		
-
+		StringTokenizer rowTokens = new StringTokenizer(s, ROW_DELIM);
+		while (rowTokens.hasMoreTokens()) {
+			StringTokenizer fieldTokens = new StringTokenizer(rowTokens.nextToken(), DELIM);
+			//Util.log("***** row *****");
+			List<String> fieldList = new ArrayList<String>();
+			while (fieldTokens.hasMoreTokens()) {
+				fieldList.add(fieldTokens.nextToken());
+			}
+			/*
+			for (String f:fieldList) {
+				Util.log(f);
+			}
+			*/
+			if ("powerup.field.Cube".equals(fieldList.get(0))) {
+				// delete if already exists
+				FieldObject fo = find(fieldList.get(1));
+				if (fo != null) grid[fo.getCol()][fo.getRow()] = null;
+				
+				// create in new spot
+				Cube o = new Cube();
+				o.setName(fieldList.get(1));
+				o.setCol(new Integer(fieldList.get(2)));
+				o.setRow(new Integer(fieldList.get(3)));
+				set(o.getCol(),o.getRow(),o);
+			}
+			if ("powerup.field.Scale".equals(fieldList.get(0))) {
+				Scale o = (Scale) find(fieldList.get(1));
+				o.setNumCubes(new Integer(fieldList.get(5)));
+			}
+			if ("powerup.robot.Autobot".equals(fieldList.get(0))) {
+				FieldObject fo = find(fieldList.get(1));
+				if (fo != null) {
+					// clear out old space
+					grid[fo.getCol()][fo.getRow()] = null;
+					// put in new space
+					fo.setCol(new Integer(fieldList.get(2)));
+					fo.setRow(new Integer(fieldList.get(3)));
+					set(fo.getCol(),fo.getRow(),fo);
+				} else {
+					Autobot o = new Autobot(fieldList.get(1),fieldList.get(4),fieldList.get(5),fieldList.get(6).charAt(0));
+					Util.log("Field.load setup new robot "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
+					o.setCol(new Integer(fieldList.get(2)));
+					o.setRow(new Integer(fieldList.get(3)));
+					set(o.getCol(),o.getRow(),o);
+				}
+				
+				//Util.log("Field.load "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
+			}
+			if ("powerup.robot.RobotRex".equals(fieldList.get(0))) {
+				FieldObject fo = find(fieldList.get(1));
+				if (fo != null) {
+					// clear out old space
+					grid[fo.getCol()][fo.getRow()] = null;
+					// put in new space
+					fo.setCol(new Integer(fieldList.get(2)));
+					fo.setRow(new Integer(fieldList.get(3)));
+					set(fo.getCol(),fo.getRow(),fo);
+				} else {
+					RobotRex o = new RobotRex(fieldList.get(1),fieldList.get(4),fieldList.get(5),fieldList.get(6).charAt(0));
+					Util.log("Field.load setup new robot "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
+					o.setCol(new Integer(fieldList.get(2)));
+					o.setRow(new Integer(fieldList.get(3)));
+					set(o.getCol(),o.getRow(),o);
+				}
+				
+				//Util.log("Field.load "+o.getName()+" c:"+o.getCol()+" r:"+o.getRow());
+			}
+			
+		}
 		
 	}
 

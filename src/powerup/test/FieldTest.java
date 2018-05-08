@@ -8,6 +8,7 @@ import powerup.field.Cube;
 import powerup.field.Field;
 import powerup.field.Robot;
 import powerup.field.Scale;
+import powerup.field.Wall;
 import powerup.robot.Autobot;
 
 class FieldTest {
@@ -17,9 +18,10 @@ class FieldTest {
 		
 		// setup test field
 		Field field = new Field();
-		field.setup(1, 1, new Cube());
+		field.set(1, 1, new Cube());
 		field.setup(new Autobot("004",Robot.RED,"LRL",Field.LEFT));
-		field.setup(2,2,new Scale("RS",Robot.RED));
+		field.set(2,2,new Scale("RS",Robot.RED));
+		field.set(3,4,new Wall());
 		
 		// save as string
 		String s1 = field.save();

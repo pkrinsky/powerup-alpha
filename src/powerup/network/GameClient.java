@@ -26,8 +26,6 @@ public class GameClient {
 		String gamedata = "LRL";
 		server = new GameServer();
 		
-		controller = new RobotController(new RobotRex("001",Robot.BLUE,gamedata,Field.MIDDLE));
-		controller.setup();
 		server.addClient(this);
 		
 		server.startGame();
@@ -35,19 +33,42 @@ public class GameClient {
 		
 	}
 	
+	private void updateField(String name, Field field) {
+		String s = server.getFieldAsString(name);
+		field.load(s);
+		//field = server.getField(name);
+	}
+	
+	private void move(String name, int command) {
+		server.move(name,command);
+	}	
+	
 	private void gameLoop() {
 		Util.log("GameClient.gameLoop");
+		String name = "001";
 		boolean gameRunning = true;
-		Field field = null;
-		String name = controller.getRobot().getName();
+		
+		Field field = Field.getStaticField();
+		updateField(name,field);
+		
+		controller = new RobotController(name);
+		controller.setup();
 			
 		while (gameRunning) {
-			if (field == null || field.getGameSecs() > 0) {
-				field = server.getField(name);
-				int move = controller.move(field);
-				if (move != Robot.STOP) {
-					server.move(name,move);
-					field = server.getField(name);
+			Util.log("GameClient.gameLoop "+field.getGameSecs());
+			if (field.getGameSecs() > 0) {
+				// get the latest field data from the server
+				updateField(name,field);
+				
+				// see if the robot wants to make a move
+				int command = controller.move(field);
+				Util.log("GameClient.gameLoop command:"+command);
+				
+				if (command != Robot.STOP) {
+					// send the move to the server
+					move(name,command);
+					// update the field data to see what happened
+					updateField(name,field);
 				}
 				controller.drawField(field);
 			}
@@ -57,10 +78,7 @@ public class GameClient {
 		}
 	}
 	
-	public void move(Field field) {
-		Util.log("GameClient.move");
-		controller.move(field);
-	}
+
 
 	/*
 	

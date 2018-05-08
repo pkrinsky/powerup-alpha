@@ -38,7 +38,8 @@ public class RobotController extends Canvas  {
 	private List<RobotController> robotControllerList= new ArrayList<RobotController>();
 	private List<Block> blocks = new ArrayList<Block>();
 	private BufferedImage[] imageArray = new BufferedImage[10];
-	private int move = Robot.STOP;
+	private String robotName = null;
+	private Character lastKey = null;
 	
 	public BufferedImage getImage(String filename) {
 		BufferedImage sourceImage = null;
@@ -59,38 +60,40 @@ public class RobotController extends Canvas  {
 	
 	
 	
-	private Robot robot = null;
+	//private Robot robot = null;
 	
 
-	public RobotController(Robot robot) {
-		this.robot = robot;
+	public RobotController(String robotName) {
+		this.robotName = robotName;
 	}
 
 	public int move(Field field) {
-		move = robot.move(field);
+		Robot robot = getRobot(field);
+		if (lastKey != null) {
+			robot.key(lastKey);
+			lastKey = null;
+		}
+		int move = getRobot(field).move(field);
 		if (move != Robot.STOP)
-			Util.log("RobotController.move "+robot.getName()+" move:"+Robot.getCommandName(move));
+			Util.log("RobotController.move "+robotName+" move:"+Robot.getCommandName(move));
 		return move;
 	}
 	
 
 	
 	public void key(char key) {
-		Util.log("RobotControler.key:"+key);
-		robot.key(key);
+		Util.log("RobotControler.key lastKey:"+key);
+		lastKey = key;
 	}
 
 
-	public Robot getRobot() {
+	public Robot getRobot(Field field) {
+		Robot robot = (Robot) field.find(robotName);
 		return robot;
 	}
 
 
 
-	public void setRobot(Robot robot) {
-		this.robot = robot;
-	}
-	
 	private void drawLabels(Graphics2D g,Field field) {
 		Scale r = (Scale) field.find("RS");
 		String stats = "";
@@ -113,7 +116,7 @@ public class RobotController extends Canvas  {
 		
 		g.setColor(Color.black);
 		for (RobotController rc:robotControllerList) {
-			Robot robot = rc.getRobot();
+			Robot robot = rc.getRobot(field);
 			stats = stats+robot.getName()+": makes="+robot.getShotsMade()+"     ";
 			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
 		}
@@ -145,7 +148,7 @@ public class RobotController extends Canvas  {
 	}
 	
 	public void keyEvent(KeyEvent e) {
-		//Util.log("RobotControler.keyEvent char:"+e.getKeyChar());
+		Util.log("RobotControler.keyEvent char:"+e.getKeyChar());
 
 		if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
 			System.exit(0);
@@ -217,6 +220,8 @@ public class RobotController extends Canvas  {
 	}	
 		
 	public void setup() {
+		Util.log("RobotController.setup");
+		
 		JFrame container = new JFrame("Powerup");
 		
 		JPanel panel = (JPanel) container.getContentPane();
@@ -278,7 +283,12 @@ public class RobotController extends Canvas  {
 		// draw the blocks
 		blocks.removeIf(b -> b.getFieldObject().isDeleted() == true);
 		for (Block b:blocks) {
-			b.draw(g);
+			// update with latest field data
+			FieldObject fo = field.find(b.getFieldObject().getName());
+			if (fo != null) {
+				b.setFieldObject(fo);
+				b.draw(g);
+			}
 		}
 		
 		//do this last so the labels show on top

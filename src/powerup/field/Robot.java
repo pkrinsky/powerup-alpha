@@ -15,12 +15,12 @@ public class Robot extends FieldObject  {
 	public static final String BLUE = "B";
 	public static final String RED = "R";
 	
-	protected int command = STOP;
 	protected String alliance; 
 	protected boolean hasCube = true;
 	protected String gamedata = null;
 	protected char startPosition;
 	protected int shotsMade = 0;
+	protected int command = Robot.STOP;
 	
 	public Robot(String name, String alliance, String gamedata, char start) {
 		this.name = name;
@@ -70,7 +70,7 @@ public class Robot extends FieldObject  {
 	}
 
 	public void key(char key) {
-		Util.log("Robot.key:"+key);
+		Util.log("Robot.key "+name+" key:"+key);
 		
 		if (key == 'd') {
 			command = Robot.EAST;
@@ -91,7 +91,7 @@ public class Robot extends FieldObject  {
 			command = Robot.SHOOT;
 		}	
 		
-		Util.log("Robot.key command:"+command+ " "+getCommandName(command));
+		Util.log("Robot.key "+name+" command:"+command+ " "+getCommandName(command));
 				
 	}
 
@@ -109,6 +109,10 @@ public class Robot extends FieldObject  {
 	
 	public int getShotsMade() {
 		return shotsMade;
+	}
+
+	public String getGamedata() {
+		return gamedata;
 	}
 
 
