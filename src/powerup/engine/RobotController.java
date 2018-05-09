@@ -268,7 +268,7 @@ public class RobotController extends Canvas  {
 	
 
 	public void drawField(Field field) {
-		Util.log("RobotController.drawField");
+		//Util.log("RobotController.drawField");
 
 		if (imageArray[0] == null)
 			setupImages(field);

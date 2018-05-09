@@ -44,7 +44,7 @@ public class GameClient {
 	}	
 	
 	private void gameLoop() {
-		Util.log("GameClient.gameLoop");
+		//Util.log("GameClient.gameLoop");
 		String name = "001";
 		boolean gameRunning = true;
 		
@@ -55,16 +55,16 @@ public class GameClient {
 		controller.setup();
 			
 		while (gameRunning) {
-			Util.log("GameClient.gameLoop "+field.getGameSecs());
+			//Util.log("GameClient.gameLoop "+field.getGameSecs());
 			if (field.getGameSecs() > 0) {
 				// get the latest field data from the server
 				updateField(name,field);
 				
 				// see if the robot wants to make a move
 				int command = controller.move(field);
-				Util.log("GameClient.gameLoop command:"+command);
 				
 				if (command != Robot.STOP) {
+					Util.log("GameClient.gameLoop command:"+Robot.getCommandName(command));
 					// send the move to the server
 					move(name,command);
 					// update the field data to see what happened

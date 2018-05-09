@@ -191,48 +191,56 @@ public class Field {
 	
 	public void pickup(Robot robot) {
 		// check for a cube
-		pickupCheck(robot.getCol()+1, robot.getRow(),robot);
-		pickupCheck(robot.getCol(), robot.getRow()+1,robot);
-		pickupCheck(robot.getCol(), robot.getRow()-1,robot);
-		pickupCheck(robot.getCol()-1, robot.getRow(),robot);
+		boolean found = false;
+		if (!found) found = pickupCheck(robot.getCol()+1, robot.getRow(),robot);
+		if (!found) found = pickupCheck(robot.getCol(), robot.getRow()+1,robot);
+		if (!found) found = pickupCheck(robot.getCol(), robot.getRow()-1,robot);
+		if (!found) found = pickupCheck(robot.getCol()-1, robot.getRow(),robot);
 	}
 	
-	private void pickupCheck(int c, int r, Robot robot) {
+	private boolean pickupCheck(int c, int r, Robot robot) {
+		boolean found = false;
 		FieldObject fo = getFieldObject(c, r);
 		if (fo != null && fo instanceof Cube) {
-			//Util.log("Field.pickupCheck found cube");
+			Util.log("Field.pickupCheck found cube "+fo.getName());
 			if(robot.hasCube() == false) {
 				robot.setHasCube(true);
 				remove(c, r);
+				found = true;
 			}else {
-				//System.out.println("you already have a cube");
+				Util.log("Field.pickupCheck you already have a cube");
 			}
-		}		
+		}
+		return found;
 	}
 	
 	public void shoot(Robot robot) {
-		// check for a cube
-		shootCheck(robot.getCol()+1, robot.getRow(),robot);
-		shootCheck(robot.getCol(), robot.getRow()+1,robot);
-		shootCheck(robot.getCol(), robot.getRow()-1,robot);
-		shootCheck(robot.getCol()-1, robot.getRow(),robot);
+		// check for a shot
+		boolean shot = false;
+		if (!shot) shot = shootCheck(robot.getCol()+1, robot.getRow(),robot);
+		if (!shot) shot = shootCheck(robot.getCol(), robot.getRow()+1,robot);
+		if (!shot) shot = shootCheck(robot.getCol(), robot.getRow()-1,robot);
+		if (!shot) shot = shootCheck(robot.getCol()-1, robot.getRow(),robot);
 	}
 	
-	private void shootCheck(int c, int r, Robot robot) {
+	private boolean shootCheck(int c, int r, Robot robot) {
+		boolean shot = false;
 		FieldObject fo = getFieldObject(c, r);
 		if (fo != null && fo instanceof Scale) {
 			Scale scale = (Scale) fo;
-			//System.out.println("RobotController.found scale");
+			Util.log("RobotController.found scale");
 			if(robot.hasCube() == true) {
 				robot.setHasCube(false);
 				robot.shotMade();
-				scale.setNumCubes(1);
-				//System.out.println("NumCubes="+ scale.getNumCubes());
+				scale.setNumCubes(scale.getNumCubes()+1);
+				shot = true;
+				Util.log("NumCubes="+ scale.getNumCubes());
 				
 			}else {
-				//System.out.println("you have no cube");
+				Util.log("you have no cube");
 			}
 		}		
+		return shot;
 	}
 	public int getRedScore() {
 		return redScore;
@@ -377,8 +385,19 @@ public class Field {
 		
 	}
 	
+	private void resetCubes() {
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null && grid[c][r] instanceof Cube) {
+						grid[c][r] = null;
+				}
+			}
+		}		
+	}
+	
 	public void load(String s) {
-		boolean debug = true;
+		boolean debug = false;
+		resetCubes();
 		StringTokenizer rowTokens = new StringTokenizer(s, ROW_DELIM);
 		while (rowTokens.hasMoreTokens()) {
 			StringTokenizer fieldTokens = new StringTokenizer(rowTokens.nextToken(), DELIM);
@@ -401,8 +420,8 @@ public class Field {
 			}
 			if ("powerup.field.Cube".equals(fieldList.get(0))) {
 				// delete if already exists
-				FieldObject fo = find(fieldList.get(1));
-				if (fo != null) grid[fo.getCol()][fo.getRow()] = null;
+				//FieldObject fo = find(fieldList.get(1));
+				//if (fo != null) grid[fo.getCol()][fo.getRow()] = null;
 				
 				// create in new spot
 				Cube o = new Cube();
