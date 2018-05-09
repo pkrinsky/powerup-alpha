@@ -25,7 +25,7 @@ import powerup.field.Robot;
 import powerup.field.Scale;
 import powerup.field.Wall;
 
-public class RobotController extends Canvas  {
+public class GraphicsController extends Canvas  {
 	
 	private static final long serialVersionUID = 1L;
 	private static final int SCORE_AREA = 100;
@@ -35,7 +35,7 @@ public class RobotController extends Canvas  {
 	private static final int SCORE_POSITION_Y = HEIGHT-80;
 
 	private BufferStrategy strategy;
-	private List<RobotController> robotControllerList= new ArrayList<RobotController>();
+	private List<GraphicsController> robotControllerList= new ArrayList<GraphicsController>();
 	private List<Block> blocks = new ArrayList<Block>();
 	private BufferedImage[] imageArray = new BufferedImage[10];
 	private String robotName = null;
@@ -63,7 +63,7 @@ public class RobotController extends Canvas  {
 	//private Robot robot = null;
 	
 
-	public RobotController(String robotName) {
+	public GraphicsController(String robotName) {
 		this.robotName = robotName;
 	}
 
@@ -115,7 +115,7 @@ public class RobotController extends Canvas  {
 		g.drawString(""+r.getNumCubes(),(r.getCol()*Block.BLOCKSIZE+10),r.getRow()*Block.BLOCKSIZE+20);
 		
 		g.setColor(Color.black);
-		for (RobotController rc:robotControllerList) {
+		for (GraphicsController rc:robotControllerList) {
 			Robot robot = rc.getRobot(field);
 			stats = stats+robot.getName()+": makes="+robot.getShotsMade()+"     ";
 			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
@@ -288,7 +288,7 @@ public class RobotController extends Canvas  {
 			if (fo != null) {
 				b.setFieldObject(fo);
 				b.draw(g);
-			}
+			} 
 		}
 		
 		//do this last so the labels show on top

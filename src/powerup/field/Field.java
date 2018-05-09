@@ -45,6 +45,10 @@ public class Field {
 	}
 	
 	public FieldObject find(String name) {
+		return find(name,false);
+	}
+	
+	public FieldObject find(String name, boolean warn) {
 		FieldObject fo = null;
 		for (int r=0;r<Field.ROWS;r++) {
 			for (int c=0;c<Field.COLS;c++) {
@@ -62,9 +66,9 @@ public class Field {
 			}
 		}
 		
-		if (fo == null) {
+		if (fo == null && warn) {
 			Util.log("WARNING: Field.find cannot find field object with name:"+name);
-			//new Exception().printStackTrace(System.out);
+			new Exception().printStackTrace(System.out);
 		}
 		return fo;
 		

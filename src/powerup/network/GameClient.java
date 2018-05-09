@@ -1,15 +1,13 @@
 package powerup.network;
 
-import powerup.engine.RobotController;
+import powerup.engine.GraphicsController;
 import powerup.engine.Util;
 import powerup.field.Field;
 import powerup.field.Robot;
-import powerup.robot.RobotRex;
 
 public class GameClient {
 	
-	//private List<RobotController> robotControllerList= new ArrayList<RobotController>();
-	private RobotController controller = null;
+	private GraphicsController controller = null;
 	//private String serverAddress = "localhost";
 	//private int serverPort = 9001;
 	private GameServer server = null;
@@ -23,11 +21,8 @@ public class GameClient {
 	
 	public void setup() {
 		Util.log("GameClient.setup");
-		String gamedata = "LRL";
 		server = new GameServer();
-		
 		server.addClient(this);
-		
 		server.startGame();
 		gameLoop();
 		
@@ -51,7 +46,7 @@ public class GameClient {
 		Field field = Field.getStaticField();
 		updateField(name,field);
 		
-		controller = new RobotController(name);
+		controller = new GraphicsController(name);
 		controller.setup();
 			
 		while (gameRunning) {
@@ -111,11 +106,11 @@ public class GameClient {
 		controller.key(key);
 	}
 
-	public RobotController getController() {
+	public GraphicsController getController() {
 		return controller;
 	}
 
-	public void setController(RobotController controller) {
+	public void setController(GraphicsController controller) {
 		this.controller = controller;
 	}
 	

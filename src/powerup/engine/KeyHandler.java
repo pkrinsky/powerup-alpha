@@ -4,10 +4,10 @@ import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
 public class KeyHandler extends KeyAdapter {
-	private RobotController controller = null;
+	private GraphicsController controller = null;
 
 	
-	public KeyHandler(RobotController controller) {
+	public KeyHandler(GraphicsController controller) {
 		super();
 		this.controller = controller;
 	}
