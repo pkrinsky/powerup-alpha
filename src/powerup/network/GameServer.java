@@ -6,6 +6,7 @@ import java.net.DatagramSocket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import powerup.engine.Util;
 import powerup.field.Cube;
@@ -70,10 +71,6 @@ public class GameServer {
 
 	}
 	
-	public void move(String name, int command) {
-		field.move(name, command);
-	}
-	
 	private void calcScore() {
 		Scale r = (Scale) field.find("RS");
 		Scale b = (Scale) field.find("BS");
@@ -100,9 +97,7 @@ public class GameServer {
 		connectionList.add(client);
 	}
 	
-	
-	
-	public Field getField(String name) {
+	private Field getField(String name) {
 		//Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
 		if (field.getGameSecs() > 0) {
 		
@@ -127,6 +122,26 @@ public class GameServer {
 	public String getFieldAsString(String name) {
 		return getField(name).save();
 	}
+	
+	public void move(String s) {
+		String name = null;
+		int command = -1;
+		
+		StringTokenizer fieldTokens = new StringTokenizer(s, GameClient.DELIM);
+		List<String> fieldList = new ArrayList<String>();
+		while (fieldTokens.hasMoreTokens()) {
+			fieldList.add(fieldTokens.nextToken());
+		}
+		
+		name=fieldList.get(0);
+		command = new Integer(fieldList.get(1));
+		
+		move(name,command);
+	}
+	
+	private void move(String name, int command) {
+		field.move(name, command);
+	}	
 	
 	public void startGame() {
 		Util.log("GameServer.startGame");

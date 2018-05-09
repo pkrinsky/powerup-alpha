@@ -1,15 +1,22 @@
 package powerup.network;
 
+import java.io.IOException;
+import java.net.DatagramPacket;
+import java.net.DatagramSocket;
+import java.net.InetAddress;
+
 import powerup.engine.GraphicsController;
 import powerup.engine.Util;
 import powerup.field.Field;
 import powerup.field.Robot;
 
 public class GameClient {
+	public static final String DELIM="|";
+	public static final String ROW_DELIM="\n";
 	
 	private GraphicsController controller = null;
-	//private String serverAddress = "localhost";
-	//private int serverPort = 9001;
+	private String serverAddress = "localhost";
+	private int serverPort = 9001;
 	private GameServer server = null;
 	
 	public static void main(String[] args) {
@@ -34,10 +41,6 @@ public class GameClient {
 		//field = server.getField(name);
 	}
 	
-	private void move(String name, int command) {
-		server.move(name,command);
-	}	
-	
 	private void gameLoop() {
 		//Util.log("GameClient.gameLoop");
 		String name = "001";
@@ -61,7 +64,7 @@ public class GameClient {
 				if (command != Robot.STOP) {
 					Util.log("GameClient.gameLoop command:"+Robot.getCommandName(command));
 					// send the move to the server
-					move(name,command);
+					sendMove(name,command);
 					// update the field data to see what happened
 					updateField(name,field);
 				}
@@ -74,14 +77,15 @@ public class GameClient {
 	}
 	
 
-
-	/*
-	
-	private void send(int command) {
+	private void sendMove(String name, int command) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(name);
+		sb.append(DELIM);
+		sb.append(command);
+		
 		// if there is a local server use it otherwise send it across the network
 		if (server == null) {
-			String s = ""+command;
-			byte[] buf = s.getBytes();
+			byte[] buf = sb.toString().getBytes();
 			
 			try {
 				DatagramSocket socket = new DatagramSocket();
@@ -89,7 +93,7 @@ public class GameClient {
 				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, serverPort);
 				socket.send(packet);
 				packet = new DatagramPacket(buf, buf.length, address, serverPort);
-				Util.log("GameClient.sending s:"+s);
+				Util.log("GameClient.sending s:"+sb.toString());
 				socket.send(packet);
 				socket.close();
 			} catch (IOException e) {
@@ -97,10 +101,9 @@ public class GameClient {
 				e.printStackTrace();
 			}			
 		} else {
-			server.move(command);
+			server.move(sb.toString());
 		}
 	}
-		*/
 	
 	public void key(char key) {
 		controller.key(key);

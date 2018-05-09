@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import powerup.engine.Util;
+import powerup.network.GameClient;
 
 public class Field {
 	public static final int COLS=23;
@@ -18,8 +19,8 @@ public class Field {
 	public static final char LEFT = 'L';
 	public static final char MIDDLE = 'M';
 	public static final char RIGHT = 'R';
-	public static final String DELIM="|";
-	public static final String ROW_DELIM="\n";
+	private static final String DELIM = GameClient.DELIM;
+	private static final String ROW_DELIM = GameClient.ROW_DELIM;
 
 	private static final int GAME_SECS = 60;
 
