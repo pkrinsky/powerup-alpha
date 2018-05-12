@@ -4,7 +4,7 @@ public class Cube extends FieldObject {
 	
 	@Override
 	public String getName() {
-		return "cube";
-	}	
+		return "cube-"+getCol()+"-"+getRow();
+	}
 
 }

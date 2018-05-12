@@ -1,4 +1,4 @@
-package powerup.engine;
+package powerup.server;
 
 import powerup.field.Cube;
 import powerup.field.Field;
@@ -6,12 +6,12 @@ import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
 
-public class RobotController {
+public class GameController {
 	
 	private Robot robot = null;
 	
 
-	public RobotController(Robot robot) {
+	public GameController(Robot robot) {
 		this.robot = robot;
 	}
 
@@ -19,7 +19,7 @@ public class RobotController {
 		int move = robot.move(field);
 		FieldObject fo = field.find(robot.getName());
 		if (move > Robot.STOP)
-			System.out.println("RobotController: "+robot.getName()+" move:"+robot.getCommandName(move) + " col:"+ fo.getCol()+ " row:"+ fo.getRow());
+			System.out.println("RobotController: "+robot.getName()+" move:"+Robot.getCommandName(move) + " col:"+ fo.getCol()+ " row:"+ fo.getRow());
 		
 		switch (move) {
 			case Robot.NORTH:

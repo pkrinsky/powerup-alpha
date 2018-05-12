@@ -4,9 +4,8 @@ public class Wall extends FieldObject {
 
 	@Override
 	public String getName() {
-		return "wall";
+		return "wall-"+getCol()+"-"+getRow();
 	}
-	
-	
+
 
 }

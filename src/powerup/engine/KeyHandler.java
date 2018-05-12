@@ -3,19 +3,17 @@ package powerup.engine;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
 
-import powerup.Main;
-
 public class KeyHandler extends KeyAdapter {
-	private Main main = null;
+	private GraphicsController controller = null;
 
 	
-	public KeyHandler(Main main) {
+	public KeyHandler(GraphicsController controller) {
 		super();
-		this.main = main;
+		this.controller = controller;
 	}
 
 	public void keyPressed(KeyEvent e) {
-		main.keyEvent(e);
+		controller.keyEvent(e);
 		
 	}
 }

@@ -1,5 +1,7 @@
 package powerup.field;
 
+import powerup.engine.Util;
+
 public class Robot extends FieldObject  {
 	
 	public static final int STOP = 0;
@@ -13,12 +15,12 @@ public class Robot extends FieldObject  {
 	public static final String BLUE = "B";
 	public static final String RED = "R";
 	
-	protected int command = STOP;
 	protected String alliance; 
-	protected boolean hasCube = true;
+	protected boolean hasCube = false;
 	protected String gamedata = null;
 	protected char startPosition;
 	protected int shotsMade = 0;
+	protected int command = Robot.STOP;
 	
 	public Robot(String name, String alliance, String gamedata, char start) {
 		this.name = name;
@@ -36,10 +38,14 @@ public class Robot extends FieldObject  {
 	}
 	
 	public int move(Field info) {
-		return command;
+		int thismove = command;
+		
+		// once the move has completed STOP and wait for next command
+		command = Robot.STOP;
+		return thismove;		
 	}
 	
-	public String getCommandName(int c) {
+	public static String getCommandName(int c) {
 		String name = "unknown";
 		switch (c) {
 			case Robot.NORTH:
@@ -68,7 +74,7 @@ public class Robot extends FieldObject  {
 	}
 
 	public void key(char key) {
-		System.out.println("Robot key:"+key);
+		Util.log("Robot.key "+name+" key:"+key);
 		
 		if (key == 'd') {
 			command = Robot.EAST;
@@ -89,7 +95,7 @@ public class Robot extends FieldObject  {
 			command = Robot.SHOOT;
 		}	
 		
-		System.out.println("Robot command:"+command+ " "+getCommandName(command));
+		Util.log("Robot.key "+name+" command:"+command+ " "+getCommandName(command));
 				
 	}
 
@@ -107,6 +113,10 @@ public class Robot extends FieldObject  {
 	
 	public int getShotsMade() {
 		return shotsMade;
+	}
+
+	public String getGamedata() {
+		return gamedata;
 	}
 
 
