@@ -1,8 +1,13 @@
 package powerup.network;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
+import java.net.ServerSocket;
+import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
@@ -16,6 +21,9 @@ import powerup.field.Scale;
 import powerup.robot.Autobot;
 
 public class GameServer {
+	
+	public static final String COMMAND_GET_FIELD = "GET_FIELD";
+	public static final String COMMAND_MOVE = "MOVE";
 	
 	private long lastScoreSecs = 0;
 	
@@ -61,6 +69,7 @@ public class GameServer {
 	
 	public static void main(String[] args) {
 		GameServer server = new GameServer();
+		server.startGame();
 		int listenPort = 9001;
 		try {
 			server.start(listenPort);
@@ -148,8 +157,69 @@ public class GameServer {
 		setupField();
 	}
 	
-	
 	private void start(int listenPort) throws SocketException {
+		boolean listen = true;
+		ServerSocket serverSocket;
+		try {
+			serverSocket = new ServerSocket(listenPort);
+			Socket clientSocket;
+			BufferedReader in;
+			PrintWriter out;
+			
+			while (listen) {
+				Util.log("Waiting for client");
+				clientSocket = serverSocket.accept();
+				Util.log("Client connection");
+				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				out = new PrintWriter(clientSocket.getOutputStream(),true);
+				processClient(in,out);
+				clientSocket.close();
+				Util.log("Client socket closed");
+			}
+			serverSocket.close();
+		} catch (Exception e) {
+			Util.log(e.getMessage());
+		}
+	}
+	
+	private void processClient(BufferedReader in, PrintWriter out) {
+		String line ="";
+		boolean done = false;
+		List<String> fieldList = new ArrayList<String>();
+		Util.log("GameServer.processClient readLine");
+		try {
+			while (!done) {
+				if ((line = in.readLine()) == null) {
+					done = true;
+				} else {
+					Util.log("Client message:["+line+"]");
+				}
+			}
+			
+			StringTokenizer fieldTokens = new StringTokenizer(line, GameClient.DELIM);
+			while (fieldTokens.hasMoreTokens()) {
+				fieldList.add(fieldTokens.nextToken());
+			}
+			String command = fieldList.get(0);
+			Util.log("Client command:["+command+"]");
+			
+			if (COMMAND_MOVE.equals(command)) {
+				Util.log("GameServer.processClient move:"+fieldList.get(1));
+				move(fieldList.get(1));
+			}
+			
+			if (COMMAND_GET_FIELD.equals(command)) {
+				String f = field.save();
+				Util.log("GameServer.processClient println fieldString:"+f);
+				out.println(f);
+			}
+			Util.log("GameServer.prcessClient done");
+		} catch (Exception e) {
+			Util.log(e.getMessage());
+		}
+	}
+	
+	private void startDatagram(int listenPort) throws SocketException {
 		boolean listen = true;
 		
 		DatagramSocket socket = new DatagramSocket(listenPort);

@@ -1,9 +1,14 @@
 package powerup.network;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 
 import powerup.engine.GraphicsController;
 import powerup.engine.Util;
@@ -12,34 +17,87 @@ import powerup.field.Robot;
 
 public class GameClient {
 	public static final String DELIM="|";
-	public static final String ROW_DELIM="\n";
+	public static final String ROW_DELIM="~";
 	
 	private GraphicsController controller = null;
-	private String serverAddress = "localhost";
-	private int serverPort = 9001;
+	private String serverAddress = null;
+	private int serverPort = 0;
+	private Socket socket;
+	private BufferedReader in;
+	private PrintWriter out;
 	private GameServer server = null;
 	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
-		client.setup();
+		client.setup(args[0],args[1]);
 		client.gameLoop();
 		//client.send(-1);
 	}
 	
-	public void setup() {
+	public void setup(String serverAddress, String serverPort) {
 		Util.log("GameClient.setup");
-		server = new GameServer();
-		server.addClient(this);
-		server.startGame();
+		if (serverAddress == null) {
+			server = new GameServer();
+			server.addClient(this);
+			server.startGame();	
+		} else {
+			this.serverAddress = serverAddress;
+			this.serverPort = new Integer(serverPort).intValue();
+			try {
+				socket = new Socket(this.serverAddress,this.serverPort);
+				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+				out = new PrintWriter(socket.getOutputStream(),true);
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+		}
+		
 		gameLoop();
 		
 	}
 	
-	private void updateField(String name, Field field) {
-		String s = server.getFieldAsString(name);
-		field.load(s);
-		//field = server.getField(name);
+	private void getFieldData(String name, Field field) {
+		String s = null;
+		if (server == null) {
+			out.println(GameServer.COMMAND_GET_FIELD);
+			try {
+				Util.log("GameClient.getFieldData readLine ...");
+				s = in.readLine();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		} else {
+			s = server.getFieldAsString(name);
+		}
+		Util.log("GameClient.getFieldData returned "+s);
+				
+		if (s!= null) field.load(s);
 	}
+	
+	private void sendMove(String name, int command) {
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_MOVE);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		sb.append(command);
+		sb.append(ROW_DELIM);
+		
+		// if there is a local server use it otherwise send it across the network
+		if (server != null) {
+			out.println(sb.toString());
+		} else {
+			server.move(sb.toString());
+		}
+	}	
+	
+	
 	
 	private void gameLoop() {
 		//Util.log("GameClient.gameLoop");
@@ -47,7 +105,7 @@ public class GameClient {
 		boolean gameRunning = true;
 		
 		Field field = Field.getStaticField();
-		updateField(name,field);
+		getFieldData(name,field);
 		
 		controller = new GraphicsController(name);
 		controller.setup();
@@ -56,7 +114,7 @@ public class GameClient {
 			//Util.log("GameClient.gameLoop "+field.getGameSecs());
 			if (field.getGameSecs() > 0) {
 				// get the latest field data from the server
-				updateField(name,field);
+				getFieldData(name,field);
 				
 				// see if the robot wants to make a move
 				int command = controller.move(field);
@@ -66,7 +124,7 @@ public class GameClient {
 					// send the move to the server
 					sendMove(name,command);
 					// update the field data to see what happened
-					updateField(name,field);
+					getFieldData(name,field);
 				}
 				controller.drawField(field);
 			}
@@ -77,33 +135,8 @@ public class GameClient {
 	}
 	
 
-	private void sendMove(String name, int command) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(name);
-		sb.append(DELIM);
-		sb.append(command);
-		
-		// if there is a local server use it otherwise send it across the network
-		if (server == null) {
-			byte[] buf = sb.toString().getBytes();
-			
-			try {
-				DatagramSocket socket = new DatagramSocket();
-				InetAddress address = InetAddress.getByName(serverAddress);
-				DatagramPacket packet = new DatagramPacket(buf, buf.length, address, serverPort);
-				socket.send(packet);
-				packet = new DatagramPacket(buf, buf.length, address, serverPort);
-				Util.log("GameClient.sending s:"+sb.toString());
-				socket.send(packet);
-				socket.close();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}			
-		} else {
-			server.move(sb.toString());
-		}
-	}
+
+	
 	
 	public void key(char key) {
 		controller.key(key);
