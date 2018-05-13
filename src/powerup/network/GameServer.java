@@ -43,7 +43,7 @@ public class GameServer {
 		
 		String gamedata = "LRL";
 		
-		robotList.add(new Autobot("001",Robot.BLUE,gamedata,Field.MIDDLE));
+		robotList.add(new Robot("001",Robot.BLUE,gamedata,Field.MIDDLE));
 		robotList.add(new Autobot("004",Robot.RED,gamedata,Field.LEFT));
 		robotList.add(new Autobot("005",Robot.RED,gamedata,Field.MIDDLE));
 		robotList.add(new Autobot("006",Robot.RED,gamedata,Field.RIGHT));

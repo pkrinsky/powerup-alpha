@@ -75,6 +75,17 @@ public class Field {
 		
 	}
 	
+	public List<Robot> getRobotList() {
+		List<Robot> robotList = new ArrayList<Robot>();
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null && grid[c][r] instanceof Robot) {
+					robotList.add((Robot)grid[c][r]);
+				}
+			}
+		}
+		return robotList;
+	}	
 	
 	public void print() {
 		for (int r=0;r<Field.ROWS;r++) {

@@ -18,6 +18,7 @@ import powerup.field.Robot;
 public class GameClient {
 	public static final String DELIM="|";
 	public static final String ROW_DELIM="~";
+	public static final int DELAY = 200;
 	
 	private GraphicsController controller = null;
 	private String serverAddress = null;
@@ -62,7 +63,7 @@ public class GameClient {
 	private void getFieldData(String name, Field field) {
 		String s = null;
 		if (server == null) {
-			Util.log("GameClient.getFieldData requesting from server");
+			//Util.log("GameClient.getFieldData requesting from server");
 			StringBuffer sb = new StringBuffer();
 			sb.append(GameServer.COMMAND_GET_FIELD);
 			sb.append(DELIM);
@@ -70,9 +71,9 @@ public class GameClient {
 			sb.append(DELIM);			
 			out.println(sb.toString());
 			try {
-				Util.log("GameClient.getFieldData reading response");
+				//Util.log("GameClient.getFieldData reading response");
 				s = in.readLine();
-				Util.log("GameClient.getFieldData got response "+s);
+				//Util.log("GameClient.getFieldData got response "+s);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -80,7 +81,7 @@ public class GameClient {
 		} else {
 			s = server.getFieldAsString(name);
 		}
-		Util.log("GameClient.getFieldData returned "+s);
+		//Util.log("GameClient.getFieldData returned "+s);
 				
 		if (s!= null) field.load(s);
 	}
@@ -122,6 +123,7 @@ public class GameClient {
 			if (field.getGameSecs() > 0) {
 				// get the latest field data from the server
 				getFieldData(name,field);
+				controller.drawField(field);
 				
 				// see if the robot wants to make a move
 				int command = controller.move(field);
@@ -130,14 +132,15 @@ public class GameClient {
 					Util.log("GameClient.gameLoop command:"+Robot.getCommandName(command));
 					// send the move to the server
 					sendMove(name,command);
+					
 					// update the field data to see what happened
-					getFieldData(name,field);
+					// getFieldData(name,field);
 				}
-				controller.drawField(field);
+				
 			}
 
 			// wait for a little then start again
-			try { Thread.sleep(250); } catch (Exception e) {}
+			try { Thread.sleep(DELAY); } catch (Exception e) {}
 		}
 	}
 	

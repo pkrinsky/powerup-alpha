@@ -35,7 +35,6 @@ public class GraphicsController extends Canvas  {
 	private static final int SCORE_POSITION_Y = HEIGHT-80;
 
 	private BufferStrategy strategy;
-	private List<GraphicsController> robotControllerList= new ArrayList<GraphicsController>();
 	private List<Block> blocks = new ArrayList<Block>();
 	private BufferedImage[] imageArray = new BufferedImage[10];
 	private String robotName = null;
@@ -60,9 +59,6 @@ public class GraphicsController extends Canvas  {
 	
 	
 	
-	//private Robot robot = null;
-	
-
 	public GraphicsController(String robotName) {
 		this.robotName = robotName;
 	}
@@ -95,8 +91,10 @@ public class GraphicsController extends Canvas  {
 
 
 	private void drawLabels(Graphics2D g,Field field) {
-		Scale r = (Scale) field.find("RS");
 		String stats = "";
+		
+		// draw numbers on scales
+		Scale r = (Scale) field.find("RS");
 		g.drawString(""+r.getNumCubes(),r.getCol()*Block.BLOCKSIZE+10,r.getRow()*Block.BLOCKSIZE+20);
 		
 		r = (Scale) field.find("BS");
@@ -115,8 +113,9 @@ public class GraphicsController extends Canvas  {
 		g.drawString(""+r.getNumCubes(),(r.getCol()*Block.BLOCKSIZE+10),r.getRow()*Block.BLOCKSIZE+20);
 		
 		g.setColor(Color.black);
-		for (GraphicsController rc:robotControllerList) {
-			Robot robot = rc.getRobot(field);
+		
+		// draw numbers on robots
+		for (Robot robot:field.getRobotList()) {
 			stats = stats+robot.getName()+": makes="+robot.getShotsMade()+"     ";
 			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
 		}
