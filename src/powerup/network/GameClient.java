@@ -31,16 +31,17 @@ public class GameClient {
 		GameClient client = new GameClient();
 		client.setup(args[0],args[1]);
 		client.gameLoop();
-		//client.send(-1);
 	}
 	
 	public void setup(String serverAddress, String serverPort) {
-		Util.log("GameClient.setup");
+		
 		if (serverAddress == null) {
+			Util.log("GameClient.setup local server");
 			server = new GameServer();
 			server.addClient(this);
 			server.startGame();	
 		} else {
+			Util.log("GameClient.setup network server "+serverAddress+" "+serverPort);
 			this.serverAddress = serverAddress;
 			this.serverPort = new Integer(serverPort).intValue();
 			try {
@@ -56,18 +57,22 @@ public class GameClient {
 			}
 
 		}
-		
-		gameLoop();
-		
 	}
 	
 	private void getFieldData(String name, Field field) {
 		String s = null;
 		if (server == null) {
-			out.println(GameServer.COMMAND_GET_FIELD);
+			Util.log("GameClient.getFieldData requesting from server");
+			StringBuffer sb = new StringBuffer();
+			sb.append(GameServer.COMMAND_GET_FIELD);
+			sb.append(DELIM);
+			sb.append(name);
+			sb.append(DELIM);			
+			out.println(sb.toString());
 			try {
-				Util.log("GameClient.getFieldData readLine ...");
+				Util.log("GameClient.getFieldData reading response");
 				s = in.readLine();
+				Util.log("GameClient.getFieldData got response "+s);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -81,19 +86,21 @@ public class GameClient {
 	}
 	
 	private void sendMove(String name, int command) {
-		StringBuffer sb = new StringBuffer();
-		sb.append(GameServer.COMMAND_MOVE);
-		sb.append(DELIM);
-		sb.append(name);
-		sb.append(DELIM);
-		sb.append(command);
-		sb.append(ROW_DELIM);
+		Util.log("GameClient.sendMove "+command);
 		
 		// if there is a local server use it otherwise send it across the network
-		if (server != null) {
+		if (server == null) {
+			StringBuffer sb = new StringBuffer();
+			sb.append(GameServer.COMMAND_MOVE);
+			sb.append(DELIM);
+			sb.append(name);
+			sb.append(DELIM);
+			sb.append(command);
+			sb.append(DELIM);
+			//sb.append(ROW_DELIM);			
 			out.println(sb.toString());
 		} else {
-			server.move(sb.toString());
+			server.move(name,command);
 		}
 	}	
 	

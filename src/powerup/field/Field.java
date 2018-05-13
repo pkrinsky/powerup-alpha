@@ -80,7 +80,7 @@ public class Field {
 		for (int r=0;r<Field.ROWS;r++) {
 			for (int c=0;c<Field.COLS;c++) {
 				if (grid[c][r] != null) {
-					System.out.println("Field.print "+c+" "+r+" "+grid[c][r].name);
+					Util.log("Field.print "+c+" "+r+" "+grid[c][r].name);
 				} else {
 					//System.out.println(c+" "+r+" Empty");
 				}
@@ -89,18 +89,18 @@ public class Field {
 		
 	}
 	
-	public void set(int col, int row, FieldObject fo) {
+	public synchronized void set(int col, int row, FieldObject fo) {
 		fo.setCol(col);
 		fo.setRow(row);
 		if (grid[col][row] == null) {
 			//Util.log("Field.setup "+fo.getName()+" at col:"+col+" r:"+row);
 			grid[col][row] = fo;
 		} else {
-			throw new RuntimeException("Field.setup position already taken by "+grid[col][row].getName()); 
+			Util.log("Field.setup position already taken by "+grid[col][row].getName()); 
 		}
 	}
 	
-	public void setup(Robot r) {
+	public synchronized void setup(Robot r) {
 		int row = 0;
 		int col = 0;
 		
@@ -131,13 +131,13 @@ public class Field {
 		set(col,row,r);
 	}
 	
-	public void remove(int col, int row) {
+	private void remove(int col, int row) {
 		grid[col][row].setDeleted(true);
 		grid[col][row] = null;
 		Util.log("Field.remove is now empty col:"+col+" r:"+row);
 	}
 	
-	public void move(FieldObject fo, int col, int row) {
+	public synchronized void move(FieldObject fo, int col, int row) {
 		Util.log("Field.move "+fo.name+" from col:"+fo.getCol()+" r:"+fo.getRow()+" to col:"+col+" r:"+row);
 		
 		// make sure target is on the field
@@ -161,7 +161,7 @@ public class Field {
 		//print();
 	}
 	
-	public void move(String name, int move) {
+	public synchronized void move(String name, int move) {
 		// tell the field to move it
 		FieldObject fo = find(name);
 		if (move > Robot.STOP) {
@@ -279,7 +279,7 @@ public class Field {
 		this.gameSecs = gameSecs;
 	}
 
-	public void decreaseGameSecs(int i) {
+	public synchronized void decreaseGameSecs(int i) {
 		long current = System.currentTimeMillis();
 		if (current - lastTick > 1000) {
 			this.gameSecs = this.gameSecs - 1;
@@ -329,7 +329,7 @@ public class Field {
 	
 
 
-	public String save() {
+	public synchronized String save() {
 		StringBuffer sb = new StringBuffer();
 		FieldObject fo = null;
 		
@@ -400,7 +400,7 @@ public class Field {
 		}		
 	}
 	
-	public void load(String s) {
+	public synchronized void load(String s) {
 		boolean debug = false;
 		resetCubes();
 		StringTokenizer rowTokens = new StringTokenizer(s, ROW_DELIM);

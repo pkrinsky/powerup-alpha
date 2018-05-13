@@ -24,6 +24,7 @@ public class GameServer {
 	
 	public static final String COMMAND_GET_FIELD = "GET_FIELD";
 	public static final String COMMAND_MOVE = "MOVE";
+	public static final String COMMAND_EXIT = "EXIT";
 	
 	private long lastScoreSecs = 0;
 	
@@ -107,7 +108,7 @@ public class GameServer {
 	}
 	
 	private Field getField(String name) {
-		//Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
+		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
 		if (field.getGameSecs() > 0) {
 		
 			field.decreaseGameSecs(1);
@@ -132,23 +133,8 @@ public class GameServer {
 		return getField(name).save();
 	}
 	
-	public void move(String s) {
-		String name = null;
-		int command = -1;
-		
-		StringTokenizer fieldTokens = new StringTokenizer(s, GameClient.DELIM);
-		List<String> fieldList = new ArrayList<String>();
-		while (fieldTokens.hasMoreTokens()) {
-			fieldList.add(fieldTokens.nextToken());
-		}
-		
-		name=fieldList.get(0);
-		command = new Integer(fieldList.get(1));
-		
-		move(name,command);
-	}
 	
-	private void move(String name, int command) {
+	public void move(String name, int command) {
 		field.move(name, command);
 	}	
 	
@@ -162,20 +148,20 @@ public class GameServer {
 		ServerSocket serverSocket;
 		try {
 			serverSocket = new ServerSocket(listenPort);
-			Socket clientSocket;
+			Socket clientSocket = null;
 			BufferedReader in;
 			PrintWriter out;
 			
 			while (listen) {
-				Util.log("Waiting for client");
+				Util.log("Waiting for client on "+listenPort);
 				clientSocket = serverSocket.accept();
 				Util.log("Client connection");
 				in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				out = new PrintWriter(clientSocket.getOutputStream(),true);
 				processClient(in,out);
-				clientSocket.close();
-				Util.log("Client socket closed");
 			}
+			clientSocket.close();
+			Util.log("Client socket closed");
 			serverSocket.close();
 		} catch (Exception e) {
 			Util.log(e.getMessage());
@@ -186,32 +172,37 @@ public class GameServer {
 		String line ="";
 		boolean done = false;
 		List<String> fieldList = new ArrayList<String>();
-		Util.log("GameServer.processClient readLine");
 		try {
 			while (!done) {
-				if ((line = in.readLine()) == null) {
-					done = true;
-				} else {
-					Util.log("Client message:["+line+"]");
+				Util.log("GameServer.processClient waiting for client");
+				line = in.readLine();
+				Util.log("GameServer.processClient received line:["+line+"]");
+					
+				StringTokenizer fieldTokens = new StringTokenizer(line, GameClient.DELIM);
+				fieldList.clear();
+				while (fieldTokens.hasMoreTokens()) {
+					fieldList.add(fieldTokens.nextToken());
 				}
-			}
-			
-			StringTokenizer fieldTokens = new StringTokenizer(line, GameClient.DELIM);
-			while (fieldTokens.hasMoreTokens()) {
-				fieldList.add(fieldTokens.nextToken());
-			}
-			String command = fieldList.get(0);
-			Util.log("Client command:["+command+"]");
-			
-			if (COMMAND_MOVE.equals(command)) {
-				Util.log("GameServer.processClient move:"+fieldList.get(1));
-				move(fieldList.get(1));
-			}
-			
-			if (COMMAND_GET_FIELD.equals(command)) {
-				String f = field.save();
-				Util.log("GameServer.processClient println fieldString:"+f);
-				out.println(f);
+				String command = fieldList.get(0);
+				Util.log("Client command:["+command+"]");
+				
+				if (COMMAND_EXIT.equals(command)) {
+					Util.log("GameServer.processClient move:"+fieldList.get(1));
+					done = true;
+				}
+				
+				if (COMMAND_MOVE.equals(command)) {
+					Util.log("GameServer.processClient move:"+fieldList.get(1));
+					String c = fieldList.get(1);
+					int i = new Integer(fieldList.get(2));
+					move(c,i);
+				}
+				
+				if (COMMAND_GET_FIELD.equals(command)) {
+					String f = getFieldAsString(fieldList.get(1));
+					//Util.log("GameServer.processClient println fieldString:"+f);
+					out.println(f);
+				}
 			}
 			Util.log("GameServer.prcessClient done");
 		} catch (Exception e) {
@@ -219,30 +210,5 @@ public class GameServer {
 		}
 	}
 	
-	private void startDatagram(int listenPort) throws SocketException {
-		boolean listen = true;
-		
-		DatagramSocket socket = new DatagramSocket(listenPort);
-		System.out.println("GameServer.start listening on "+listenPort);
-		
-		while (listen) {
-			byte[] buf = new byte[256];
-			DatagramPacket packet = new DatagramPacket(buf, buf.length);
-			try {
-				socket.receive(packet);
-				String received = new String(packet.getData(), 0, packet.getLength());
-				Util.log("GameServer.start received packet s:"+received);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			
-			//InetAddress address = packet.getAddress();
-			//int port = packet.getPort();
-			//packet = new DatagramPacket(buf, buf.length, address, port);
-			//socket.send(packet);
-			
-		}
-		socket.close();
-	}
+
 }
