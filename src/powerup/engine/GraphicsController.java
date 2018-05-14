@@ -84,7 +84,7 @@ public class GraphicsController extends Canvas  {
 
 
 	public Robot getRobot(Field field) {
-		Robot robot = (Robot) field.find(robotName);
+		Robot robot = (Robot) field.find(robotName,true);
 		return robot;
 	}
 

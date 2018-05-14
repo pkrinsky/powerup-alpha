@@ -4,9 +4,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.DatagramPacket;
-import java.net.DatagramSocket;
-import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -27,19 +24,20 @@ public class GameClient {
 	private BufferedReader in;
 	private PrintWriter out;
 	private GameServer server = null;
+	private String name = "000";
 	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
-		client.setup(args[0],args[1]);
+		client.setup(args[0],args[1], args[2]);
 		client.gameLoop();
 	}
 	
-	public void setup(String serverAddress, String serverPort) {
-		
+	public void setup(String serverAddress, String serverPort, String name) {
+		this.name = name;
 		if (serverAddress == null) {
 			Util.log("GameClient.setup local server");
 			server = new GameServer();
-			server.addClient(this);
+			//server.addClient(this);
 			server.startGame();	
 		} else {
 			Util.log("GameClient.setup network server "+serverAddress+" "+serverPort);
@@ -49,6 +47,15 @@ public class GameClient {
 				socket = new Socket(this.serverAddress,this.serverPort);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				out = new PrintWriter(socket.getOutputStream(),true);
+				
+				// register robot
+				StringBuffer sb = new StringBuffer();
+				sb.append(GameServer.COMMAND_REGISTER);
+				sb.append(DELIM);
+				sb.append(name);
+				sb.append(DELIM);			
+				out.println(sb.toString());
+				
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -109,7 +116,6 @@ public class GameClient {
 	
 	private void gameLoop() {
 		//Util.log("GameClient.gameLoop");
-		String name = "001";
 		boolean gameRunning = true;
 		
 		Field field = Field.getStaticField();
