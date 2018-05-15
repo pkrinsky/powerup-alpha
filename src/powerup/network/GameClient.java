@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
@@ -59,6 +60,10 @@ public class GameClient {
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
+			} catch (ConnectException e) {
+				Util.log("GameClient.setup could not connect to server");
+				Util.log("GameClient.setup exiting");
+				System.exit(1);
 			} catch (IOException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
