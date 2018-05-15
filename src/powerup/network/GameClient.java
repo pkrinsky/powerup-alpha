@@ -30,7 +30,11 @@ public class GameClient {
 	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
-		client.setup(args[0],args[1]);
+		if (args.length>2) {
+			client.setup(args[0],args[1]);
+		} else {
+			client.setup(null, null);
+		}
 		client.gameLoop();
 	}
 	
