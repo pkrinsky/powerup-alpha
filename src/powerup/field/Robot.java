@@ -16,7 +16,7 @@ public class Robot extends FieldObject  {
 	public static final String RED = "R";
 	
 	protected String alliance; 
-	protected boolean hasCube = false;
+	protected boolean hasCube = true;
 	protected String gamedata = null;
 	protected char startPosition;
 	protected int shotsMade = 0;

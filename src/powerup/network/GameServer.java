@@ -5,6 +5,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import powerup.engine.Util;
 import powerup.field.Cube;
@@ -25,8 +26,55 @@ public class GameServer {
 	
 	private Field field = new Field();
 	private List<Robot> robotList = new ArrayList<Robot>();
+	
+	public synchronized String execute(String name, String request) {
+		//boolean running = true;
+		String returnString = null;
+		
+		List<String> fieldList = new ArrayList<String>();
+		
+		Util.log("GameServer.execute robot:"+name+" request:["+request+"]");
+		
+		StringTokenizer fieldTokens = new StringTokenizer(request, GameClient.DELIM);
+		fieldList.clear();
+		while (fieldTokens.hasMoreTokens()) {
+			fieldList.add(fieldTokens.nextToken());
+		}
+		
+		String command = fieldList.get(0);
+		//Util.log("ServerThread.run command:["+command+"]");
+		
+		if (GameServer.COMMAND_EXIT.equals(command)) {
+			//Util.log("ServerThread.run exit:"+fieldList.get(1));
+			//running = false;
+		}
+		
+		if (GameServer.COMMAND_MOVE.equals(command)) {
+			//Util.log("ServerThread.run move:"+fieldList.get(1));
+			String c = fieldList.get(1);
+			int i = new Integer(fieldList.get(2));
+			move(c,i);
+		}
+		
+		if (GameServer.COMMAND_REGISTER.equals(command)) {
+			Util.log("ServerThread.run register robot:"+fieldList.get(1));
+			Robot robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
+			setup(robot);	
+		}				
+		
+		if (GameServer.COMMAND_GET_FIELD.equals(command)) {
+			String f = getFieldAsString(fieldList.get(1));
+			//Util.log("ServerThread.run println fieldString:"+f);
+			returnString = f;
+		}
+		
+		Util.log("GameServer.execute robot:"+name+" response:["+returnString+"]");
+		
+		return returnString;
 
-	public Field setupField() {
+	}
+
+	private Field setupField() {
 		Util.log("GameServer.setupField");
 		
 		field = Field.getStaticField();
@@ -119,16 +167,16 @@ public class GameServer {
 		return field;
 	}
 	
-	public String getFieldAsString(String name) {
+	private String getFieldAsString(String name) {
 		return getField(name).save();
 	}
 	
 	
-	public void move(String name, int command) {
+	private void move(String name, int command) {
 		field.move(name, command);
 	}
 	
-	public void setup(Robot robot) {
+	private void setup(Robot robot) {
 		field.setup(robot);;
 	}
 	
@@ -149,19 +197,19 @@ public class GameServer {
 				Util.log("GameServer.run Waiting for client on "+listenPort);
 				clientSocket = serverSocket.accept();
 				Util.log("GameServer.run Client connection from "+clientSocket.getInetAddress().getHostAddress()+" "+clientSocket.getPort());
-				String robotName = "000";
 				Robot robot = null;
 				switch (threadList.size()) {
 					case 0:
-						robot = new Robot(robotName,Robot.BLUE,gamedata,Field.MIDDLE);
+						robot = new Robot("000",Robot.BLUE,gamedata,Field.MIDDLE);
 						break;
 					case 1:					
-						robot = new Robot(robotName,Robot.RED,gamedata,Field.MIDDLE);
+						robot = new Robot("001",Robot.RED,gamedata,Field.MIDDLE);
 						break;
 				}
 				Util.log("GameServer.run setup robot "+robot.getName());
+				setup(robot);
 				robotList.add(robot);
-				ServerThread thread = new ServerThread(robotName);
+				ServerThread thread = new ServerThread(robot.getName());
 				threadList.add(thread);
 				thread.setup(this, clientSocket, robot);
 				thread.start();
@@ -174,8 +222,5 @@ public class GameServer {
 			Util.log(e.getMessage());
 		}
 	}
-	
-
-	
 
 }

@@ -37,6 +37,35 @@ public class GameClient {
 		client.gameLoop();
 	}
 	
+	public String executeCommand(String name, String request) {
+		String returnString = null;
+		Util.log("GameClinent.executeCommand robot:"+name+" sent:"+request);
+		if (server == null) {
+			try {
+				// register robot
+				StringBuffer sb = new StringBuffer();
+				sb.append(GameServer.COMMAND_REGISTER);
+				sb.append(DELIM);
+				sb.append(name);
+				sb.append(DELIM);			
+				out.println(sb.toString());
+				returnString = in.readLine();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (ConnectException e) {
+				Util.log("GameClient.setup could not connect to server");
+				Util.log("GameClient.setup exiting");
+				System.exit(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}			
+		} else {
+			returnString = server.execute(name, request);
+		}
+		Util.log("GameClient.executeCommand received:"+returnString);
+		return returnString;
+	}
+	
 	public void setup(String serverAddress, String serverPort, String name) {
 		if (name != null) this.name = name;
 		if (serverAddress == null) {
@@ -48,18 +77,11 @@ public class GameClient {
 			Util.log("GameClient.setup network server "+serverAddress+" "+serverPort);
 			this.serverAddress = serverAddress;
 			this.serverPort = new Integer(serverPort).intValue();
+			
 			try {
 				socket = new Socket(this.serverAddress,this.serverPort);
 				in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 				out = new PrintWriter(socket.getOutputStream(),true);
-				
-				// register robot
-				StringBuffer sb = new StringBuffer();
-				sb.append(GameServer.COMMAND_REGISTER);
-				sb.append(DELIM);
-				sb.append(name);
-				sb.append(DELIM);			
-				out.println(sb.toString());
 				
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
@@ -74,29 +96,27 @@ public class GameClient {
 			}
 
 		}
+		
+		// register robot
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_REGISTER);
+		sb.append(DELIM);
+		sb.append(this.name);
+		sb.append(DELIM);			
+		executeCommand(this.name,sb.toString());
+		
+		
 	}
 	
 	private void getFieldData(String name, Field field) {
 		String s = null;
-		if (server == null) {
-			//Util.log("GameClient.getFieldData requesting from server");
-			StringBuffer sb = new StringBuffer();
-			sb.append(GameServer.COMMAND_GET_FIELD);
-			sb.append(DELIM);
-			sb.append(name);
-			sb.append(DELIM);			
-			out.println(sb.toString());
-			try {
-				//Util.log("GameClient.getFieldData reading response");
-				s = in.readLine();
-				//Util.log("GameClient.getFieldData got response "+s);
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		} else {
-			s = server.getFieldAsString(name);
-		}
+		//Util.log("GameClient.getFieldData requesting from server");
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_GET_FIELD);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);	
+		s = executeCommand(name,sb.toString());
 		//Util.log("GameClient.getFieldData returned "+s);
 				
 		if (s!= null) field.load(s);
@@ -105,20 +125,14 @@ public class GameClient {
 	private void sendMove(String name, int command) {
 		Util.log("GameClient.sendMove "+command);
 		
-		// if there is a local server use it otherwise send it across the network
-		if (server == null) {
-			StringBuffer sb = new StringBuffer();
-			sb.append(GameServer.COMMAND_MOVE);
-			sb.append(DELIM);
-			sb.append(name);
-			sb.append(DELIM);
-			sb.append(command);
-			sb.append(DELIM);
-			//sb.append(ROW_DELIM);			
-			out.println(sb.toString());
-		} else {
-			server.move(name,command);
-		}
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_MOVE);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		sb.append(command);
+		sb.append(DELIM);
+		executeCommand(name,sb.toString());
 	}	
 	
 	
