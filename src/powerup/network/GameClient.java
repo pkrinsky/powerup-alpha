@@ -29,12 +29,16 @@ public class GameClient {
 	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
-		client.setup(args[0],args[1], args[2]);
+		if (args.length > 2) {
+			client.setup(args[0],args[1], args[2]);
+		} else {
+			client.setup(null, null, null);
+		}
 		client.gameLoop();
 	}
 	
 	public void setup(String serverAddress, String serverPort, String name) {
-		this.name = name;
+		if (name != null) this.name = name;
 		if (serverAddress == null) {
 			Util.log("GameClient.setup local server");
 			server = new GameServer();
