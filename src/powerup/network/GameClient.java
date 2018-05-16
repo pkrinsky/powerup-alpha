@@ -42,13 +42,7 @@ public class GameClient {
 		Util.log("GameClinent.executeCommand robot:"+name+" sent:"+request);
 		if (server == null) {
 			try {
-				// register robot
-				StringBuffer sb = new StringBuffer();
-				sb.append(GameServer.COMMAND_REGISTER);
-				sb.append(DELIM);
-				sb.append(name);
-				sb.append(DELIM);			
-				out.println(sb.toString());
+				out.println(request);
 				returnString = in.readLine();
 			} catch (UnknownHostException e) {
 				e.printStackTrace();

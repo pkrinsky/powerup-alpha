@@ -1,5 +1,8 @@
 package powerup.network;
 
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
@@ -31,10 +34,9 @@ public class GameServer {
 		//boolean running = true;
 		String returnString = null;
 		
-		List<String> fieldList = new ArrayList<String>();
-		
 		Util.log("GameServer.execute robot:"+name+" request:["+request+"]");
 		
+		List<String> fieldList = new ArrayList<String>();
 		StringTokenizer fieldTokens = new StringTokenizer(request, GameClient.DELIM);
 		fieldList.clear();
 		while (fieldTokens.hasMoreTokens()) {
@@ -57,9 +59,10 @@ public class GameServer {
 		}
 		
 		if (GameServer.COMMAND_REGISTER.equals(command)) {
-			Util.log("ServerThread.run register robot:"+fieldList.get(1));
-			Robot robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
-			setup(robot);	
+			//Util.log("ServerThread.run register robot:"+fieldList.get(1));
+			//Robot robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
+			//setup(robot);
+			//returnString = robot.getName();
 		}				
 		
 		if (GameServer.COMMAND_GET_FIELD.equals(command)) {
@@ -73,6 +76,55 @@ public class GameServer {
 		return returnString;
 
 	}
+	
+	private void run(int listenPort) throws SocketException {
+		boolean listen = true;
+		ServerSocket serverSocket;
+		List<ServerThread> threadList = new ArrayList<ServerThread>();
+		try {
+			serverSocket = new ServerSocket(listenPort);
+			Socket clientSocket = null;
+
+			while (listen) {
+				Util.log("GameServer.run Waiting for client on "+listenPort);
+				clientSocket = serverSocket.accept();
+				Util.log("GameServer.run Client connection from "+clientSocket.getInetAddress().getHostAddress()+" "+clientSocket.getPort());
+				
+				BufferedReader in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+				PrintWriter out = new PrintWriter(clientSocket.getOutputStream(),true);
+				String request = in.readLine();
+				out.println("");
+				List<String> fieldList = new ArrayList<String>();
+				StringTokenizer fieldTokens = new StringTokenizer(request, GameClient.DELIM);
+				fieldList.clear();
+				while (fieldTokens.hasMoreTokens()) {
+					fieldList.add(fieldTokens.nextToken());
+				}
+				String robotName = fieldList.get(1);
+				Robot robot = null;
+				switch (threadList.size()) {
+					case 0:
+						robot = new Robot(robotName,Robot.BLUE,gamedata,Field.MIDDLE);
+						break;
+					case 1:					
+						robot = new Robot(robotName,Robot.RED,gamedata,Field.MIDDLE);
+						break;
+				}
+				Util.log("GameServer.run setup robot "+robot.getName());
+				setup(robot);
+				robotList.add(robot);
+				ServerThread thread = new ServerThread(in,out,robot,this);
+				threadList.add(thread);
+				thread.start();
+			}
+			for (ServerThread t:threadList) {
+				t.shutdown();
+			}
+			serverSocket.close();
+		} catch (Exception e) {
+			Util.log(e.getMessage());
+		}
+	}	
 
 	private Field setupField() {
 		Util.log("GameServer.setupField");
@@ -171,7 +223,6 @@ public class GameServer {
 		return getField(name).save();
 	}
 	
-	
 	private void move(String name, int command) {
 		field.move(name, command);
 	}
@@ -185,42 +236,6 @@ public class GameServer {
 		setupField();
 	}
 	
-	private void run(int listenPort) throws SocketException {
-		boolean listen = true;
-		ServerSocket serverSocket;
-		List<ServerThread> threadList = new ArrayList<ServerThread>();
-		try {
-			serverSocket = new ServerSocket(listenPort);
-			Socket clientSocket = null;
 
-			while (listen) {
-				Util.log("GameServer.run Waiting for client on "+listenPort);
-				clientSocket = serverSocket.accept();
-				Util.log("GameServer.run Client connection from "+clientSocket.getInetAddress().getHostAddress()+" "+clientSocket.getPort());
-				Robot robot = null;
-				switch (threadList.size()) {
-					case 0:
-						robot = new Robot("000",Robot.BLUE,gamedata,Field.MIDDLE);
-						break;
-					case 1:					
-						robot = new Robot("001",Robot.RED,gamedata,Field.MIDDLE);
-						break;
-				}
-				Util.log("GameServer.run setup robot "+robot.getName());
-				setup(robot);
-				robotList.add(robot);
-				ServerThread thread = new ServerThread(robot.getName());
-				threadList.add(thread);
-				thread.setup(this, clientSocket, robot);
-				thread.start();
-			}
-			for (ServerThread t:threadList) {
-				t.shutdown();
-			}
-			serverSocket.close();
-		} catch (Exception e) {
-			Util.log(e.getMessage());
-		}
-	}
 
 }

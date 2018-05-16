@@ -1,10 +1,7 @@
 package powerup.network;
 
 import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
-import java.net.Socket;
 
 import powerup.engine.Util;
 import powerup.field.Robot;
@@ -17,16 +14,15 @@ public class ServerThread extends Thread {
 	private boolean running = true;
 	private Robot robot;
 	
-	public ServerThread(String name) {
-		super(name);
-	}
-
-	public void setup(GameServer server, Socket clientSocket, Robot robot) throws IOException {
-		this.in = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-		this.out = new PrintWriter(clientSocket.getOutputStream(),true);
+	
+	public ServerThread(BufferedReader in, PrintWriter out, Robot robot, GameServer server) {
+		super();
+		this.in = in;
+		this.out = out;
 		this.robot = robot;
 		this.server = server;
 	}
+
 	
 	public void shutdown() {
 		running = false;
