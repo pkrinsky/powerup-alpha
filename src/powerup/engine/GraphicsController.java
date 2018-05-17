@@ -12,7 +12,9 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -37,8 +39,8 @@ public class GraphicsController extends Canvas  {
 	private BufferStrategy strategy;
 	private List<Block> blocks = new ArrayList<Block>();
 	private BufferedImage[] imageArray = new BufferedImage[10];
-	private String robotName = null;
-	private Character lastKey = null;
+	private Map<String,Block> robotMap = new HashMap<String,Block>();
+	private Robot robot = new Robot();
 	
 	public BufferedImage getImage(String filename) {
 		BufferedImage sourceImage = null;
@@ -57,38 +59,34 @@ public class GraphicsController extends Canvas  {
 		return sourceImage;
 	}
 	
-	
-	
 	public GraphicsController(String robotName) {
-		this.robotName = robotName;
+		robot.setName(robotName);
 	}
 
-	public int move(Field field) {
-		Robot robot = getRobot(field);
-		if (lastKey != null) {
-			robot.key(lastKey);
-			lastKey = null;
+	public int getMove(Field field) {
+		int move = Robot.STOP;
+		Robot fieldRobot = getRobot(field, robot.getName());
+
+		// if the robot is on the field get the latest data
+		if (fieldRobot != null) {
+			robot.update(fieldRobot);
 		}
-		int move = getRobot(field).move(field);
-		if (move != Robot.STOP)
-			Util.log("RobotController.move "+robotName+" move:"+Robot.getCommandName(move));
+		
+		// get the next move
+		move = robot.move(field);
+		
+		// send to the server if needed
+		if (move != Robot.STOP) {
+			Util.log("RobotController.move "+robot.getName()+" move:"+Robot.getCommandName(move));
+		}
+		
 		return move;
 	}
 	
-
-	
-	public void key(char key) {
-		Util.log("RobotControler.key lastKey:"+key);
-		lastKey = key;
-	}
-
-
-	public Robot getRobot(Field field) {
-		Robot robot = (Robot) field.find(robotName);
+	public Robot getRobot(Field field, String robotName) {
+		Robot robot = (Robot) field.find(robotName,true);
 		return robot;
 	}
-
-
 
 	private void drawLabels(Graphics2D g,Field field) {
 		String stats = "";
@@ -153,7 +151,7 @@ public class GraphicsController extends Canvas  {
 			System.exit(0);
 		}
 		
-		key(e.getKeyChar());
+		robot.handleKey(e.getKeyChar());
 	}	
 
 	private void setupImages(Field field) {
@@ -188,18 +186,7 @@ public class GraphicsController extends Canvas  {
 					}
 					if (field.getFieldObject(c,r) instanceof Robot) {
 						Robot s = (Robot) fo;
-						if (s.getAlliance().equalsIgnoreCase(Robot.RED)) {
-							BufferedImage[] i = new BufferedImage[2];
-							i[0] = imageArray[1];
-							i[1] = imageArray[0];
-							blocks.add(new Block(i,fo));
-						} else {
-							BufferedImage[] i = new BufferedImage[2];
-							i[0] = imageArray[5];
-							i[1] = imageArray[4];
-							blocks.add(new Block(i,fo));
-						}
-							
+						addRobot(s);
 					}
 					if (fo instanceof Cube) {
 						BufferedImage[] i = new BufferedImage[1];
@@ -210,13 +197,27 @@ public class GraphicsController extends Canvas  {
 						BufferedImage[] i = new BufferedImage[1];
 						i[0] = imageArray[7];
 						blocks.add(new Block(i,fo));
-							
 					}
 				}
 			}
 		}
-
 	}	
+	
+	private void addRobot(Robot s) {
+		BufferedImage[] i;
+		if (s.getAlliance().equalsIgnoreCase(Robot.RED)) {
+			i = new BufferedImage[2];
+			i[0] = imageArray[1];
+			i[1] = imageArray[0];
+		} else {
+			i = new BufferedImage[2];
+			i[0] = imageArray[5];
+			i[1] = imageArray[4];
+		}
+		Block b = new Block(i,s);
+		blocks.add(b);
+		robotMap.put(s.getName(),b);
+	}
 		
 	public void setup() {
 		Util.log("RobotController.setup");
@@ -288,6 +289,13 @@ public class GraphicsController extends Canvas  {
 				b.setFieldObject(fo);
 				b.draw(g);
 			} 
+		}
+		
+		// add in any new robots
+		for (Robot r:field.getRobotList()) {
+			if (robotMap.get(r.getName()) == null) {
+				addRobot(r);
+			}
 		}
 		
 		//do this last so the labels show on top
