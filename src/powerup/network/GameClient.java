@@ -16,7 +16,7 @@ import powerup.field.Robot;
 public class GameClient {
 	public static final String DELIM="|";
 	public static final String ROW_DELIM="~";
-	public static final int DELAY = 200;
+	public static final int DELAY = 500;
 	
 	private GraphicsController controller = null;
 	private String serverAddress = null;
@@ -35,29 +35,6 @@ public class GameClient {
 			client.setup(null, null, null);
 		}
 		client.gameLoop();
-	}
-	
-	public String executeCommand(String name, String request) {
-		String returnString = null;
-		Util.log("GameClinent.executeCommand robot:"+name+" sent:"+request);
-		if (server == null) {
-			try {
-				out.println(request);
-				returnString = in.readLine();
-			} catch (UnknownHostException e) {
-				e.printStackTrace();
-			} catch (ConnectException e) {
-				Util.log("GameClient.setup could not connect to server");
-				Util.log("GameClient.setup exiting");
-				System.exit(1);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}			
-		} else {
-			returnString = server.execute(name, request);
-		}
-		Util.log("GameClient.executeCommand received:"+returnString);
-		return returnString;
 	}
 	
 	public void setup(String serverAddress, String serverPort, String name) {
@@ -90,17 +67,33 @@ public class GameClient {
 			}
 
 		}
-		
-		// register robot
-		StringBuffer sb = new StringBuffer();
-		sb.append(GameServer.COMMAND_REGISTER);
-		sb.append(DELIM);
-		sb.append(this.name);
-		sb.append(DELIM);			
-		executeCommand(this.name,sb.toString());
-		
-		
+
+	}	
+	
+	public String executeCommand(String name, String request) {
+		String returnString = null;
+		Util.log("GameClient.executeCommand robot:"+name+" sent:"+request);
+		if (server == null) {
+			try {
+				out.println(request);
+				returnString = in.readLine();
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (ConnectException e) {
+				Util.log("GameClient.setup could not connect to server");
+				Util.log("GameClient.setup exiting");
+				System.exit(1);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}			
+		} else {
+			returnString = server.execute(name, request);
+		}
+		if (returnString != null)
+			Util.log("GameClient.executeCommand received:"+returnString.replace(ROW_DELIM.charAt(0), '\n'));
+		return returnString;
 	}
+
 	
 	private void getFieldData(String name, Field field) {
 		String s = null;
@@ -116,8 +109,8 @@ public class GameClient {
 		if (s!= null) field.load(s);
 	}
 	
-	private void sendMove(String name, int command) {
-		Util.log("GameClient.sendMove "+command);
+	private void sendCommand(String name, int command) {
+		Util.log("GameClient.sendCommand "+command);
 		
 		StringBuffer sb = new StringBuffer();
 		sb.append(GameServer.COMMAND_MOVE);
@@ -129,6 +122,18 @@ public class GameClient {
 		executeCommand(name,sb.toString());
 	}	
 	
+	private void sendRegister(String name, int position) {
+		Util.log("GameClient.sendRegister position:"+position);
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_REGISTER);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		sb.append(position);
+		sb.append(DELIM);
+		executeCommand(name,sb.toString());
+	}		
 	
 	
 	private void gameLoop() {
@@ -149,17 +154,19 @@ public class GameClient {
 				controller.drawField(field);
 				
 				// see if the robot wants to make a move
-				int command = controller.move(field);
+				int command = controller.getMove(field);
 				
+				// send the move to the server
 				if (command != Robot.STOP) {
 					Util.log("GameClient.gameLoop command:"+Robot.getCommandName(command));
-					// send the move to the server
-					sendMove(name,command);
-					
-					// update the field data to see what happened
-					// getFieldData(name,field);
+					if (Robot.PLAYER_1 == command) {
+						sendRegister(name,1);
+					} else if (Robot.PLAYER_2 == command) {
+						sendRegister(name,2);
+					} else {
+						sendCommand(name,command);
+					}
 				}
-				
 			}
 
 			// wait for a little then start again
@@ -168,12 +175,7 @@ public class GameClient {
 	}
 	
 
-
 	
-	
-	public void key(char key) {
-		controller.key(key);
-	}
 
 	public GraphicsController getController() {
 		return controller;

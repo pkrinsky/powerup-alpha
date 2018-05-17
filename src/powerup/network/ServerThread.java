@@ -4,7 +4,6 @@ import java.io.BufferedReader;
 import java.io.PrintWriter;
 
 import powerup.engine.Util;
-import powerup.field.Robot;
 
 public class ServerThread extends Thread {
 	
@@ -12,14 +11,14 @@ public class ServerThread extends Thread {
 	private PrintWriter out;
 	private GameServer server;
 	private boolean running = true;
-	private Robot robot;
+	private String name;
 	
 	
-	public ServerThread(BufferedReader in, PrintWriter out, Robot robot, GameServer server) {
+	public ServerThread(BufferedReader in, PrintWriter out, String name, GameServer server) {
 		super();
 		this.in = in;
 		this.out = out;
-		this.robot = robot;
+		this.name = name;
 		this.server = server;
 	}
 
@@ -32,9 +31,9 @@ public class ServerThread extends Thread {
 		String line ="";
 		try {
 			while (running) {
-				Util.log("ServerThread.run waiting for robot "+robot.getName());
+				Util.log("ServerThread.run waiting for client "+name);
 				line = in.readLine();
-				String outString = server.execute(robot.getName(),line);
+				String outString = server.execute(name,line);
 				out.println(outString);
 			}
 		} catch (Exception e) {

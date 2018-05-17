@@ -32,7 +32,7 @@ public class GameServer {
 	
 	public synchronized String execute(String name, String request) {
 		//boolean running = true;
-		String returnString = null;
+		String returnString = "";
 		
 		Util.log("GameServer.execute robot:"+name+" request:["+request+"]");
 		
@@ -59,10 +59,19 @@ public class GameServer {
 		}
 		
 		if (GameServer.COMMAND_REGISTER.equals(command)) {
-			//Util.log("ServerThread.run register robot:"+fieldList.get(1));
-			//Robot robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
-			//setup(robot);
-			//returnString = robot.getName();
+			Util.log("GameServer.execute register robot:"+fieldList.get(1)+" position:"+fieldList.get(2));
+			int position = new Integer(fieldList.get(2));
+			Robot robot = null;
+			switch (position) {
+				case 1:
+					robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
+					break;
+				case 2:
+					robot = new Robot(fieldList.get(1),Robot.RED,gamedata,Field.MIDDLE);
+					break;
+			}
+			setup(robot);
+			returnString = robot.getName();
 		}				
 		
 		if (GameServer.COMMAND_GET_FIELD.equals(command)) {
@@ -71,7 +80,7 @@ public class GameServer {
 			returnString = f;
 		}
 		
-		Util.log("GameServer.execute robot:"+name+" response:["+returnString+"]");
+		//Util.log("GameServer.execute robot:"+name+" response:["+returnString+"]");
 		
 		return returnString;
 
@@ -100,7 +109,9 @@ public class GameServer {
 				while (fieldTokens.hasMoreTokens()) {
 					fieldList.add(fieldTokens.nextToken());
 				}
-				String robotName = fieldList.get(1);
+				String clientName = fieldList.get(1);
+				/*
+				
 				Robot robot = null;
 				switch (threadList.size()) {
 					case 0:
@@ -113,7 +124,8 @@ public class GameServer {
 				Util.log("GameServer.run setup robot "+robot.getName());
 				setup(robot);
 				robotList.add(robot);
-				ServerThread thread = new ServerThread(in,out,robot,this);
+				*/
+				ServerThread thread = new ServerThread(in,out,clientName,this);
 				threadList.add(thread);
 				thread.start();
 			}
@@ -136,15 +148,17 @@ public class GameServer {
 		// [close switch][scale][far switch]
 		
 		
-		//robotList.add(new Robot("001",Robot.BLUE,gamedata,Field.MIDDLE));
-		//robotList.add(new Autobot("004",Robot.RED,gamedata,Field.LEFT));
-		//robotList.add(new Autobot("005",Robot.RED,gamedata,Field.MIDDLE));
-		//robotList.add(new Autobot("006",Robot.RED,gamedata,Field.RIGHT));
+		//robotList.add(new Autobot("101",Robot.BLUE,gamedata,Field.LEFT));
+		//robotList.add(new Autobot("102",Robot.BLUE,gamedata,Field.MIDDLE));
+		//robotList.add(new Autobot("103",Robot.BLUE,gamedata,Field.RIGHT));
+		//robotList.add(new Autobot("106",Robot.RED,gamedata,Field.LEFT));
+		//robotList.add(new Autobot("105",Robot.RED,gamedata,Field.MIDDLE));
+		//robotList.add(new Autobot("104",Robot.RED,gamedata,Field.RIGHT));
 		
 		
 		//for (Robot r:robotList) {
-		//	r.setHasCube(true);
-		//	field.setup(r);	
+			//r.setHasCube(true);
+			//field.setup(r);	
 		//}
 		
 		for (int i=0;i<5;i++) {

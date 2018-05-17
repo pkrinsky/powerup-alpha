@@ -22,7 +22,7 @@ public class Field {
 	private static final String DELIM = GameClient.DELIM;
 	private static final String ROW_DELIM = GameClient.ROW_DELIM;
 
-	private static final int GAME_SECS = 60;
+	public static final int GAME_SECS = 60;
 
 	private int redScore = 0;
 	private int blueScore = 0;
