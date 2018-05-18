@@ -14,12 +14,17 @@ public class Robot extends FieldObject  {
 	public static final int START = 9;
 	public static final int PLAYER_1 = 11;
 	public static final int PLAYER_2 = 12;
+	public static final int PLAYER_3 = 13;
+	public static final int PLAYER_4 = 14;
+	public static final int PLAYER_5 = 15;
+	public static final int PLAYER_6 = 16;
 	
 	public static final String BLUE = "B";
 	public static final String RED = "R";
 	
 	protected String alliance; 
 	protected boolean hasCube = true;
+	private boolean ai = false;
 	protected String gamedata = null;
 	protected char startPosition;
 	protected int shotsMade = 0;
@@ -35,14 +40,8 @@ public class Robot extends FieldObject  {
 		this.startPosition = start;
 	}	
 	
-	public boolean hasCube() {
-		return hasCube;
-	}
 
-	public void setHasCube(boolean hasCube) {
-		this.hasCube = hasCube;
-	}
-	
+
 	public int move(Field info) {
 		int thismove = command;
 		
@@ -110,6 +109,18 @@ public class Robot extends FieldObject  {
 		if (key == '2') {
 			command = Robot.PLAYER_2;
 		}		
+		if (key == '3') {
+			command = Robot.PLAYER_3;
+		}		
+		if (key == '4') {
+			command = Robot.PLAYER_4;
+		}		
+		if (key == '5') {
+			command = Robot.PLAYER_5;
+		}		
+		if (key == '6') {
+			command = Robot.PLAYER_6;
+		}		
 		if (key == ' ') {
 			command = Robot.SHOOT;
 		}	
@@ -158,6 +169,21 @@ public class Robot extends FieldObject  {
 
 	public String getGamedata() {
 		return gamedata;
+	}
+	public boolean hasCube() {
+		return hasCube;
+	}
+
+	public void setHasCube(boolean hasCube) {
+		this.hasCube = hasCube;
+	}
+	
+	public boolean isAi() {
+		return ai;
+	}
+
+	public void setAi(boolean ai) {
+		this.ai = ai;
 	}
 
 	public void update(Robot fieldRobot) {

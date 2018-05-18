@@ -15,6 +15,7 @@ import powerup.field.Cube;
 import powerup.field.Field;
 import powerup.field.Robot;
 import powerup.field.Scale;
+import powerup.robot.Autobot;
 
 public class GameServer {
 	
@@ -27,10 +28,8 @@ public class GameServer {
 	private long lastScoreSecs = 0;
 	private String gamedata = "LRL";
 	private boolean running = false;
-
 	
 	private Field field = new Field();
-	private List<Robot> robotList = new ArrayList<Robot>();
 	
 	public synchronized String executeCommand(String name, String request) {
 		String returnString = "";
@@ -64,24 +63,41 @@ public class GameServer {
 		}
 		
 		if (GameServer.COMMAND_REGISTER.equals(command)) {
-			Util.log("GameServer.execute register robot:"+fieldList.get(1)+" position:"+fieldList.get(2));
-			int position = new Integer(fieldList.get(2));
-			Robot robot = null;
-			switch (position) {
-				case 1:
-					robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
-					break;
-				case 2:
-					robot = new Robot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
-					break;
+			if (!running) {
+				Util.log("GameServer.execute register robot:"+fieldList.get(1)+" position:"+fieldList.get(2));
+				int position = new Integer(fieldList.get(2));
+				Robot robot = null;
+				switch (position) {
+					case 1:
+						robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
+						break;
+					case 2:
+						robot = new Robot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
+						break;
+					case 3:
+						robot = new Autobot("993",Robot.BLUE,gamedata,Field.MIDDLE);
+						robot.setAi(true);
+						break;
+					case 4:
+						robot = new Autobot("994",Robot.RED,gamedata,Field.MIDDLE);
+						robot.setAi(true);
+						break;
+					case 5:
+						robot = new Autobot("995",Robot.BLUE,gamedata,Field.RIGHT);
+						robot.setAi(true);
+						break;
+					case 6:
+						robot = new Autobot("996",Robot.RED,gamedata,Field.RIGHT);
+						robot.setAi(true);
+						break;
+				}
+				setup(robot);
+				returnString = robot.getName();
 			}
-			setup(robot);
-			returnString = robot.getName();
 		}				
 		
 		if (GameServer.COMMAND_GET_FIELD.equals(command)) {
 			String f = getFieldAsString(fieldList.get(1));
-			//Util.log("ServerThread.run println fieldString:"+f);
 			returnString = f;
 		}
 		
@@ -120,21 +136,6 @@ public class GameServer {
 					fieldList.add(fieldTokens.nextToken());
 				}
 				String clientName = fieldList.get(1);
-				/*
-				
-				Robot robot = null;
-				switch (threadList.size()) {
-					case 0:
-						robot = new Robot(robotName,Robot.BLUE,gamedata,Field.MIDDLE);
-						break;
-					case 1:					
-						robot = new Robot(robotName,Robot.RED,gamedata,Field.MIDDLE);
-						break;
-				}
-				Util.log("GameServer.run setup robot "+robot.getName());
-				setup(robot);
-				robotList.add(robot);
-				*/
 				ServerThread thread = new ServerThread(in,out,clientName,this);
 				threadList.add(thread);
 				thread.start();
@@ -227,9 +228,12 @@ public class GameServer {
 		
 			// move the ai
 			int move = Robot.STOP;
-			for (Robot r:robotList) {
-				move = r.move(field);
-				field.move(r.getName(),move);
+			for (Robot r:field.getRobotList()) {
+				if (r.isAi()) {
+					Util.log("GameServer.move ai "+r.getName());
+					move = r.move(field);
+					field.move(r.getName(),move);
+				}
 			}
 			
 			if (field.getGameSecs() == 0) {

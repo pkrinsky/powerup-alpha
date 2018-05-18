@@ -136,6 +136,11 @@ public class GraphicsController extends Canvas  {
 				drawCenterX(g,"Tie Game!", SCORE_POSITION_Y+25,0);
 			}
 		}
+		
+		if (field.getGameSecs() == Field.GAME_SECS) {
+			drawCenterX(g,"Press 1-6 to join the game", SCORE_POSITION_Y+25,0);
+			drawCenterX(g,"Press 9 to start", SCORE_POSITION_Y+50,0);
+		}
 	}
 	
 	private void drawCenterX(Graphics2D g, String s, int y, int offset) {

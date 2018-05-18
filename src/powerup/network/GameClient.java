@@ -192,6 +192,14 @@ public class GameClient {
 						sendRegister(1);
 					} else if (Robot.PLAYER_2 == command) {
 						sendRegister(2);
+					} else if (Robot.PLAYER_3 == command) {
+						sendRegister(3);
+					} else if (Robot.PLAYER_4 == command) {
+						sendRegister(4);
+					} else if (Robot.PLAYER_5 == command) {
+						sendRegister(5);
+					} else if (Robot.PLAYER_6 == command) {
+						sendRegister(6);
 					} else if (Robot.START == command) {
 						sendStart();
 					} else {
