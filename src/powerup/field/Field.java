@@ -22,7 +22,7 @@ public class Field {
 	private static final String DELIM = GameClient.DELIM;
 	private static final String ROW_DELIM = GameClient.ROW_DELIM;
 
-	public static final int GAME_SECS = 60;
+	public static final int GAME_SECS = 90;
 
 	private int redScore = 0;
 	private int blueScore = 0;
@@ -67,7 +67,7 @@ public class Field {
 			}
 		}
 		
-		if (fo == null && warn) {
+		if (fo == null && (warn || (Util.getDebugLevel() >=5))) {
 			Util.log("WARNING: Field.find cannot find field object with name:"+name);
 			new Exception().printStackTrace(System.out);
 		}
@@ -388,6 +388,8 @@ public class Field {
 							sb.append(((Robot)(grid[c][r])).getStartPosition());
 							sb.append(DELIM);
 							sb.append(((Robot)(grid[c][r])).hasCube());
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).getShotsMade());
 							//Util.log("Field.save\n"+sb.toString());
 						}
 						sb.append(ROW_DELIM);
@@ -460,6 +462,7 @@ public class Field {
 				o.setCol(new Integer(fieldList.get(2)));
 				o.setRow(new Integer(fieldList.get(3)));
 				o.setHasCube((new Boolean(fieldList.get(7))));
+				o.setShotsMade((new Integer(fieldList.get(8))));
 				set(o.getCol(),o.getRow(),o);
 			}
 		}

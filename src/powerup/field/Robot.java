@@ -11,6 +11,7 @@ public class Robot extends FieldObject  {
 	public static final int WEST = 4;	
 	public static final int PICKUP = 5;
 	public static final int SHOOT = 6;
+	public static final int START = 9;
 	public static final int PLAYER_1 = 11;
 	public static final int PLAYER_2 = 12;
 	
@@ -112,6 +113,9 @@ public class Robot extends FieldObject  {
 		if (key == ' ') {
 			command = Robot.SHOOT;
 		}	
+		if (key == '9') {
+			command = Robot.START;
+		}	
 		
 		Util.log("Robot.handleKey "+name+" command:"+command+ " "+getCommandName(command));
 	}
@@ -163,6 +167,7 @@ public class Robot extends FieldObject  {
 		setGamedata(fieldRobot.getGamedata());
 		setStartPosition(fieldRobot.getStartPosition());
 		setHasCube(fieldRobot.getHasCube());
+		setShotsMade(fieldRobot.getShotsMade());
 	}
 	
 

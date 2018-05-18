@@ -16,7 +16,7 @@ import powerup.field.Robot;
 public class GameClient {
 	public static final String DELIM="|";
 	public static final String ROW_DELIM="~";
-	public static final int DELAY = 500;
+	public static final int DELAY = 100;
 	
 	private GraphicsController controller = null;
 	private String serverAddress = null;
@@ -29,11 +29,26 @@ public class GameClient {
 	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
-		if (args.length > 2) {
-			client.setup(args[0],args[1], args[2]);
-		} else {
-			client.setup(null, null, null);
+		String name = null;
+		String debug = null;
+		String serverAddress = null;
+		String serverPort = null;
+		
+		if (args.length >= 1) {
+			name = args[0];
 		}
+		if (args.length >= 2) {
+			debug = args[1];
+			Util.setDebugLevel(new Integer(debug));
+		}
+		if (args.length >= 3) {
+			serverAddress = args[2];
+		}
+		if (args.length >= 4) {
+			serverPort = args[3];
+		}
+			
+		client.setup(serverAddress, serverPort, name);
 		client.gameLoop();
 	}
 	
@@ -70,7 +85,7 @@ public class GameClient {
 
 	}	
 	
-	public String executeCommand(String name, String request) {
+	public String executeCommand(String request) {
 		String returnString = null;
 		Util.log("GameClient.executeCommand robot:"+name+" sent:"+request);
 		if (server == null) {
@@ -87,15 +102,14 @@ public class GameClient {
 				e.printStackTrace();
 			}			
 		} else {
-			returnString = server.execute(name, request);
+			returnString = server.executeCommand(name, request);
 		}
 		if (returnString != null)
-			Util.log("GameClient.executeCommand received:"+returnString.replace(ROW_DELIM.charAt(0), '\n'));
+			Util.log("GameClient.executeCommand received:"+returnString.replace(ROW_DELIM.charAt(0), '\n'),5);
 		return returnString;
 	}
-
 	
-	private void getFieldData(String name, Field field) {
+	private void getFieldData(Field field) {
 		String s = null;
 		//Util.log("GameClient.getFieldData requesting from server");
 		StringBuffer sb = new StringBuffer();
@@ -103,13 +117,13 @@ public class GameClient {
 		sb.append(DELIM);
 		sb.append(name);
 		sb.append(DELIM);	
-		s = executeCommand(name,sb.toString());
+		s = executeCommand(sb.toString());
 		//Util.log("GameClient.getFieldData returned "+s);
 				
 		if (s!= null) field.load(s);
 	}
 	
-	private void sendCommand(String name, int command) {
+	private void sendCommand(int command) {
 		Util.log("GameClient.sendCommand "+command);
 		
 		StringBuffer sb = new StringBuffer();
@@ -119,10 +133,10 @@ public class GameClient {
 		sb.append(DELIM);
 		sb.append(command);
 		sb.append(DELIM);
-		executeCommand(name,sb.toString());
+		executeCommand(sb.toString());
 	}	
 	
-	private void sendRegister(String name, int position) {
+	private void sendRegister(int position) {
 		Util.log("GameClient.sendRegister position:"+position);
 		
 		StringBuffer sb = new StringBuffer();
@@ -132,16 +146,31 @@ public class GameClient {
 		sb.append(DELIM);
 		sb.append(position);
 		sb.append(DELIM);
-		executeCommand(name,sb.toString());
-	}		
+		executeCommand(sb.toString());
+	}
 	
+	private void sendStart() {
+		Util.log("GameClient.sendStart");
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_START);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		executeCommand(sb.toString());
+	}		
 	
 	private void gameLoop() {
 		//Util.log("GameClient.gameLoop");
 		boolean gameRunning = true;
+		int delay = DELAY;
+		
+		if (Util.getDebugLevel() >= 10) {
+			delay = DELAY+500;
+		}
 		
 		Field field = Field.getStaticField();
-		getFieldData(name,field);
+		getFieldData(field);
 		
 		controller = new GraphicsController(name);
 		controller.setup();
@@ -150,7 +179,7 @@ public class GameClient {
 			//Util.log("GameClient.gameLoop "+field.getGameSecs());
 			if (field.getGameSecs() > 0) {
 				// get the latest field data from the server
-				getFieldData(name,field);
+				getFieldData(field);
 				controller.drawField(field);
 				
 				// see if the robot wants to make a move
@@ -160,22 +189,21 @@ public class GameClient {
 				if (command != Robot.STOP) {
 					Util.log("GameClient.gameLoop command:"+Robot.getCommandName(command));
 					if (Robot.PLAYER_1 == command) {
-						sendRegister(name,1);
+						sendRegister(1);
 					} else if (Robot.PLAYER_2 == command) {
-						sendRegister(name,2);
+						sendRegister(2);
+					} else if (Robot.START == command) {
+						sendStart();
 					} else {
-						sendCommand(name,command);
+						sendCommand(command);
 					}
 				}
 			}
 
 			// wait for a little then start again
-			try { Thread.sleep(DELAY); } catch (Exception e) {}
+			try { Thread.sleep(delay); } catch (Exception e) {}
 		}
 	}
-	
-
-	
 
 	public GraphicsController getController() {
 		return controller;
@@ -184,6 +212,5 @@ public class GameClient {
 	public void setController(GraphicsController controller) {
 		this.controller = controller;
 	}
-	
 	
 }

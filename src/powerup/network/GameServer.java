@@ -22,19 +22,20 @@ public class GameServer {
 	public static final String COMMAND_MOVE = "MOVE";
 	public static final String COMMAND_REGISTER = "REGISTER";
 	public static final String COMMAND_EXIT = "EXIT";
+	public static final String COMMAND_START = "START";
 	
 	private long lastScoreSecs = 0;
 	private String gamedata = "LRL";
+	private boolean running = false;
 
 	
 	private Field field = new Field();
 	private List<Robot> robotList = new ArrayList<Robot>();
 	
-	public synchronized String execute(String name, String request) {
-		//boolean running = true;
+	public synchronized String executeCommand(String name, String request) {
 		String returnString = "";
 		
-		Util.log("GameServer.execute robot:"+name+" request:["+request+"]");
+		Util.log("GameServer.executeCommand robot:"+name+" recv:"+request);
 		
 		List<String> fieldList = new ArrayList<String>();
 		StringTokenizer fieldTokens = new StringTokenizer(request, GameClient.DELIM);
@@ -55,7 +56,11 @@ public class GameServer {
 			//Util.log("ServerThread.run move:"+fieldList.get(1));
 			String c = fieldList.get(1);
 			int i = new Integer(fieldList.get(2));
-			move(c,i);
+			if (running) {
+				move(c,i);
+			} else {
+				Util.log("ServerThread.execute no moves while game not running");
+			}
 		}
 		
 		if (GameServer.COMMAND_REGISTER.equals(command)) {
@@ -64,10 +69,10 @@ public class GameServer {
 			Robot robot = null;
 			switch (position) {
 				case 1:
-					robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
+					robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
 					break;
 				case 2:
-					robot = new Robot(fieldList.get(1),Robot.RED,gamedata,Field.MIDDLE);
+					robot = new Robot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
 					break;
 			}
 			setup(robot);
@@ -78,6 +83,11 @@ public class GameServer {
 			String f = getFieldAsString(fieldList.get(1));
 			//Util.log("ServerThread.run println fieldString:"+f);
 			returnString = f;
+		}
+		
+		if (GameServer.COMMAND_START.equals(command)) {
+			Util.log("ServerThread.execute start");
+			running = true;
 		}
 		
 		//Util.log("GameServer.execute robot:"+name+" response:["+returnString+"]");
@@ -212,23 +222,27 @@ public class GameServer {
 
 	
 	private Field getField(String name) {
-		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
-		if (field.getGameSecs() > 0) {
+		//Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
+		if (running) {
 		
-			field.decreaseGameSecs(1);
+			// move the ai
+			int move = Robot.STOP;
+			for (Robot r:robotList) {
+				move = r.move(field);
+				field.move(r.getName(),move);
+			}
+			
+			if (field.getGameSecs() == 0) {
+				running = false;
+			} else {
+				field.decreaseGameSecs(1);
+			}
 			
 			if (field.getGameSecs() != lastScoreSecs) {
 				calcScore();
 				lastScoreSecs = field.getGameSecs();
 			}
 			
-			// move the ai
-			int move = Robot.STOP;
-			for (Robot r:robotList) {
-				// ask the ai if they want to move
-				move = r.move(field);
-				field.move(r.getName(),move);
-			}
 		}
 		return field;
 	}

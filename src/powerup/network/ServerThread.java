@@ -33,7 +33,7 @@ public class ServerThread extends Thread {
 			while (running) {
 				Util.log("ServerThread.run waiting for client "+name);
 				line = in.readLine();
-				String outString = server.execute(name,line);
+				String outString = server.executeCommand(name,line);
 				out.println(outString);
 			}
 		} catch (Exception e) {

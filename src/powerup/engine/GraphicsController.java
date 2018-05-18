@@ -84,7 +84,7 @@ public class GraphicsController extends Canvas  {
 	}
 	
 	public Robot getRobot(Field field, String robotName) {
-		Robot robot = (Robot) field.find(robotName,true);
+		Robot robot = (Robot) field.find(robotName);
 		return robot;
 	}
 
@@ -121,8 +121,8 @@ public class GraphicsController extends Canvas  {
 		// draw stats and score
 		g.setColor(Color.white);
 		g.drawString(stats, SCORE_POSITION_X-250, SCORE_POSITION_Y+50);
-		drawCenterX(g,"Blue "+field.getBlueScore(),SCORE_POSITION_Y,-100);
-		drawCenterX(g,"Red "+field.getRedScore(), SCORE_POSITION_Y,100);
+		drawCenterX(g,"Blue "+field.getBlueScore(),SCORE_POSITION_Y,100);
+		drawCenterX(g,"Red "+field.getRedScore(), SCORE_POSITION_Y,-100);
 		drawCenterX(g,"Time "+field.getGameSecs(), SCORE_POSITION_Y,0);
 		
 		if (field.getGameSecs() < 1) {
@@ -145,7 +145,7 @@ public class GraphicsController extends Canvas  {
 	}
 	
 	public void keyEvent(KeyEvent e) {
-		Util.log("RobotControler.keyEvent char:"+e.getKeyChar());
+		//Util.log("GraphicsController.keyEvent key:"+e.getKeyChar());
 
 		if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
 			System.exit(0);
