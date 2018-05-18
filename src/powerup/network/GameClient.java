@@ -176,7 +176,6 @@ public class GameClient {
 		controller.setup();
 			
 		while (gameRunning) {
-			//Util.log("GameClient.gameLoop "+field.getGameSecs());
 			if (field.getGameSecs() > 0) {
 				// get the latest field data from the server
 				getFieldData(field);

@@ -33,7 +33,6 @@ public class GraphicsController extends Canvas  {
 	private static final int SCORE_AREA = 100;
 	private static final int HEIGHT = (Field.ROWS*Block.BLOCKSIZE)+SCORE_AREA;
 	private static final int WIDTH = Field.COLS*Block.BLOCKSIZE;
-	private static final int SCORE_POSITION_X = (WIDTH/2)-20;
 	private static final int SCORE_POSITION_Y = HEIGHT-80;
 
 	private BufferStrategy strategy;
@@ -120,7 +119,6 @@ public class GraphicsController extends Canvas  {
 		
 		// draw stats and score
 		g.setColor(Color.white);
-		g.drawString(stats, SCORE_POSITION_X-250, SCORE_POSITION_Y+50);
 		drawCenterX(g,"Blue "+field.getBlueScore(),SCORE_POSITION_Y,100);
 		drawCenterX(g,"Red "+field.getRedScore(), SCORE_POSITION_Y,-100);
 		drawCenterX(g,"Time "+field.getGameSecs(), SCORE_POSITION_Y,0);
@@ -137,9 +135,11 @@ public class GraphicsController extends Canvas  {
 			}
 		}
 		
+		drawCenterX(g, stats, SCORE_POSITION_Y+25,0);
+		
 		if (field.getGameSecs() == Field.GAME_SECS) {
-			drawCenterX(g,"Press 1-6 to join the game", SCORE_POSITION_Y+25,0);
-			drawCenterX(g,"Press 9 to start", SCORE_POSITION_Y+50,0);
+			drawCenterX(g,"Press 1-6 to join the game", SCORE_POSITION_Y+50,0);
+			drawCenterX(g,"Press 9 to start", SCORE_POSITION_Y+75,0);
 		}
 	}
 	

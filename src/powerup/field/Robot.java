@@ -40,8 +40,6 @@ public class Robot extends FieldObject  {
 		this.startPosition = start;
 	}	
 	
-
-
 	public int move(Field info) {
 		int thismove = command;
 		

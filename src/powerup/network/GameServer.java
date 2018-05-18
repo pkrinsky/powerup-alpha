@@ -44,11 +44,10 @@ public class GameServer {
 		}
 		
 		String command = fieldList.get(0);
-		//Util.log("ServerThread.run command:["+command+"]");
 		
 		if (GameServer.COMMAND_EXIT.equals(command)) {
-			//Util.log("ServerThread.run exit:"+fieldList.get(1));
-			//running = false;
+			Util.log("ServerThread.run exit:"+fieldList.get(1));
+			running = false;
 		}
 		
 		if (GameServer.COMMAND_MOVE.equals(command)) {
@@ -166,11 +165,6 @@ public class GameServer {
 		//robotList.add(new Autobot("105",Robot.RED,gamedata,Field.MIDDLE));
 		//robotList.add(new Autobot("104",Robot.RED,gamedata,Field.RIGHT));
 		
-		
-		//for (Robot r:robotList) {
-			//r.setHasCube(true);
-			//field.setup(r);	
-		//}
 		
 		for (int i=0;i<5;i++) {
 			field.set(Field.COL1+1,5+i,new Cube());
