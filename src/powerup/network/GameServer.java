@@ -16,6 +16,7 @@ import powerup.field.Field;
 import powerup.field.Robot;
 import powerup.field.Scale;
 import powerup.robot.Autobot;
+import powerup.robot.Paulbot;
 
 public class GameServer {
 	
@@ -68,13 +69,13 @@ public class GameServer {
 				Robot robot = null;
 				switch (position) {
 					case 1:
-						robot = new Robot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
+						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
 						break;
 					case 2:
-						robot = new Robot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
+						robot = new Autobot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
 						break;
 					case 3:
-						robot = new Autobot("993",Robot.BLUE,gamedata,Field.MIDDLE);
+						robot = new Paulbot("993",Robot.BLUE,gamedata,Field.MIDDLE);
 						robot.setAi(true);
 						break;
 					case 4:
@@ -82,7 +83,7 @@ public class GameServer {
 						robot.setAi(true);
 						break;
 					case 5:
-						robot = new Autobot("995",Robot.BLUE,gamedata,Field.RIGHT);
+						robot = new Paulbot("995",Robot.BLUE,gamedata,Field.RIGHT);
 						robot.setAi(true);
 						break;
 					case 6:
