@@ -31,84 +31,68 @@ public class Autobot extends Robot {
 		// if we have a cube put it on the switch
 		if (hasCube()) {
 			FieldObject[][] grid = field.getGrid();
-			if(Field.LEFT == startPosition){
-				if( gamedata == "LRL" ) {
 
+
+			if( gamedata == "RLR") {
+				if(Field.RIGHT == startPosition){
 					target = field.find(alliance+"NS");
+
 					System.out.println("Autobot.move "+name+" target scale:"+target.getCol()+" "+target.getRow());
+
 				} else {
+					target = field.find(alliance+"S");
+				}
+			}else {
+				if(Field.RIGHT == startPosition) {
+					target = field.find(alliance+"S");
+				}else {
 					target = field.find(alliance+"NS");
-					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());	
 				}
-				if (target.getRow() > getRow()) {
-					thismove = Robot.SOUTH;
+			}
+
+
+			if (thismove == Robot.STOP) {
+				thismove = Robot.SHOOT;
+			} 
+			if(getCol() >0) {
+				if (target.getCol()+1 < getCol() && grid[getCol()-1][getRow()] ==null) {
+					thismove = Robot.WEST;
+				}else {
+					if(grid[getCol() -1][getRow()] != null && target.getCol()+1 != getCol()) {
+						thismove = Robot.NORTH;
+					}	
 				}
-				if (target.getRow() < getRow() && grid[getCol()][getRow()-1] == null) {
-					thismove = Robot.NORTH;
-				}
-				if (thismove == Robot.STOP) {
-					thismove = Robot.SHOOT;
-				} 
-				if(getCol() >0) {
-					if (target.getCol()+1 < getCol() && grid[getCol()-1][getRow()] ==null) {
-						thismove = Robot.WEST;
-					}else {
-						if(grid[getCol() -1][getRow()] != null && target.getCol()+1 != getCol()) {
-							thismove = Robot.NORTH;
-						}	
-					}
-				}
-				if (target.getCol()-1 > getCol()) {
+			}
+			if(getCol() <22) {
+				if (target.getCol()-1 > getCol() && grid[getCol()+1][getRow()] == null) {
 					thismove = Robot.EAST;
+
+				}else {
+					if(grid[getCol()+1][getRow()] != null && target.getCol()-1 != getCol()) {
+						thismove = Robot.NORTH;
+					}
+						if (target.getRow() < getRow() && grid[getCol()][getRow()-1] == null ) {
+							thismove = Robot.NORTH;
+						} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
+							thismove = Robot.EAST;
+						} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
+							thismove = Robot.WEST;
+						}
+						if (target.getRow() > getRow() && grid[getCol()][getRow()+1] == null) {
+							thismove = Robot.SOUTH;
+						} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
+							thismove = Robot.EAST;
+						} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
+							thismove = Robot.WEST;
+						}
+
+					
+
 				}
 
 			}
 
-			if(Field.RIGHT == startPosition){
-				if( gamedata == "RLR") {
-					target = field.find(alliance+"S");
 
-					System.out.println("Autobot.move "+name+" target scale:"+target.getCol()+" "+target.getRow());
-
-				} else if(alliance == BLUE){
-					target = field.find(alliance+"S");	
-					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());
-
-				} else {
-					target = field.find(alliance+"S");
-					System.out.println("Autobot.move "+name+" target switch:"+target.getCol()+" "+target.getRow());
-
-				}
-				if (target.getRow() > getRow()) {
-					thismove = Robot.SOUTH;
-					if(grid[getCol()][getRow()+1] != null && getRow() == 5) {
-						thismove = Robot.WEST;
-					}
-				}
-				if (target.getRow() < getRow() ) {
-					thismove = Robot.NORTH;
-					if(grid[getCol()][getRow()-1] != null && getRow() == 5) {
-						thismove = Robot.WEST;
-
-					}
-				}
-				if (thismove == Robot.STOP) {
-					thismove = Robot.SHOOT;
-				} 
-				if(getCol() >0) {
-					if (target.getCol()+1 < getCol() && grid[getCol()-1][getRow()] ==null || grid[getCol()-1][getRow()] instanceof Cube) {
-						thismove = Robot.WEST;
-					}else {
-						if(grid[getCol() -1][getRow()] != null && target.getCol()+1 != getCol()) {
-							thismove = Robot.NORTH;
-						}	
-					}
-				}
-				if (target.getCol()-1 > getCol()) {
-					thismove = Robot.EAST;
-				}
-
-			}
 
 		} else {
 			FieldObject[][] grid = field.getGrid();
@@ -117,14 +101,16 @@ public class Autobot extends Robot {
 
 			if (cube.getRow()-1 > getRow() && cube.getCol() == getCol()) {
 				thismove = Robot.SOUTH;
-				if(grid[getCol()][getRow()+1] != null && getRow() == 5) {
+				if(grid[getCol()][getRow()+1] != null) {
 					thismove = Robot.WEST;
 				}
 			}
 			if (cube.getRow()+1 < getRow()) {
 				thismove = Robot.NORTH;
-				if(grid[getCol()][getRow()+1] != null && getRow() == 5) {
+				if(grid[getCol()][getRow()+1] != null) {
 					thismove = Robot.WEST;		
+				}else {
+					thismove = Robot.EAST;
 				}
 			}
 			if (cube.getCol()+1 <= getCol() && grid[getCol()-1][getRow()] ==null) {
