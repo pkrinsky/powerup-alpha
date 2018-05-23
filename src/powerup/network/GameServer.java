@@ -229,9 +229,13 @@ public class GameServer {
 			int move = Robot.STOP;
 			for (Robot r:field.getRobotList()) {
 				if (((turn % 4) == 0) && r.isAi()) {
-					Util.log("GameServer.move ai "+r.getName());
-					move = r.move(field);
-					field.move(r.getName(),move);
+					try {
+						Util.log("GameServer.move ai "+r.getName());
+						move = r.move(field);
+						field.move(r.getName(),move);
+					} catch (Exception e) {
+						Util.log(e.getMessage());
+					}
 				}
 			}
 			
