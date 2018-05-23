@@ -27,6 +27,8 @@ public class GameServer {
 	public static final String COMMAND_START = "START";
 	
 	private long lastScoreSecs = 0;
+	private int turn = 0;
+
 	private String gamedata = "LRL";
 	private boolean running = false;
 	
@@ -70,9 +72,11 @@ public class GameServer {
 				switch (position) {
 					case 1:
 						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
+						//robot.setAi(true);
 						break;
 					case 2:
-						robot = new Autobot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
+						robot = new Autobot("992",Robot.RED,gamedata,Field.LEFT);
+						robot.setAi(true);
 						break;
 					case 3:
 						robot = new Paulbot("993",Robot.BLUE,gamedata,Field.MIDDLE);
@@ -218,13 +222,13 @@ public class GameServer {
 
 	
 	private Field getField(String name) {
-		//Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs());
+		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs()+" turn:"+turn);
 		if (running) {
-		
+			turn++;
 			// move the ai
 			int move = Robot.STOP;
 			for (Robot r:field.getRobotList()) {
-				if (r.isAi()) {
+				if (((turn % 4) == 0) && r.isAi()) {
 					Util.log("GameServer.move ai "+r.getName());
 					move = r.move(field);
 					field.move(r.getName(),move);

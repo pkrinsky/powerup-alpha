@@ -70,7 +70,7 @@ public class Paulbot extends Robot {
 						case 2:	thismove = Robot.SOUTH;	break;
 					}
 				}
-				Util.log("Paulbot.chooseDir blocked switching to "+ri);
+				Util.log("Paulbot.chooseDir blocked switching to "+thismove);
 			}
 			
 		}
@@ -101,6 +101,7 @@ public class Paulbot extends Robot {
 	}
 
 	public int move(Field field) {
+		Util.log("Paulbot.move "+name);
 		int thismove = Robot.STOP;
 		FieldObject target = null;
 
@@ -121,47 +122,51 @@ public class Paulbot extends Robot {
 		} else {
 			target = findCube(field);
 		}
-		Util.log("Target is c:"+target.getCol()+" r:"+target.getRow());
 		
-		if (getCol() != target.getCol() && target.getRow() < 5 && getRow() > 1) {
-			Util.log("Paulbot.move if not if right column then go up until row 1");
-			thismove = chooseDirection(field,getCol(),1);
+		if (target == null) {
+			Util.log("No more cubes");
 		} else {
-			Util.log("Paulbot.move just move");
-			thismove = chooseDirection(field,target.getCol(),target.getRow());
-		}
+			Util.log("Target is c:"+target.getCol()+" r:"+target.getRow());
+			if (getCol() != target.getCol() && getRow() > 3 && getRow() <= 5 ) {
+				Util.log("Paulbot.move move to the top before moving E/W");
+				thismove = chooseDirection(field,getCol(),1);
+			} else if (getCol() != target.getCol() && getRow() >= 6 && getRow() < 10) {
+				Util.log("Paulbot.move move to the bottom before moving E/W");
+				thismove = chooseDirection(field,getCol(),11);
+			} else {
+				Util.log("Paulbot.move move to the target");
+				thismove = chooseDirection(field,target.getCol(),target.getRow());
+			}
 		
-		if (hasCube()) {
-			if (target.getCol() == getCol() && target.getRow() == getRow()+1) {
-				thismove = Robot.SHOOT;
-			} 
-			if (target.getCol() == getCol() && target.getRow() == getRow()-1) {
-				thismove = Robot.SHOOT;
-			}
-			
-			if (target.getCol() == getCol()+1 && target.getRow() == getRow()) {
-				thismove = Robot.SHOOT;
-			} 
-			if (target.getCol() == getCol()-1 && target.getRow() == getRow()) {
-				thismove = Robot.SHOOT;
-			} 
-		} else {
-			if (target.getCol() == getCol() && target.getRow() == getRow()+1) {
-				thismove = Robot.PICKUP;
-			} 
-			if (target.getCol() == getCol() && target.getRow() == getRow()-1) {
-				thismove = Robot.PICKUP;
-			}
-			if (target.getCol() == getCol()+1 && target.getRow() == getRow()) {
-				thismove = Robot.PICKUP;
-			} 
-			if (target.getCol() == getCol()-1 && target.getRow() == getRow()) {
-				thismove = Robot.PICKUP;
+			if (hasCube()) {
+				if (target.getCol() == getCol() && target.getRow() == getRow()+1) {
+					thismove = Robot.SHOOT;
+				} 
+				if (target.getCol() == getCol() && target.getRow() == getRow()-1) {
+					thismove = Robot.SHOOT;
+				}
+				
+				if (target.getCol() == getCol()+1 && target.getRow() == getRow()) {
+					thismove = Robot.SHOOT;
+				} 
+				if (target.getCol() == getCol()-1 && target.getRow() == getRow()) {
+					thismove = Robot.SHOOT;
+				} 
+			} else {
+				if (field.getFieldObject(getCol(), getRow()+1) instanceof Cube) {
+					thismove = Robot.PICKUP;
+				} 
+				if (field.getFieldObject(getCol(), getRow()-1) instanceof Cube) {
+					thismove = Robot.PICKUP;
+				}
+				if (field.getFieldObject(getCol()+1, getRow()) instanceof Cube) {
+					thismove = Robot.PICKUP;
+				} 
+				if (field.getFieldObject(getCol()-1, getRow()) instanceof Cube) {
+					thismove = Robot.PICKUP;
+				}
 			}
 		}
-
-
-		
 
 		// once the move has complete wait for next command
 		command = Robot.STOP;
