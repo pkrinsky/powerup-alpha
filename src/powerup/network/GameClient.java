@@ -87,7 +87,7 @@ public class GameClient {
 	
 	public String executeCommand(String request) {
 		String returnString = null;
-		Util.log("GameClient.executeCommand robot:"+name+" sent:"+request);
+		Util.log("GameClient.executeCommand robot:"+name+" sent:"+request,10);
 		if (server == null) {
 			try {
 				out.println(request);
@@ -158,6 +158,17 @@ public class GameClient {
 		sb.append(name);
 		sb.append(DELIM);
 		executeCommand(sb.toString());
+	}
+	
+	private void sendPause() {
+		Util.log("GameClient.sendPause");
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_PAUSE);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		executeCommand(sb.toString());
 	}		
 	
 	private void gameLoop() {
@@ -201,6 +212,8 @@ public class GameClient {
 						sendRegister(6);
 					} else if (Robot.START == command) {
 						sendStart();
+					} else if (Robot.PAUSE == command) {
+						sendPause();
 					} else {
 						sendCommand(command);
 					}

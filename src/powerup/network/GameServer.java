@@ -25,6 +25,8 @@ public class GameServer {
 	public static final String COMMAND_REGISTER = "REGISTER";
 	public static final String COMMAND_EXIT = "EXIT";
 	public static final String COMMAND_START = "START";
+	public static final String COMMAND_PAUSE = "PAUSE";
+	private static final int ROBOT_SPEED = 4;
 	
 	private long lastScoreSecs = 0;
 	private int turn = 0;
@@ -37,7 +39,7 @@ public class GameServer {
 	public synchronized String executeCommand(String name, String request) {
 		String returnString = "";
 		
-		Util.log("GameServer.executeCommand robot:"+name+" recv:"+request);
+		Util.log("GameServer.executeCommand robot:"+name+" recv:"+request,10);
 		
 		List<String> fieldList = new ArrayList<String>();
 		StringTokenizer fieldTokens = new StringTokenizer(request, GameClient.DELIM);
@@ -72,7 +74,7 @@ public class GameServer {
 				switch (position) {
 					case 1:
 						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
-						//robot.setAi(true);
+						robot.setAi(true);
 						break;
 					case 2:
 						robot = new Autobot("992",Robot.RED,gamedata,Field.LEFT);
@@ -108,6 +110,15 @@ public class GameServer {
 		if (GameServer.COMMAND_START.equals(command)) {
 			Util.log("ServerThread.execute start");
 			running = true;
+		}
+		
+		if (GameServer.COMMAND_PAUSE.equals(command)) {
+			Util.log("ServerThread.execute pause");
+			if (running) {
+				running = false;
+			} else {
+				running = true;
+			}
 		}
 		
 		//Util.log("GameServer.execute robot:"+name+" response:["+returnString+"]");
@@ -222,19 +233,19 @@ public class GameServer {
 
 	
 	private Field getField(String name) {
-		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs()+" turn:"+turn);
+		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs()+" turn:"+turn,10);
 		if (running) {
 			turn++;
 			// move the ai
 			int move = Robot.STOP;
 			for (Robot r:field.getRobotList()) {
-				if (((turn % 4) == 0) && r.isAi()) {
+				if (((turn % ROBOT_SPEED) == 0) && r.isAi()) {
 					try {
 						Util.log("GameServer.move ai "+r.getName());
 						move = r.move(field);
 						field.move(r.getName(),move);
 					} catch (Exception e) {
-						Util.log(e.getMessage());
+						Util.log(e);
 					}
 				}
 			}

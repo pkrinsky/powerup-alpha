@@ -12,6 +12,7 @@ public class Robot extends FieldObject  {
 	public static final int PICKUP = 5;
 	public static final int SHOOT = 6;
 	public static final int START = 9;
+	public static final int PAUSE = 10;
 	public static final int PLAYER_1 = 11;
 	public static final int PLAYER_2 = 12;
 	public static final int PLAYER_3 = 13;
@@ -66,6 +67,9 @@ public class Robot extends FieldObject  {
 				break;
 			case Robot.STOP:
 				name = "STOP";
+				break;
+			case Robot.PAUSE:
+				name = "PAUSE";
 				break;
 			case Robot.PICKUP:
 				name = "PICKUP";
@@ -124,6 +128,9 @@ public class Robot extends FieldObject  {
 		}	
 		if (key == '9') {
 			command = Robot.START;
+		}	
+		if (key == 'p') {
+			command = Robot.PAUSE;
 		}	
 		
 		Util.log("Robot.handleKey "+name+" command:"+command+ " "+getCommandName(command));

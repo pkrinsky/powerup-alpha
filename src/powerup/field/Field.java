@@ -162,7 +162,7 @@ public class Field {
 				grid[col][row] = fo;
 				Util.log("Field.move was successful new position for "+fo.name+" col:"+col+" r:"+row);
 				grid[oldc][oldr] = null;
-				Util.log("Field.move is now empty "+" col:"+oldc+" r:"+oldr);
+				//Util.log("Field.move is now empty "+" col:"+oldc+" r:"+oldr);
 			} else {
 				Util.log("Field.move target is occupied "+fo.name+" col:"+col+" r:"+row);
 			}

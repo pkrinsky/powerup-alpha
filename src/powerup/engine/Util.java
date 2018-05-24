@@ -10,6 +10,11 @@ public class Util {
 		log(s,0);
 	}
 	
+	public static void log(Exception e) {
+		log(e.toString(),0);
+		e.printStackTrace();
+	}
+	
 	public static void log(String s, int level) {
 		if (debugLevel >= level) {
 			String date = new SimpleDateFormat("HH:mm:ss:S").format(new Date())+"   ";
