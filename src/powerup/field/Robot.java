@@ -1,5 +1,7 @@
 package powerup.field;
 
+import java.awt.event.KeyEvent;
+
 import powerup.engine.Util;
 
 public class Robot extends FieldObject  {
@@ -87,49 +89,50 @@ public class Robot extends FieldObject  {
 		return name;
 	}
 
-	public void handleKey(char key) {
-		Util.log("Robot.handleKey "+name+" key:"+key);
+	public void handleKey(KeyEvent e) {
+		Util.log("Robot.handleKey "+name+" key:"+e.getKeyChar());
 		
-		if (key == 'd') {
+		if (e.getKeyChar() == 'd' || e.getKeyCode() == 39) {
 			command = Robot.EAST;
 		}		
-		if (key == 'a') {
+		if (e.getKeyChar() == 'a' || e.getKeyCode() == 37) {
 			command = Robot.WEST;
 		}		
-		if (key == 'w') {
+		if (e.getKeyChar() == 'w' || e.getKeyCode() == 38) {
 			command = Robot.NORTH;
 		}		
-		if (key == 's') {
+		if (e.getKeyChar() == 's' || e.getKeyCode() == 40) {
 			command = Robot.SOUTH;
 		}		
-		if (key == 'r') {
-			command = Robot.PICKUP;
-		}		
-		if (key == '1') {
+		if (e.getKeyChar() == '1') {
 			command = Robot.PLAYER_1;
 		}		
-		if (key == '2') {
+		if (e.getKeyChar() == '2') {
 			command = Robot.PLAYER_2;
 		}		
-		if (key == '3') {
+		if (e.getKeyChar() == '3') {
 			command = Robot.PLAYER_3;
 		}		
-		if (key == '4') {
+		if (e.getKeyChar() == '4') {
 			command = Robot.PLAYER_4;
 		}		
-		if (key == '5') {
+		if (e.getKeyChar() == '5') {
 			command = Robot.PLAYER_5;
 		}		
-		if (key == '6') {
+		if (e.getKeyChar() == '6') {
 			command = Robot.PLAYER_6;
 		}		
-		if (key == ' ') {
-			command = Robot.SHOOT;
+		if (e.getKeyChar() == ' ') {
+			if (hasCube()) {
+				command = Robot.SHOOT;
+			} else {
+				command = Robot.PICKUP;
+			}
 		}	
-		if (key == '9') {
+		if (e.getKeyChar() == '9') {
 			command = Robot.START;
 		}	
-		if (key == 'p') {
+		if (e.getKeyChar() == 'p') {
 			command = Robot.PAUSE;
 		}	
 		

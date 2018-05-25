@@ -150,13 +150,13 @@ public class GraphicsController extends Canvas  {
 	}
 	
 	public void keyEvent(KeyEvent e) {
-		//Util.log("GraphicsController.keyEvent key:"+e.getKeyChar());
+		Util.log("GraphicsController.keyEvent keyChar:"+e.getKeyChar()+" code:"+e.getKeyCode());
 
 		if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
 			System.exit(0);
 		}
 		
-		robot.handleKey(e.getKeyChar());
+		robot.handleKey(e);
 	}	
 
 	private void setupImages(Field field) {
