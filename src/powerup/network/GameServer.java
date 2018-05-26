@@ -150,6 +150,7 @@ public class GameServer {
 	}
 	
 	private void run(int listenPort) throws SocketException {
+		Util.log("GameServer.run listenPort:"+listenPort);
 		boolean listen = true;
 		ServerSocket serverSocket;
 		List<ServerThread> threadList = new ArrayList<ServerThread>();
@@ -208,6 +209,8 @@ public class GameServer {
 		GameServer server = new GameServer();
 		server.startGame();
 		int listenPort = 9001;
+		if (args.length > 0)
+			listenPort = new Integer(args[0]);
 		try {
 			server.run(listenPort);
 		} catch (SocketException e) {
