@@ -27,6 +27,7 @@ public class GameServer {
 	public static final String COMMAND_EXIT = "EXIT";
 	public static final String COMMAND_START = "START";
 	public static final String COMMAND_PAUSE = "PAUSE";
+	public static final String COMMAND_AI_FASTER = "AI_FASTER";
 	
 	private long lastScoreSecs = 0;
 	private int turn = 0;
@@ -36,16 +37,6 @@ public class GameServer {
 	
 	private Field field = new Field();
 	private Random random = new Random();
-	private int robotSpeed = 4;
-	
-	private int getRobotSpeed() {
-		return robotSpeed;
-	}
-	
-	public void increaseRobotSpeed() {
-		if (robotSpeed > 0) robotSpeed--;
-	}
-
 	
 	public synchronized String executeCommand(String name, String request) {
 		String returnString = "";
@@ -75,6 +66,11 @@ public class GameServer {
 			} else {
 				Util.log("ServerThread.execute no moves while game not running");
 			}
+		}
+		
+		if (GameServer.COMMAND_AI_FASTER.equals(command)) {
+			Util.log("ServerThread.run AI HARD");
+			field.increaseRobotLevel();
 		}
 		
 		if (GameServer.COMMAND_REGISTER.equals(command)) {
@@ -108,18 +104,20 @@ public class GameServer {
 						setup(robot);
 						break;
 					case 7:
+						int players = field.getRobotList().size();
 						robot = new Paulbot("901",Robot.RED,gamedata,Field.RIGHT);
 						robot.setAi(true);
 						setup(robot);
-						robot = new Paulbot("902",Robot.RED,gamedata,Field.MIDDLE);
-						robot.setAi(true);
-						setup(robot);
-						robot = new Paulbot("903",Robot.RED,gamedata,Field.LEFT);
-						robot.setAi(true);
-						setup(robot);
-						break;
-					case 8:
-						increaseRobotSpeed();
+						if (players >1) {
+							robot = new Paulbot("902",Robot.RED,gamedata,Field.MIDDLE);
+							robot.setAi(true);
+							setup(robot);
+						}
+						if (players >2) {
+							robot = new Paulbot("903",Robot.RED,gamedata,Field.LEFT);
+							robot.setAi(true);
+							setup(robot);
+						}
 						break;
 				}
 				returnString = robot.getName();
@@ -296,7 +294,7 @@ public class GameServer {
 			// move the ai
 			int move = Robot.STOP;
 			for (Robot r:field.getRobotList()) {
-				if (((turn % getRobotSpeed()) == 0) && r.isAi()) {
+				if (((turn % field.getRobotLevel()) == 0) && r.isAi()) {
 					try {
 						Util.log("GameServer.move ai "+r.getName());
 						move = r.move(field);

@@ -28,7 +28,21 @@ public class Field {
 	private int blueScore = 0;
 	private int gameSecs = GAME_SECS;
 	private long lastTick = 0;
+	private int robotLevel = 4;
 	
+	public int getRobotLevel() {
+		return robotLevel;
+	}
+	
+	public void setRobotLevel(int s) {
+		robotLevel = s;
+	}
+	
+	public void increaseRobotLevel() {
+		if (robotLevel > 1) robotLevel--;
+		Util.log("Field.increaseRobotLevel to:"+robotLevel,1);
+	}
+
 	
 
 	private FieldObject[][] grid= new FieldObject[COLS][ROWS];
@@ -79,7 +93,7 @@ public class Field {
 			}
 		}
 		
-		if (fo == null && (warn || (Util.getDebugLevel() >=5))) {
+		if (fo == null && (warn || (Util.getDebugLevel() >=20))) {
 			Util.log("WARNING: Field.find cannot find field object with name:"+name);
 			new Exception().printStackTrace(System.out);
 		}
@@ -375,6 +389,8 @@ public class Field {
 		sb.append(blueScore);
 		sb.append(DELIM);
 		sb.append(gameSecs);
+		sb.append(DELIM);
+		sb.append(robotLevel);
 		sb.append(ROW_DELIM);
 		
 		//Util.log("Field.save\n"+sb.toString());
@@ -414,6 +430,8 @@ public class Field {
 							sb.append(((Robot)(grid[c][r])).hasCube());
 							sb.append(DELIM);
 							sb.append(((Robot)(grid[c][r])).getShotsMade());
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).isAi());
 							//Util.log("Field.save\n"+sb.toString());
 						}
 						sb.append(ROW_DELIM);
@@ -459,6 +477,7 @@ public class Field {
 				setRedScore(new Integer(fieldList.get(1)));
 				setBlueScore(new Integer(fieldList.get(2)));
 				setGameSecs(new Integer(fieldList.get(3)));
+				setRobotLevel(new Integer(fieldList.get(4)));
 			}
 			if ("powerup.field.Cube".equals(fieldList.get(0))) {
 				// delete if already exists
@@ -487,6 +506,7 @@ public class Field {
 				o.setRow(new Integer(fieldList.get(3)));
 				o.setHasCube((new Boolean(fieldList.get(7))));
 				o.setShotsMade((new Integer(fieldList.get(8))));
+				if (fieldList.get(9).equals("true")) o.isAi();
 				set(o.getCol(),o.getRow(),o);
 			}
 		}

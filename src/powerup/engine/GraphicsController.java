@@ -90,6 +90,7 @@ public class GraphicsController extends Canvas  {
 
 	private void drawLabels(Graphics2D g,Field field) {
 		String stats = "";
+		boolean hasAi = false;
 		
 		// draw numbers on scales
 		Scale r = (Scale) field.find("RS");
@@ -116,13 +117,17 @@ public class GraphicsController extends Canvas  {
 		for (Robot robot:field.getRobotList()) {
 			stats = stats+robot.getName()+": cubes="+robot.getShotsMade()+"     ";
 			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
+			if (robot.isAi()) hasAi = true;
 		}
+		
+		stats = stats + "  AI level:"+field.getRobotLevel(); 
 		
 		// draw stats and score
 		g.setColor(Color.white);
 		drawCenterX(g,"Blue "+field.getBlueScore(),SCORE_POSITION_Y,100);
 		drawCenterX(g,"Red "+field.getRedScore(), SCORE_POSITION_Y,-100);
 		drawCenterX(g,"Time "+field.getGameSecs(), SCORE_POSITION_Y,0);
+		
 		
 		if (field.getGameSecs() < 1) {
 			if (field.getBlueScore() > field.getRedScore()) {
@@ -138,7 +143,7 @@ public class GraphicsController extends Canvas  {
 		
 		
 		if (field.getGameSecs() == Field.GAME_SECS) {
-			drawCenterX(g,"Press 1-6 to join the game", SCORE_POSITION_Y+50,0);
+			drawCenterX(g,"Press 1-6 to join the game, 7 to add AI, 8 for harder AI level:"+field.getRobotLevel(), SCORE_POSITION_Y+50,0);
 			drawCenterX(g,"Press 9 to start", SCORE_POSITION_Y+75,0);
 		} else {
 			drawCenterX(g, stats, SCORE_POSITION_Y+50,0);	

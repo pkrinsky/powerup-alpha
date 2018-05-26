@@ -5,6 +5,7 @@ import powerup.field.Cube;
 import powerup.field.Field;
 import powerup.field.FieldObject;
 import powerup.field.Robot;
+import powerup.field.Scale;
 
 public class Paulbot extends Robot {
 	
@@ -160,12 +161,38 @@ public class Paulbot extends Robot {
 	
 	public int move(Field field) {
 		Util.log("Paulbot.move "+name);
-		int thismove = Robot.STOP;
 		FieldObject target = null;
+		int thismove = Robot.STOP;
+		String otherAlliance = Robot.RED.equals(alliance) ? Robot.BLUE : Robot.RED;
+		
 		
 		// choose a new target if needed
 		// if we have a cube put it on the switch
 		if (hasCube()) {
+			
+			Scale us = (Scale) field.find(alliance+"S");
+			Scale them = (Scale) field.find(otherAlliance+"S");
+			
+			if (target == null && them.getNumCubes() >= us.getNumCubes()) {
+				target = us;
+			}
+			
+			us = (Scale) field.find(alliance+"NS");
+			them = (Scale) field.find(otherAlliance+"FS");
+			if (target == null && them.getNumCubes() >= us.getNumCubes()) {
+				target = us;
+			}
+			
+			us = (Scale) field.find(alliance+"FS");
+			them = (Scale) field.find(otherAlliance+"NS");
+			if (target == null && them.getNumCubes() >= us.getNumCubes()) {
+				target = us;
+			}
+			
+			if (target == null) 
+				target = field.find(alliance+"S");
+			
+			/*
 			if(Field.LEFT == startPosition){
 				target = field.find(alliance+"FS");
 			}
@@ -177,6 +204,7 @@ public class Paulbot extends Robot {
 			if(Field.RIGHT == startPosition){
 				target = field.find(alliance+"S");
 			}
+			*/
 
 		} else {
 			target = findCube(field);

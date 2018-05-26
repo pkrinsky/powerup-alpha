@@ -158,6 +158,17 @@ public class GameClient {
 		executeCommand(sb.toString());
 	}
 	
+	private void sendAIHard() {
+		Util.log("GameClient.sendAIHard");
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_AI_FASTER);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		executeCommand(sb.toString());
+	}
+	
 	private void sendPause() {
 		Util.log("GameClient.sendPause");
 		
@@ -173,10 +184,6 @@ public class GameClient {
 		//Util.log("GameClient.gameLoop");
 		boolean gameRunning = true;
 		int delay = DELAY;
-		
-		if (Util.getDebugLevel() >= 10) {
-			delay = DELAY+500;
-		}
 		
 		Field field = Field.getStaticField();
 		getFieldData(field);
@@ -211,7 +218,7 @@ public class GameClient {
 					} else if (Robot.ADD_AI == command) {
 						sendRegister(7);
 					} else if (Robot.INCREASE_AI_SPEED == command) {
-						sendRegister(8);
+						sendAIHard();
 					} else if (Robot.START == command) {
 						sendStart();
 					} else if (Robot.PAUSE == command) {
