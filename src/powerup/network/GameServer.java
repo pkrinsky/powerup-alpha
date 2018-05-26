@@ -27,7 +27,6 @@ public class GameServer {
 	public static final String COMMAND_EXIT = "EXIT";
 	public static final String COMMAND_START = "START";
 	public static final String COMMAND_PAUSE = "PAUSE";
-	private static final int ROBOT_SPEED = 2;
 	
 	private long lastScoreSecs = 0;
 	private int turn = 0;
@@ -37,6 +36,15 @@ public class GameServer {
 	
 	private Field field = new Field();
 	private Random random = new Random();
+	private int robotSpeed = 4;
+	
+	private int getRobotSpeed() {
+		return robotSpeed;
+	}
+	
+	public void increaseRobotSpeed() {
+		if (robotSpeed > 0) robotSpeed--;
+	}
 
 	
 	public synchronized String executeCommand(String name, String request) {
@@ -76,31 +84,44 @@ public class GameServer {
 				Robot robot = null;
 				switch (position) {
 					case 1:
-						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
-						//robot.setAi(true);
+						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.RIGHT);
+						setup(robot);
 						break;
 					case 2:
-						robot = new Paulbot("892",Robot.RED,gamedata,Field.LEFT);
-						robot.setAi(true);
+						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
+						setup(robot);
 						break;
 					case 3:
-						robot = new Paulbot("993",Robot.BLUE,gamedata,Field.MIDDLE);
-						robot.setAi(true);
+						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
+						setup(robot);
 						break;
 					case 4:
-						robot = new Paulbot("894",Robot.RED,gamedata,Field.MIDDLE);
-						robot.setAi(true);
+						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
+						setup(robot);
 						break;
 					case 5:
-						robot = new Paulbot("995",Robot.BLUE,gamedata,Field.RIGHT);
-						robot.setAi(true);
+						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.MIDDLE);
+						setup(robot);
 						break;
 					case 6:
-						robot = new Paulbot("896",Robot.RED,gamedata,Field.RIGHT);
+						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
+						setup(robot);
+						break;
+					case 7:
+						robot = new Paulbot("901",Robot.RED,gamedata,Field.RIGHT);
 						robot.setAi(true);
+						setup(robot);
+						robot = new Paulbot("902",Robot.RED,gamedata,Field.MIDDLE);
+						robot.setAi(true);
+						setup(robot);
+						robot = new Paulbot("903",Robot.RED,gamedata,Field.LEFT);
+						robot.setAi(true);
+						setup(robot);
+						break;
+					case 8:
+						increaseRobotSpeed();
 						break;
 				}
-				setup(robot);
 				returnString = robot.getName();
 			}
 		}				
@@ -219,11 +240,17 @@ public class GameServer {
 	}	
 	
 	private void spawnCornerCubes() {
-		int r = random.nextInt(10);
 		FieldObject fo;
+		int r = 0;
 		
-		if (field.getGameSecs() < 60 && r == 1) {
-			
+		List<Cube> cubeList = field.getCubeList();
+		
+		if (cubeList == null) 
+			r = 1;
+		else if (cubeList.size() < 5)
+			r = random.nextInt(2);
+		
+		if (r == 1) {
 			r = random.nextInt(4);
 			
 			switch (r) {
@@ -245,7 +272,7 @@ public class GameServer {
 						field.set(0,0,new Cube());
 					}
 					break;
-				case 4:					
+				case 0:					
 					fo = field.getFieldObject(Field.COLS-1,0);
 					if (fo == null) {
 						field.set(Field.COLS-1,0,new Cube());
@@ -269,7 +296,7 @@ public class GameServer {
 			// move the ai
 			int move = Robot.STOP;
 			for (Robot r:field.getRobotList()) {
-				if (((turn % ROBOT_SPEED) == 0) && r.isAi()) {
+				if (((turn % getRobotSpeed()) == 0) && r.isAi()) {
 					try {
 						Util.log("GameServer.move ai "+r.getName());
 						move = r.move(field);

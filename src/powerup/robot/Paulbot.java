@@ -13,14 +13,22 @@ public class Paulbot extends Robot {
 	}
 
 	private FieldObject findCube(Field field) {
-		for (int c=0; c<Field.COLS; c++) {
-			for(int r=0; r<Field.ROWS; r++) {
-				if (field.getFieldObject(c, r) != null && field.getFieldObject(c, r) instanceof Cube){
-					return field.getFieldObject(c, r);
-				}
+		FieldObject fo = null;
+		int dc = 0;
+		int dr = 0;
+		int d = 0;
+		int distance = Integer.MAX_VALUE;
+		for (Cube c:field.getCubeList()) {
+			dc = c.getCol() - getCol();
+			dr = c.getRow() - getRow();
+			d = Math.abs(dc)+Math.abs(dr);
+			if (d<distance) {
+				distance = d;
+				fo = c;
 			}
 		}
-		return null;
+		
+		return fo;
 	}
 	
 	private int chooseDirection(Field field, int targetc, int targetr) {

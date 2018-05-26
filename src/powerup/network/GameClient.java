@@ -208,6 +208,10 @@ public class GameClient {
 						sendRegister(5);
 					} else if (Robot.PLAYER_6 == command) {
 						sendRegister(6);
+					} else if (Robot.ADD_AI == command) {
+						sendRegister(7);
+					} else if (Robot.INCREASE_AI_SPEED == command) {
+						sendRegister(8);
 					} else if (Robot.START == command) {
 						sendStart();
 					} else if (Robot.PAUSE == command) {

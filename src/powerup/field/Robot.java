@@ -21,6 +21,8 @@ public class Robot extends FieldObject  {
 	public static final int PLAYER_4 = 14;
 	public static final int PLAYER_5 = 15;
 	public static final int PLAYER_6 = 16;
+	public static final int ADD_AI = 17;
+	public static final int INCREASE_AI_SPEED = 18;
 	
 	public static final String BLUE = "B";
 	public static final String RED = "R";
@@ -121,6 +123,12 @@ public class Robot extends FieldObject  {
 		}		
 		if (e.getKeyChar() == '6') {
 			command = Robot.PLAYER_6;
+		}		
+		if (e.getKeyChar() == '7') {
+			command = Robot.ADD_AI;
+		}		
+		if (e.getKeyChar() == '8') {
+			command = Robot.INCREASE_AI_SPEED;
 		}		
 		if (e.getKeyChar() == ' ') {
 			if (hasCube()) {
