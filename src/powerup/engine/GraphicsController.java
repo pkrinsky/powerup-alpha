@@ -39,6 +39,7 @@ public class GraphicsController extends Canvas  {
 	private List<Block> blocks = new ArrayList<Block>();
 	private BufferedImage[] imageArray = new BufferedImage[10];
 	private Map<String,Block> robotMap = new HashMap<String,Block>();
+	private Map<String,Block> cubeMap = new HashMap<String,Block>();
 	private Robot robot = new Robot();
 	
 	public BufferedImage getImage(String filename) {
@@ -113,7 +114,7 @@ public class GraphicsController extends Canvas  {
 		
 		// draw numbers on robots
 		for (Robot robot:field.getRobotList()) {
-			stats = stats+robot.getName()+": makes="+robot.getShotsMade()+"     ";
+			stats = stats+robot.getName()+": cubes="+robot.getShotsMade()+"     ";
 			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
 		}
 		
@@ -135,7 +136,7 @@ public class GraphicsController extends Canvas  {
 			}
 		}
 		
-		drawCenterX(g, stats, SCORE_POSITION_Y+25,0);
+		drawCenterX(g, stats, SCORE_POSITION_Y+50,0);
 		
 		if (field.getGameSecs() == Field.GAME_SECS) {
 			drawCenterX(g,"Press 1-6 to join the game", SCORE_POSITION_Y+50,0);
@@ -194,9 +195,8 @@ public class GraphicsController extends Canvas  {
 						addRobot(s);
 					}
 					if (fo instanceof Cube) {
-						BufferedImage[] i = new BufferedImage[1];
-						i[0] = imageArray[6];
-						blocks.add(new Block(i,fo));
+						Cube s = (Cube) fo;
+						addCube(s);
 					}
 					if (fo instanceof Wall) {
 						BufferedImage[] i = new BufferedImage[1];
@@ -222,6 +222,15 @@ public class GraphicsController extends Canvas  {
 		Block b = new Block(i,s);
 		blocks.add(b);
 		robotMap.put(s.getName(),b);
+	}
+	
+	private void addCube(Cube s) {
+		BufferedImage[] i = new BufferedImage[1];
+		i[0] = imageArray[6];
+		
+		Block b = new Block(i,s);
+		blocks.add(b);
+		cubeMap.put(s.getName(),b);
 	}
 		
 	public void setup() {
@@ -300,6 +309,13 @@ public class GraphicsController extends Canvas  {
 		for (Robot r:field.getRobotList()) {
 			if (robotMap.get(r.getName()) == null) {
 				addRobot(r);
+			}
+		}
+		
+		// add in any new cubes
+		for (Cube c:field.getCubeList()) {
+			if (cubeMap.get(c.getName()) == null) {
+				addCube(c);
 			}
 		}
 		

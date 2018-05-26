@@ -38,7 +38,19 @@ public class Field {
 	}
 	
 	public FieldObject getFieldObject(int c, int r) {
-		return grid[c][r];
+		FieldObject fo = null;
+		if (inBounds(c,r)) {
+			fo = grid[c][r];
+		}
+		return fo;
+	}
+	
+	public boolean inBounds(int c, int r) {
+		boolean returnValue = false;
+		if (c>=0 && r>=0 && c<Field.COLS && r< Field.ROWS) {
+			returnValue = true;
+		}
+		return returnValue;
 	}
 
 	public void setGrid(FieldObject[][] grid) {
@@ -85,6 +97,18 @@ public class Field {
 			}
 		}
 		return robotList;
+	}
+	
+	public List<Cube> getCubeList() {
+		List<Cube> cubeList = new ArrayList<Cube>();
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null && grid[c][r] instanceof Cube) {
+					cubeList.add((Cube)grid[c][r]);
+				}
+			}
+		}
+		return cubeList;
 	}	
 	
 	public void print() {

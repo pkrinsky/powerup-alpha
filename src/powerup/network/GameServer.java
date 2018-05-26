@@ -8,14 +8,15 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.StringTokenizer;
 
 import powerup.engine.Util;
 import powerup.field.Cube;
 import powerup.field.Field;
+import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
-import powerup.robot.Autobot;
 import powerup.robot.Paulbot;
 
 public class GameServer {
@@ -26,7 +27,7 @@ public class GameServer {
 	public static final String COMMAND_EXIT = "EXIT";
 	public static final String COMMAND_START = "START";
 	public static final String COMMAND_PAUSE = "PAUSE";
-	private static final int ROBOT_SPEED = 4;
+	private static final int ROBOT_SPEED = 2;
 	
 	private long lastScoreSecs = 0;
 	private int turn = 0;
@@ -35,6 +36,8 @@ public class GameServer {
 	private boolean running = false;
 	
 	private Field field = new Field();
+	private Random random = new Random();
+
 	
 	public synchronized String executeCommand(String name, String request) {
 		String returnString = "";
@@ -74,10 +77,10 @@ public class GameServer {
 				switch (position) {
 					case 1:
 						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
-						robot.setAi(true);
+						//robot.setAi(true);
 						break;
 					case 2:
-						robot = new Autobot("992",Robot.RED,gamedata,Field.LEFT);
+						robot = new Paulbot("892",Robot.RED,gamedata,Field.LEFT);
 						robot.setAi(true);
 						break;
 					case 3:
@@ -85,7 +88,7 @@ public class GameServer {
 						robot.setAi(true);
 						break;
 					case 4:
-						robot = new Autobot("994",Robot.RED,gamedata,Field.MIDDLE);
+						robot = new Paulbot("894",Robot.RED,gamedata,Field.MIDDLE);
 						robot.setAi(true);
 						break;
 					case 5:
@@ -93,7 +96,7 @@ public class GameServer {
 						robot.setAi(true);
 						break;
 					case 6:
-						robot = new Autobot("996",Robot.RED,gamedata,Field.RIGHT);
+						robot = new Paulbot("896",Robot.RED,gamedata,Field.RIGHT);
 						robot.setAi(true);
 						break;
 				}
@@ -160,7 +163,7 @@ public class GameServer {
 			}
 			serverSocket.close();
 		} catch (Exception e) {
-			Util.log(e.getMessage());
+			Util.log(e);
 		}
 	}	
 
@@ -168,19 +171,6 @@ public class GameServer {
 		Util.log("GameServer.setupField");
 		
 		field = Field.getStaticField();
-
-		
-		// need to randomize this
-		// [close switch][scale][far switch]
-		
-		
-		//robotList.add(new Autobot("101",Robot.BLUE,gamedata,Field.LEFT));
-		//robotList.add(new Autobot("102",Robot.BLUE,gamedata,Field.MIDDLE));
-		//robotList.add(new Autobot("103",Robot.BLUE,gamedata,Field.RIGHT));
-		//robotList.add(new Autobot("106",Robot.RED,gamedata,Field.LEFT));
-		//robotList.add(new Autobot("105",Robot.RED,gamedata,Field.MIDDLE));
-		//robotList.add(new Autobot("104",Robot.RED,gamedata,Field.RIGHT));
-		
 		
 		for (int i=0;i<5;i++) {
 			field.set(Field.COL1+1,5+i,new Cube());
@@ -188,7 +178,6 @@ public class GameServer {
 			field.set(Field.COL3+1,5+i,new Cube());
 			field.set(Field.COL3-1,5+i,new Cube());
 		}
-		
 		
 		//field.print();
 
@@ -203,8 +192,7 @@ public class GameServer {
 		try {
 			server.run(listenPort);
 		} catch (SocketException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			Util.log(e);
 		}
 
 	}
@@ -230,12 +218,54 @@ public class GameServer {
 		}
 	}	
 	
+	private void spawnCornerCubes() {
+		int r = random.nextInt(10);
+		FieldObject fo;
+		
+		if (field.getGameSecs() < 60 && r == 1) {
+			
+			r = random.nextInt(4);
+			
+			switch (r) {
+				case 1:
+					fo = field.getFieldObject(Field.COLS-1,Field.ROWS-1);
+					if (fo == null) {
+						field.set(Field.COLS-1,Field.ROWS-1,new Cube());
+					}
+					break;
+				case 2:					
+					fo = field.getFieldObject(0,Field.ROWS-1);
+					if (fo == null) {
+						field.set(0,Field.ROWS-1,new Cube());
+					}
+					break;
+				case 3:					
+					fo = field.getFieldObject(0,0);
+					if (fo == null) {
+						field.set(0,0,new Cube());
+					}
+					break;
+				case 4:					
+					fo = field.getFieldObject(Field.COLS-1,0);
+					if (fo == null) {
+						field.set(Field.COLS-1,0,new Cube());
+					}
+					break;
+			}
+		
+		}
+		
+	}
+	
 
 	
 	private Field getField(String name) {
 		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs()+" turn:"+turn,10);
 		if (running) {
 			turn++;
+			// check to see if we should spawn more cubes
+			spawnCornerCubes();
+			
 			// move the ai
 			int move = Robot.STOP;
 			for (Robot r:field.getRobotList()) {

@@ -126,7 +126,7 @@ public class Paulbot extends Robot {
 		
 		if (getCol()+1<Field.COLS) {
 			dist = distance[getCol()+1][getRow()];
-			Util.log("Paulbot East distance is "+distance[getCol()][getRow()+1]);
+			Util.log("Paulbot East distance is "+distance[getCol()+1][getRow()]);
 			if (dist > -1 && dist < shortest) {
 				nextmove = Robot.EAST;
 				shortest = dist;

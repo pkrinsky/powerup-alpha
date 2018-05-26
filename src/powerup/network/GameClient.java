@@ -70,15 +70,13 @@ public class GameClient {
 				out = new PrintWriter(socket.getOutputStream(),true);
 				
 			} catch (UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Util.log(e);
 			} catch (ConnectException e) {
 				Util.log("GameClient.setup could not connect to server");
 				Util.log("GameClient.setup exiting");
 				System.exit(1);
 			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				Util.log(e);
 			}
 
 		}
@@ -93,13 +91,13 @@ public class GameClient {
 				out.println(request);
 				returnString = in.readLine();
 			} catch (UnknownHostException e) {
-				e.printStackTrace();
+				Util.log(e);
 			} catch (ConnectException e) {
 				Util.log("GameClient.setup could not connect to server");
 				Util.log("GameClient.setup exiting");
 				System.exit(1);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Util.log(e);
 			}			
 		} else {
 			returnString = server.executeCommand(name, request);
@@ -221,7 +219,7 @@ public class GameClient {
 			}
 
 			// wait for a little then start again
-			try { Thread.sleep(delay); } catch (Exception e) {}
+			try { Thread.sleep(delay); } catch (Exception e) {Util.log(e);}
 		}
 	}
 

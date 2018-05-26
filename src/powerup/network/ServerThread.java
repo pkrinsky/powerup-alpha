@@ -37,7 +37,7 @@ public class ServerThread extends Thread {
 				out.println(outString);
 			}
 		} catch (Exception e) {
-			Util.log(e.getMessage());
+			Util.log(e);
 		}
 	}    
 
