@@ -455,9 +455,20 @@ public class Field {
 		}		
 	}
 	
+	private void resetRobots() {
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null && grid[c][r] instanceof Robot) {
+						grid[c][r] = null;
+				}
+			}
+		}		
+	}
+	
 	public synchronized void load(String s) {
 		boolean debug = false;
 		resetCubes();
+		resetRobots();
 		StringTokenizer rowTokens = new StringTokenizer(s, ROW_DELIM);
 		while (rowTokens.hasMoreTokens()) {
 			StringTokenizer fieldTokens = new StringTokenizer(rowTokens.nextToken(), DELIM);

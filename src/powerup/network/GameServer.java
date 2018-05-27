@@ -26,6 +26,7 @@ public class GameServer {
 	public static final String COMMAND_REGISTER = "REGISTER";
 	public static final String COMMAND_EXIT = "EXIT";
 	public static final String COMMAND_START = "START";
+	public static final String COMMAND_RESTART = "RESTART";
 	public static final String COMMAND_PAUSE = "PAUSE";
 	public static final String COMMAND_AI_FASTER = "AI_FASTER";
 	
@@ -134,6 +135,16 @@ public class GameServer {
 			running = true;
 		}
 		
+		if (GameServer.COMMAND_RESTART.equals(command)) {
+			
+			if (!running) {
+				Util.log("ServerThread.run RESTART");
+				setupGame();
+			} else {
+				Util.log("ServerThread.run cant RESTART while game running");	
+			}
+		}
+		
 		if (GameServer.COMMAND_PAUSE.equals(command)) {
 			Util.log("ServerThread.execute pause");
 			if (running) {
@@ -207,7 +218,7 @@ public class GameServer {
 	
 	public static void main(String[] args) {
 		GameServer server = new GameServer();
-		server.startGame();
+		server.setupGame();
 		int listenPort = 9001;
 		if (args.length > 0)
 			listenPort = new Integer(args[0]);
@@ -335,8 +346,8 @@ public class GameServer {
 		field.setup(robot);;
 	}
 	
-	public void startGame() {
-		Util.log("GameServer.startGame");
+	public void setupGame() {
+		Util.log("GameServer.setupGame");
 		setupField();
 	}
 	

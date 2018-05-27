@@ -131,20 +131,20 @@ public class GraphicsController extends Canvas  {
 		
 		if (field.getGameSecs() < 1) {
 			if (field.getBlueScore() > field.getRedScore()) {
-				drawCenterX(g,"Blue is the winner!", SCORE_POSITION_Y+25,0);
+				drawCenterX(g,"Blue is the winner! Press 0 to reset.", SCORE_POSITION_Y+25,0);
 			}
 			if (field.getRedScore() > field.getBlueScore()) {
-				drawCenterX(g,"Red is the winner!", SCORE_POSITION_Y+25,0);
+				drawCenterX(g,"Red is the winner! Press 0 to reset.", SCORE_POSITION_Y+25,0);
 			}
 			if (field.getBlueScore() == field.getRedScore()) {
-				drawCenterX(g,"Tie Game!", SCORE_POSITION_Y+25,0);
+				drawCenterX(g,"Tie Game! Press 0 to reset.", SCORE_POSITION_Y+25,0);
 			}
 		}
 		
 		
 		if (field.getGameSecs() == Field.GAME_SECS) {
-			drawCenterX(g,"Press 1-6 to join the game, 7 to add AI, 8 for harder AI level:"+field.getRobotLevel(), SCORE_POSITION_Y+50,0);
-			drawCenterX(g,"Press 9 to start", SCORE_POSITION_Y+75,0);
+			drawCenterX(g,"Press 1-6 to join the game, 7 to play against bots, 8 to increase difficulty (AI level:"+field.getRobotLevel()+")", SCORE_POSITION_Y+50,0);
+			drawCenterX(g,"Press 9 to start, 0 to reset", SCORE_POSITION_Y+75,0);
 		} else {
 			drawCenterX(g, stats, SCORE_POSITION_Y+50,0);	
 		}
@@ -300,15 +300,18 @@ public class GraphicsController extends Canvas  {
 		g.setColor(Color.black);
 		g.fillRect(0,0,WIDTH,HEIGHT-SCORE_AREA);
 		
-		// draw the blocks
-		blocks.removeIf(b -> b.getFieldObject().isDeleted() == true);
+		
+		// remove any deleted robots
 		for (Block b:blocks) {
-			// update with latest field data
-			FieldObject fo = field.find(b.getFieldObject().getName());
-			if (fo != null) {
-				b.setFieldObject(fo);
-				b.draw(g);
-			} 
+			if (b.getFieldObject() instanceof Robot) {
+				Robot r = (Robot) b.getFieldObject();
+				if (field.find(r.getName()) == null) {
+					r.setDeleted(true);
+					if (robotMap.get(r.getName()) != null) {
+						robotMap.remove(r.getName(),b);
+					}
+				}
+			}
 		}
 		
 		// add in any new robots
@@ -322,6 +325,24 @@ public class GraphicsController extends Canvas  {
 		for (Cube c:field.getCubeList()) {
 			if (cubeMap.get(c.getName()) == null) {
 				addCube(c);
+			}
+		}
+
+
+		// remove deleted blocks
+		blocks.removeIf(b -> b.getFieldObject().isDeleted() == true);
+		
+		// draw the blocks
+		for (Block b:blocks) {
+			//Util.log("BLOCK "+b.getFieldObject().getName()+" "+b.getFieldObject().isDeleted());
+			
+			// update with latest field data
+			FieldObject fo = field.find(b.getFieldObject().getName());
+			if (fo != null) {
+				b.setFieldObject(fo);
+				b.draw(g);
+			} else {
+				//Util.log("FO not found for block "+b.getFieldObject().getName());
 			}
 		}
 		

@@ -23,6 +23,7 @@ public class Robot extends FieldObject  {
 	public static final int PLAYER_6 = 16;
 	public static final int ADD_AI = 17;
 	public static final int INCREASE_AI_SPEED = 18;
+	public static final int RESTART = 19;
 	
 	public static final String BLUE = "B";
 	public static final String RED = "R";
@@ -106,6 +107,16 @@ public class Robot extends FieldObject  {
 		if (e.getKeyChar() == 's' || e.getKeyCode() == 40) {
 			command = Robot.SOUTH;
 		}		
+		if (e.getKeyChar() == 'p') {
+			command = Robot.PAUSE;
+		}	
+		if (e.getKeyChar() == ' ') {
+			if (hasCube()) {
+				command = Robot.SHOOT;
+			} else {
+				command = Robot.PICKUP;
+			}
+		}	
 		if (e.getKeyChar() == '1') {
 			command = Robot.PLAYER_1;
 		}		
@@ -130,18 +141,11 @@ public class Robot extends FieldObject  {
 		if (e.getKeyChar() == '8') {
 			command = Robot.INCREASE_AI_SPEED;
 		}		
-		if (e.getKeyChar() == ' ') {
-			if (hasCube()) {
-				command = Robot.SHOOT;
-			} else {
-				command = Robot.PICKUP;
-			}
-		}	
 		if (e.getKeyChar() == '9') {
 			command = Robot.START;
 		}	
-		if (e.getKeyChar() == 'p') {
-			command = Robot.PAUSE;
+		if (e.getKeyChar() == '0') {
+			command = Robot.RESTART;
 		}	
 		
 		Util.log("Robot.handleKey "+name+" command:"+command+ " "+getCommandName(command));

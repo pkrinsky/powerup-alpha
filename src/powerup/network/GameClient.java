@@ -57,8 +57,7 @@ public class GameClient {
 		if (serverAddress == null) {
 			Util.log("GameClient.setup local server");
 			server = new GameServer();
-			//server.addClient(this);
-			server.startGame();	
+			server.setupGame();	
 		} else {
 			Util.log("GameClient.setup network server "+serverAddress+" "+serverPort);
 			this.serverAddress = serverAddress;
@@ -158,6 +157,17 @@ public class GameClient {
 		executeCommand(sb.toString());
 	}
 	
+	private void sendRestart() {
+		Util.log("GameClient.sendRestart");
+		
+		StringBuffer sb = new StringBuffer();
+		sb.append(GameServer.COMMAND_RESTART);
+		sb.append(DELIM);
+		sb.append(name);
+		sb.append(DELIM);
+		executeCommand(sb.toString());
+	}
+	
 	private void sendAIHard() {
 		Util.log("GameClient.sendAIHard");
 		
@@ -183,6 +193,7 @@ public class GameClient {
 	private void gameLoop() {
 		//Util.log("GameClient.gameLoop");
 		boolean gameRunning = true;
+		boolean clientRunning = true;
 		int delay = DELAY;
 		
 		Field field = Field.getStaticField();
@@ -191,8 +202,8 @@ public class GameClient {
 		controller = new GraphicsController(name);
 		controller.setup();
 			
-		while (gameRunning) {
-			if (field.getGameSecs() > 0) {
+		while (clientRunning) {
+			//if (field.getGameSecs() > 0) {
 				// get the latest field data from the server
 				getFieldData(field);
 				controller.drawField(field);
@@ -221,13 +232,15 @@ public class GameClient {
 						sendAIHard();
 					} else if (Robot.START == command) {
 						sendStart();
+					} else if (Robot.RESTART == command) {
+						sendRestart();
 					} else if (Robot.PAUSE == command) {
 						sendPause();
 					} else {
 						sendCommand(command);
 					}
 				}
-			}
+			//}
 
 			// wait for a little then start again
 			try { Thread.sleep(delay); } catch (Exception e) {Util.log(e);}

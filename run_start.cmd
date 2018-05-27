@@ -1,2 +1,2 @@
-java -cp bin;images powerup.network.GameClient localhost 9001 start
+java -cp bin;images powerup.network.GameClient 294 01
 
