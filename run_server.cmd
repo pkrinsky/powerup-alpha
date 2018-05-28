@@ -1,3 +1,3 @@
-java -cp bin powerup.network.GameServer 8294
+java -cp bin powerup.server.GameServer 8294
 
 pause
