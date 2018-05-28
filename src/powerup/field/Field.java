@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.StringTokenizer;
 
 import powerup.engine.Util;
-import powerup.network.GameClient;
+import powerup.server.GameClient;
 
 public class Field {
 	public static final int COLS=23;
@@ -27,8 +27,9 @@ public class Field {
 	private int redScore = 0;
 	private int blueScore = 0;
 	private int gameSecs = GAME_SECS;
+	private int countDown = 0;
 	private long lastTick = 0;
-	private int robotLevel = 4;
+	private int robotLevel = 1;
 	
 	public int getRobotLevel() {
 		return robotLevel;
@@ -38,8 +39,16 @@ public class Field {
 		robotLevel = s;
 	}
 	
+	public int getCountDown() {
+		return countDown;
+	}
+
+	public void setCountDown(int countDown) {
+		this.countDown = countDown;
+	}
+
 	public void increaseRobotLevel() {
-		if (robotLevel > 1) robotLevel--;
+		robotLevel++;
 		Util.log("Field.increaseRobotLevel to:"+robotLevel,1);
 	}
 
@@ -331,9 +340,12 @@ public class Field {
 	public synchronized void decreaseGameSecs(int i) {
 		long current = System.currentTimeMillis();
 		if (current - lastTick > 1000) {
-			this.gameSecs = this.gameSecs - 1;
+			if (countDown > 0) {
+				countDown = countDown - i;
+			} else {
+				gameSecs = gameSecs - i;	
+			}
 			lastTick = current;
-			//Util.log("Field.decreaseGameSecs new time is:"+gameSecs);
 		}
 
 	}
@@ -391,6 +403,8 @@ public class Field {
 		sb.append(gameSecs);
 		sb.append(DELIM);
 		sb.append(robotLevel);
+		sb.append(DELIM);
+		sb.append(countDown);
 		sb.append(ROW_DELIM);
 		
 		//Util.log("Field.save\n"+sb.toString());
@@ -444,26 +458,7 @@ public class Field {
 		return sb.toString();
 		
 	}
-	
-	private void resetCubes() {
-		for (int r=0;r<Field.ROWS;r++) {
-			for (int c=0;c<Field.COLS;c++) {
-				if (grid[c][r] != null && grid[c][r] instanceof Cube) {
-						grid[c][r] = null;
-				}
-			}
-		}		
-	}
-	
-	private void resetRobots() {
-		for (int r=0;r<Field.ROWS;r++) {
-			for (int c=0;c<Field.COLS;c++) {
-				if (grid[c][r] != null && grid[c][r] instanceof Robot) {
-						grid[c][r] = null;
-				}
-			}
-		}		
-	}
+
 	
 	public synchronized void load(String s) {
 		boolean debug = false;
@@ -489,6 +484,7 @@ public class Field {
 				setBlueScore(new Integer(fieldList.get(2)));
 				setGameSecs(new Integer(fieldList.get(3)));
 				setRobotLevel(new Integer(fieldList.get(4)));
+				setCountDown(new Integer(fieldList.get(5)));
 			}
 			if ("powerup.field.Cube".equals(fieldList.get(0))) {
 				// delete if already exists
@@ -522,4 +518,25 @@ public class Field {
 			}
 		}
 	}
+	
+	
+	private void resetCubes() {
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null && grid[c][r] instanceof Cube) {
+						grid[c][r] = null;
+				}
+			}
+		}		
+	}
+	
+	private void resetRobots() {
+		for (int r=0;r<Field.ROWS;r++) {
+			for (int c=0;c<Field.COLS;c++) {
+				if (grid[c][r] != null && grid[c][r] instanceof Robot) {
+						grid[c][r] = null;
+				}
+			}
+		}		
+	}	
 }

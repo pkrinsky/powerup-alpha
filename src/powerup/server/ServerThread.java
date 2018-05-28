@@ -1,4 +1,4 @@
-package powerup.network;
+package powerup.server;
 
 import java.io.BufferedReader;
 import java.io.PrintWriter;
