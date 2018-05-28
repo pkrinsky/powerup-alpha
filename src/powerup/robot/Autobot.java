@@ -28,6 +28,8 @@ public class Autobot extends Robot {
 		int thismove = Robot.STOP;
 		FieldObject target = null;
 
+
+
 		// if we have a cube put it on the switch
 		if (hasCube()) {
 			FieldObject[][] grid = field.getGrid();
@@ -51,6 +53,9 @@ public class Autobot extends Robot {
 			}
 
 
+			mk(target.getCol(),target.getRow());
+
+
 			if (thismove == Robot.STOP) {
 				thismove = Robot.SHOOT;
 			} 
@@ -71,22 +76,22 @@ public class Autobot extends Robot {
 					if(grid[getCol()+1][getRow()] != null && target.getCol()-1 != getCol()) {
 						thismove = Robot.NORTH;
 					}
-						if (target.getRow() < getRow() && grid[getCol()][getRow()-1] == null ) {
-							thismove = Robot.NORTH;
-						} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
-							thismove = Robot.EAST;
-						} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
-							thismove = Robot.WEST;
-						}
-						if (target.getRow() > getRow() && grid[getCol()][getRow()+1] == null) {
-							thismove = Robot.SOUTH;
-						} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
-							thismove = Robot.EAST;
-						} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
-							thismove = Robot.WEST;
-						}
+					if (target.getRow() < getRow() && grid[getCol()][getRow()-1] == null ) {
+						thismove = Robot.NORTH;
+					} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
+						thismove = Robot.EAST;
+					} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
+						thismove = Robot.WEST;
+					}
+					if (target.getRow() > getRow() && grid[getCol()][getRow()+1] == null) {
+						thismove = Robot.SOUTH;
+					} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
+						thismove = Robot.EAST;
+					} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
+						thismove = Robot.WEST;
+					}
 
-					
+
 
 				}
 
@@ -140,6 +145,21 @@ public class Autobot extends Robot {
 					thismove = Robot.PICKUP;
 				}
 			}
+			int loops = field.ROWS* field.COLS;
+			while (loops-- >0) {
+				for (int r=0;r<Field.ROWS;r++) {
+					for (int c=0;c<Field.COLS;c++) {
+						if (grid[c][r] == target) {
+							if (r-1>=0 && grid[c][r-1] == null) {
+								//grid[c][r-1] = 1;
+							}
+
+
+						}
+					}
+
+				}
+			}
 
 
 
@@ -151,5 +171,45 @@ public class Autobot extends Robot {
 		command = Robot.STOP;
 		return thismove;
 	}
+
+
+	private void mk(int targetCol, int targetRow) {
+
+		int[][] distance = new int[Field.COLS][Field.ROWS];
+		
+		
+		for(int r = 0 ; r< Field.ROWS; r++) {
+			for(int c = 0 ; c <Field.COLS; c++) {
+				distance[c][r] =-1;
+			}
+		}
+		
+		
+		distance[targetCol][targetRow] = 0;
+		
+		
+		for(int r = 0 ; r< Field.ROWS; r++) {
+			for(int c = 0 ; c <Field.COLS; c++) {
+				if (distance[c][r] == 0) {
+					distance[c][r-1] = distance[c][r] + 1;
+				}
+			}
+		}
+		
+		
+		print(distance);
+
+	}
+
+	private void print(int[][] distance) {
+		for(int r = 0 ; r< Field.ROWS; r++) {
+			for(int c = 0 ; c <Field.COLS; c++) {
+				System.out.print(distance[c][r]+ " ");
+			}
+			System.out.println();
+		}
+
+	}
+
 
 }
