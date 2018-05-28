@@ -13,7 +13,7 @@ public class KeyHandler extends KeyAdapter {
 	}
 
 	public void keyPressed(KeyEvent e) {
-		controller.keyEvent(e);
+		controller.getGameClient().keyEvent(e);
 		
 	}
 }

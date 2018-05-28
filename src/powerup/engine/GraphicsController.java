@@ -4,7 +4,6 @@ import java.awt.Canvas;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
-import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferStrategy;
@@ -26,6 +25,7 @@ import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
 import powerup.field.Wall;
+import powerup.server.GameClient;
 
 public class GraphicsController extends Canvas  {
 	
@@ -35,12 +35,12 @@ public class GraphicsController extends Canvas  {
 	private static final int WIDTH = Field.COLS*Block.BLOCKSIZE;
 	private static final int SCORE_POSITION_Y = HEIGHT-80;
 
+	private GameClient gameClient;
 	private BufferStrategy strategy;
 	private List<Block> blocks = new ArrayList<Block>();
 	private BufferedImage[] imageArray = new BufferedImage[10];
 	private Map<String,Block> robotMap = new HashMap<String,Block>();
 	private Map<String,Block> cubeMap = new HashMap<String,Block>();
-	private Robot robot = new Robot();
 	
 	public BufferedImage getImage(String filename) {
 		BufferedImage sourceImage = null;
@@ -51,7 +51,7 @@ public class GraphicsController extends Canvas  {
 				throw new RuntimeException("Can't find filename: "+filename);
 			}
 			sourceImage = ImageIO.read(url);
-			System.out.println("read image "+filename+" width:"+sourceImage.getWidth()+" height:"+sourceImage.getHeight());
+			//System.out.println("read image "+filename+" width:"+sourceImage.getWidth()+" height:"+sourceImage.getHeight());
 		} catch (IOException e) {
 			throw new RuntimeException("Failed to load: "+filename);
 		}
@@ -59,34 +59,7 @@ public class GraphicsController extends Canvas  {
 		return sourceImage;
 	}
 	
-	public GraphicsController(String robotName) {
-		robot.setName(robotName);
-	}
 
-	public int getMove(Field field) {
-		int move = Robot.STOP;
-		Robot fieldRobot = getRobot(field, robot.getName());
-
-		// if the robot is on the field get the latest data
-		if (fieldRobot != null) {
-			robot.update(fieldRobot);
-		}
-		
-		// get the next move
-		move = robot.move(field);
-		
-		// send to the server if needed
-		if (move != Robot.STOP) {
-			Util.log("RobotController.move "+robot.getName()+" move:"+Robot.getCommandName(move));
-		}
-		
-		return move;
-	}
-	
-	public Robot getRobot(Field field, String robotName) {
-		Robot robot = (Robot) field.find(robotName);
-		return robot;
-	}
 
 	private void drawLabels(Graphics2D g,Field field) {
 		String stats = "";
@@ -156,18 +129,10 @@ public class GraphicsController extends Canvas  {
 		g.drawString(s,x,y);
 	}
 	
-	public void keyEvent(KeyEvent e) {
-		Util.log("GraphicsController.keyEvent keyChar:"+e.getKeyChar()+" code:"+e.getKeyCode());
 
-		if (e.getKeyChar() == KeyEvent.VK_ESCAPE) {
-			System.exit(0);
-		}
-		
-		robot.handleKey(e);
-	}	
 
 	private void setupImages(Field field) {
-		Util.log("RobotController.setupImages");
+		Util.log("GraphicsController.setupImages");
 		
 		imageArray[0] = getImage("robot-red.png");
 		imageArray[1] = getImage("robot-red-cube.png");
@@ -239,8 +204,10 @@ public class GraphicsController extends Canvas  {
 		cubeMap.put(s.getName(),b);
 	}
 		
-	public void setup() {
-		Util.log("RobotController.setup");
+	public void setup(GameClient gameClient) {
+		Util.log("GraphicsController.setup");
+		
+		this.gameClient = gameClient;
 		
 		JFrame container = new JFrame("Powerup");
 		
@@ -282,13 +249,20 @@ public class GraphicsController extends Canvas  {
 		createBufferStrategy(2);
 		strategy = getBufferStrategy();
 		
+		Util.log("GraphicsController.setup complete");
 
 	}
 	
 	
 
+	public GameClient getGameClient() {
+		return gameClient;
+	}
+
+
+
 	public void drawField(Field field) {
-		//Util.log("RobotController.drawField");
+		Util.log("RobotController.drawField",10);
 
 		if (imageArray[0] == null)
 			setupImages(field);
@@ -352,7 +326,8 @@ public class GraphicsController extends Canvas  {
 		// show the redrawn map
 		g.dispose();
 		strategy.show();
-			
+		
+		Util.log("RobotController.drawField complete",10);			
 	}
 
 

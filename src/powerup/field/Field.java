@@ -26,7 +26,7 @@ public class Field {
 
 	private int redScore = 0;
 	private int blueScore = 0;
-	private int gameSecs = GAME_SECS;
+	private int gameSecs = 0;
 	private int countDown = 0;
 	private long lastTick = 0;
 	private int robotLevel = 1;
@@ -333,7 +333,7 @@ public class Field {
 		this.blueScore = blueScore;
 	}
 
-	private void setGameSecs(int gameSecs) {
+	public void setGameSecs(int gameSecs) {
 		this.gameSecs = gameSecs;
 	}
 

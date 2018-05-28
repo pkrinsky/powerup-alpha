@@ -63,10 +63,10 @@ public class GameServer {
 			//Util.log("ServerThread.run move:"+fieldList.get(1));
 			String c = fieldList.get(1);
 			int i = new Integer(fieldList.get(2));
-			if (running) {
+			if (running && field.getCountDown() == 0) {
 				move(c,i);
 			} else {
-				Util.log("GameServer.execute no moves while game not running");
+				Util.log("GameServer.execute no moves while game not running or in countdown");
 			}
 		}
 		
@@ -134,6 +134,7 @@ public class GameServer {
 		if (GameServer.COMMAND_START.equals(command)) {
 			Util.log("ServerThread.execute start");
 			running = true;
+			field.setGameSecs(Field.GAME_SECS);
 			field.setCountDown(6);
 		}
 		
