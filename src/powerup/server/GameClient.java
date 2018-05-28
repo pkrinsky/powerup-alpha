@@ -81,7 +81,7 @@ public class GameClient {
 	
 	public int getMove(Field field) {
 		int move = Robot.STOP;
-		Robot fieldRobot = getRobot(field, robot.getName());
+		Robot fieldRobot = getRobot(field, name);
 
 		// if the robot is on the field get the latest data
 		if (fieldRobot != null) {
@@ -93,7 +93,7 @@ public class GameClient {
 		
 		// send to the server if needed
 		if (move != Robot.STOP) {
-			Util.log("RobotController.move "+robot.getName()+" move:"+Robot.getCommandName(move));
+			Util.log("GameClient.move "+name+" move:"+Robot.getCommandName(move));
 		}
 		
 		return move;

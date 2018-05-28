@@ -66,7 +66,7 @@ public class GameServer {
 			if (running && field.getCountDown() == 0) {
 				move(c,i);
 			} else {
-				Util.log("GameServer.execute no moves while game not running or in countdown");
+				Util.log("GameServer.execute no moves while game not running or in countdown running:"+running+ " countdown:"+field.getCountDown());
 			}
 		}
 		

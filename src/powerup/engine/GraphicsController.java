@@ -102,7 +102,7 @@ public class GraphicsController extends Canvas  {
 			drawCenterX(g,"Game starting in "+field.getCountDown(), SCORE_POSITION_Y,-300);
 		
 		
-		if (field.getGameSecs() < 1) {
+		if (field.getGameSecs() == 0 && (field.getBlueScore() > 0 || field.getRedScore() >0)) {
 			if (field.getBlueScore() > field.getRedScore()) {
 				drawCenterX(g,"Blue is the winner! Press 0 to reset.", SCORE_POSITION_Y+25,0);
 			}
@@ -115,7 +115,7 @@ public class GraphicsController extends Canvas  {
 		}
 		
 		
-		if (field.getGameSecs() == Field.GAME_SECS) {
+		if (field.getGameSecs() == 0) {
 			drawCenterX(g,"Press 1-6 to join the game, 7 to play against bots, 8 to increase difficulty (AI level:"+field.getRobotLevel()+")", SCORE_POSITION_Y+50,0);
 			drawCenterX(g,"Press 9 to start, 0 to reset", SCORE_POSITION_Y+75,0);
 		} else {
