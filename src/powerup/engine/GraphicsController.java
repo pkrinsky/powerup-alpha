@@ -91,15 +91,35 @@ public class GraphicsController extends Canvas  {
 			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
 		}
 		
+		
 		stats = stats + "  AI level:"+field.getRobotLevel(); 
 		
 		// draw stats and score
 		g.setColor(Color.white);
+		
+		// draw stats for robots
+		int i = 0;
+		for (Robot robot:field.getRobotList()) {
+			if (Robot.BLUE.equals(robot.getAlliance())) {
+				g.drawString(""+robot.getName()+": cubes="+robot.getShotsMade(),25,SCORE_POSITION_Y+(25*i));
+				i++;
+			}
+		}
+		
+		i=0;
+		for (Robot robot:field.getRobotList()) {
+			if (Robot.RED.equals(robot.getAlliance())) {
+				g.drawString(""+robot.getName()+": cubes="+robot.getShotsMade(),WIDTH-100,SCORE_POSITION_Y+(25*i));
+				i++;
+			}
+		}
+
 		drawCenterX(g,"Blue "+field.getBlueScore(),SCORE_POSITION_Y,100);
 		drawCenterX(g,"Red "+field.getRedScore(), SCORE_POSITION_Y,-100);
 		drawCenterX(g,"Time "+field.getGameSecs(), SCORE_POSITION_Y,0);
+		
 		if (field.getCountDown() > 0)
-			drawCenterX(g,"Game starting in "+field.getCountDown(), SCORE_POSITION_Y,-300);
+			drawCenterX(g,"Game starting in "+field.getCountDown(), SCORE_POSITION_Y+25,0);
 		
 		
 		if (field.getGameSecs() == 0 && (field.getBlueScore() > 0 || field.getRedScore() >0)) {
@@ -114,13 +134,11 @@ public class GraphicsController extends Canvas  {
 			}
 		}
 		
-		
 		if (field.getGameSecs() == 0) {
 			drawCenterX(g,"Press 1-6 to join the game, 7 to play against bots, 8 to increase difficulty (AI level:"+field.getRobotLevel()+")", SCORE_POSITION_Y+50,0);
 			drawCenterX(g,"Press 9 to start, 0 to reset", SCORE_POSITION_Y+75,0);
-		} else {
-			drawCenterX(g, stats, SCORE_POSITION_Y+50,0);	
 		}
+		
 	}
 	
 	private void drawCenterX(Graphics2D g, String s, int y, int offset) {
@@ -262,7 +280,7 @@ public class GraphicsController extends Canvas  {
 
 
 	public void drawField(Field field) {
-		Util.log("RobotController.drawField",10);
+		Util.log("GraphicsController.drawField",10);
 
 		if (imageArray[0] == null)
 			setupImages(field);
@@ -327,7 +345,7 @@ public class GraphicsController extends Canvas  {
 		g.dispose();
 		strategy.show();
 		
-		Util.log("RobotController.drawField complete",10);			
+		Util.log("GraphicsController.drawField complete",10);			
 	}
 
 

@@ -40,6 +40,10 @@ public class GameServer {
 	private Field field = new Field();
 	private Random random = new Random();
 	
+	private Robot newRobot(String name, String alliance, String gameData, char startingPosition) {
+		return new Paulbot(name,alliance,gameData,startingPosition);
+	}
+	
 	public synchronized String executeCommand(String name, String request) {
 		String returnString = "";
 		
@@ -82,41 +86,41 @@ public class GameServer {
 				Robot robot = null;
 				switch (position) {
 					case 1:
-						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.RIGHT);
+						robot = newRobot(fieldList.get(1),Robot.BLUE,gamedata,Field.RIGHT);
 						setup(robot);
 						break;
 					case 2:
-						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
+						robot = newRobot(fieldList.get(1),Robot.BLUE,gamedata,Field.MIDDLE);
 						setup(robot);
 						break;
 					case 3:
-						robot = new Paulbot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
+						robot = newRobot(fieldList.get(1),Robot.BLUE,gamedata,Field.LEFT);
 						setup(robot);
 						break;
 					case 4:
-						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
+						robot = newRobot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
 						setup(robot);
 						break;
 					case 5:
-						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.MIDDLE);
+						robot = newRobot(fieldList.get(1),Robot.RED,gamedata,Field.MIDDLE);
 						setup(robot);
 						break;
 					case 6:
-						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
+						robot = newRobot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
 						setup(robot);
 						break;
 					case 7:
 						int players = field.getRobotList().size();
-						robot = new Paulbot("901",Robot.RED,gamedata,Field.RIGHT);
+						robot = newRobot("901",Robot.RED,gamedata,Field.RIGHT);
 						robot.setAi(true);
 						setup(robot);
 						if (players >1) {
-							robot = new Paulbot("902",Robot.RED,gamedata,Field.MIDDLE);
+							robot = newRobot("902",Robot.RED,gamedata,Field.MIDDLE);
 							robot.setAi(true);
 							setup(robot);
 						}
 						if (players >2) {
-							robot = new Paulbot("903",Robot.RED,gamedata,Field.LEFT);
+							robot = newRobot("903",Robot.RED,gamedata,Field.LEFT);
 							robot.setAi(true);
 							setup(robot);
 						}
@@ -324,7 +328,7 @@ public class GameServer {
 							}
 						}
 					}
-					nextAIMove = System.currentTimeMillis() + (575-(field.getRobotLevel()*75));
+					nextAIMove = System.currentTimeMillis() + (525-(field.getRobotLevel()*50));
 				}
 			}
 			
