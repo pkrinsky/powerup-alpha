@@ -267,7 +267,7 @@ public class GameClient {
 				autonomous = false;
 			}
 			
-			Util.log("GameClient.gameLoop autonomous:"+autonomous+ " running:"+gameRunning);
+			//Util.log("GameClient.gameLoop autonomous:"+autonomous+ " running:"+gameRunning);
 			
 			// see if the robot wants to make a move
 			int command = getMove(field);

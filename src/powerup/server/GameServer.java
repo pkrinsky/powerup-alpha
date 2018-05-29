@@ -17,6 +17,7 @@ import powerup.field.Field;
 import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
+import powerup.robot.Autobot;
 import powerup.robot.Paulbot;
 
 public class GameServer {
@@ -94,7 +95,7 @@ public class GameServer {
 						setup(robot);
 						break;
 					case 4:
-						robot = new Paulbot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
+						robot = new Autobot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
 						setup(robot);
 						break;
 					case 5:
@@ -107,7 +108,7 @@ public class GameServer {
 						break;
 					case 7:
 						int players = field.getRobotList().size();
-						robot = new Paulbot("901",Robot.RED,gamedata,Field.RIGHT);
+						robot = new Autobot("901",Robot.RED,gamedata,Field.RIGHT);
 						robot.setAi(true);
 						setup(robot);
 						if (players >1) {

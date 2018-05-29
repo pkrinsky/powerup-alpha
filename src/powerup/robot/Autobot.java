@@ -176,38 +176,60 @@ public class Autobot extends Robot {
 	private void mk(int targetCol, int targetRow) {
 
 		int[][] distance = new int[Field.COLS][Field.ROWS];
-		
-		
+
+
 		for(int r = 0 ; r< Field.ROWS; r++) {
 			for(int c = 0 ; c <Field.COLS; c++) {
 				distance[c][r] =-1;
 			}
 		}
-		
-		
+
+
 		distance[targetCol][targetRow] = 0;
+
+		print(distance);
 		
+		int loops = Field.COLS*Field.ROWS;
 		
-		for(int r = 0 ; r< Field.ROWS; r++) {
-			for(int c = 0 ; c <Field.COLS; c++) {
-				if (distance[c][r] == 0) {
-					distance[c][r-1] = distance[c][r] + 1;
+		while (loops-- > 0)	{
+			for(int r = 0 ; r< Field.ROWS; r++) {
+				for(int c = 0 ; c <Field.COLS; c++) {
+					if(distance[c][r] != -1 ) {
+						
+						// north
+						if (r-1 >=0 && distance[c][r-1] == -1) {
+							distance[c][r-1] = distance[c][r] + 1;
+						}
+						// east
+						if (c+1 <Field.COLS && distance[c+1][r] == -1) {
+							distance[c+1][r] = distance[c][r] + 1;
+						}
+						// south
+						if (r+1 <Field.ROWS && distance[c][r+1] == -1) {
+							distance[c][r+1] = distance[c][r] + 1;
+						}
+						// west
+						if (c-1 >=0 && distance[c-1][r] == -1) {
+							distance[c-1][r] = distance[c][r] + 1;
+						}
+						
+					}
 				}
 			}
+			print(distance);
 		}
 		
-		
-		print(distance);
-
+//		System.exit(1);
 	}
 
 	private void print(int[][] distance) {
 		for(int r = 0 ; r< Field.ROWS; r++) {
 			for(int c = 0 ; c <Field.COLS; c++) {
-				System.out.print(distance[c][r]+ " ");
+				System.out.print((distance[c][r]+" ").substring(0, 2)+ " ");
 			}
 			System.out.println();
 		}
+		System.out.println("DONE");
 
 	}
 
