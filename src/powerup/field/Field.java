@@ -23,6 +23,8 @@ public class Field {
 	private static final String ROW_DELIM = GameClient.ROW_DELIM;
 
 	public static final int GAME_SECS = 60;
+	public static final int COUNTDOWN = 3;
+	public static final int AUTONOMOUS = 10;
 
 	private int redScore = 0;
 	private int blueScore = 0;
@@ -446,6 +448,8 @@ public class Field {
 							sb.append(((Robot)(grid[c][r])).getShotsMade());
 							sb.append(DELIM);
 							sb.append(((Robot)(grid[c][r])).isAi());
+							sb.append(DELIM);
+							sb.append(((Robot)(grid[c][r])).getAlliance());
 							//Util.log("Field.save\n"+sb.toString());
 						}
 						sb.append(ROW_DELIM);
@@ -515,6 +519,7 @@ public class Field {
 				o.setShotsMade((new Integer(fieldList.get(8))));
 				if (fieldList.get(9).equals("true")) o.isAi();
 				set(o.getCol(),o.getRow(),o);
+				o.setAlliance(fieldList.get(10));
 			}
 		}
 	}

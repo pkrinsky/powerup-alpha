@@ -1,5 +1,8 @@
 package powerup.robot;
 
+import java.util.LinkedList;
+import java.util.Queue;
+
 import powerup.engine.Util;
 import powerup.field.Cube;
 import powerup.field.Field;
@@ -12,6 +15,87 @@ public class Paulbot extends Robot {
 	public Paulbot(String name, String alliance, String gamedata, char startPosition) {
 		super(name, alliance, gamedata, startPosition);
 	}
+	
+	public Queue<Integer> getAutonomousCommands() {
+		Queue<Integer> commandList = new LinkedList<Integer>();
+		
+		if (BLUE.equals(alliance)) {
+			if (Field.RIGHT == startPosition) {
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(NORTH);
+				commandList.add(SHOOT);
+			}
+			if (Field.LEFT == startPosition) {
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(SOUTH);
+				commandList.add(SOUTH);
+				commandList.add(SHOOT);
+			}
+			if (Field.MIDDLE == startPosition) {
+				commandList.add(NORTH);
+				commandList.add(NORTH);
+				commandList.add(NORTH);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(EAST);
+				commandList.add(SHOOT);
+			}
+		} else {
+			if (Field.RIGHT == startPosition) {
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(SOUTH);
+				commandList.add(SHOOT);
+			}
+			if (Field.LEFT == startPosition) {
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(NORTH);
+				commandList.add(NORTH);
+				commandList.add(SHOOT);
+			}
+			if (Field.MIDDLE == startPosition) {
+				commandList.add(SOUTH);
+				commandList.add(SOUTH);
+				commandList.add(SOUTH);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(WEST);
+				commandList.add(SHOOT);
+			}
+		}
+		
+		return commandList;
+		
+	}	
 
 	private FieldObject findCube(Field field) {
 		FieldObject fo = null;

@@ -1,6 +1,8 @@
 package powerup.field;
 
 import java.awt.event.KeyEvent;
+import java.util.LinkedList;
+import java.util.Queue;
 
 import powerup.engine.Util;
 
@@ -45,6 +47,11 @@ public class Robot extends FieldObject  {
 		this.gamedata = gamedata;
 		this.startPosition = start;
 	}	
+	
+	public Queue<Integer> getAutonomousCommands() {
+		Queue<Integer> commandList = new LinkedList<Integer>();
+		return commandList;
+	}
 	
 	public int move(Field info) {
 		int thismove = command;

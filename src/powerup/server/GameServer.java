@@ -106,7 +106,7 @@ public class GameServer {
 						setup(robot);
 						break;
 					case 6:
-						robot = newRobot(fieldList.get(1),Robot.RED,gamedata,Field.RIGHT);
+						robot = newRobot(fieldList.get(1),Robot.RED,gamedata,Field.LEFT);
 						setup(robot);
 						break;
 					case 7:
@@ -139,7 +139,7 @@ public class GameServer {
 			Util.log("ServerThread.execute start");
 			running = true;
 			field.setGameSecs(Field.GAME_SECS);
-			field.setCountDown(6);
+			field.setCountDown(Field.COUNTDOWN);
 		}
 		
 		if (GameServer.COMMAND_RESTART.equals(command)) {

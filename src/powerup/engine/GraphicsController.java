@@ -121,16 +121,18 @@ public class GraphicsController extends Canvas  {
 		if (field.getCountDown() > 0)
 			drawCenterX(g,"Game starting in "+field.getCountDown(), SCORE_POSITION_Y+25,0);
 		
+		if (gameClient.isAutonomous())
+			drawCenterX(g,"Autonomous Mode", SCORE_POSITION_Y+50,0);
 		
 		if (field.getGameSecs() == 0 && (field.getBlueScore() > 0 || field.getRedScore() >0)) {
 			if (field.getBlueScore() > field.getRedScore()) {
-				drawCenterX(g,"Blue is the winner! Press 0 to reset.", SCORE_POSITION_Y+25,0);
+				drawCenterX(g,"Blue is the winner!", SCORE_POSITION_Y+25,0);
 			}
 			if (field.getRedScore() > field.getBlueScore()) {
-				drawCenterX(g,"Red is the winner! Press 0 to reset.", SCORE_POSITION_Y+25,0);
+				drawCenterX(g,"Red is the winner!", SCORE_POSITION_Y+25,0);
 			}
 			if (field.getBlueScore() == field.getRedScore()) {
-				drawCenterX(g,"Tie Game! Press 0 to reset.", SCORE_POSITION_Y+25,0);
+				drawCenterX(g,"Tie Game!", SCORE_POSITION_Y+25,0);
 			}
 		}
 		

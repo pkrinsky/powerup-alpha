@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Queue;
 
 import powerup.engine.GraphicsController;
 import powerup.engine.Util;
@@ -32,8 +33,10 @@ public class GameClient {
 	boolean gameRunning = false;
 	boolean autonomous = false;
 
+	public boolean isAutonomous() {
+		return autonomous;
+	}
 
-	
 	public static void main(String[] args) {
 		GameClient client = new GameClient();
 		String name = null;
@@ -81,12 +84,6 @@ public class GameClient {
 	
 	public int getMove(Field field) {
 		int move = Robot.STOP;
-		Robot fieldRobot = getRobot(field, name);
-
-		// if the robot is on the field get the latest data
-		if (fieldRobot != null) {
-			robot.update(fieldRobot);
-		}
 		
 		// get the next move
 		move = robot.move(field);
@@ -239,13 +236,17 @@ public class GameClient {
 	
 	private void gameLoop() {
 		int delay = DELAY;
+		Integer command = Robot.STOP;
+		long nextMove = 0;
+		Queue<Integer> commandList = null;
+		
 		
 		Field field = Field.getStaticField();
 		getFieldData(field);
 		
 		controller = new GraphicsController();
 		controller.setup(this);
-			
+		
 		Util.log("GameClient.gameLoop starting");
 		clientRunning = true;
 		
@@ -257,10 +258,12 @@ public class GameClient {
 			
 			if (field.getGameSecs() > 0) {
 				gameRunning = true;
-				if (field.getGameSecs() < (Field.GAME_SECS - 15)) {
+				if (commandList == null) commandList = robot.getAutonomousCommands();
+				if (field.getGameSecs() < (Field.GAME_SECS - Field.AUTONOMOUS)) {
 					autonomous = false;
 				} else {
-					//autonomous = true;
+					autonomous = true;
+					//Util.log("GameClient.gameLoop autonomous:"+autonomous+ " secs:"+field.getGameSecs());
 				}
 			} else {
 				gameRunning = false;
@@ -269,8 +272,26 @@ public class GameClient {
 			
 			//Util.log("GameClient.gameLoop autonomous:"+autonomous+ " running:"+gameRunning);
 			
-			// see if the robot wants to make a move
-			int command = getMove(field);
+			Robot fieldRobot = getRobot(field, name);
+
+			// if the robot is on the field get the latest data
+			if (fieldRobot != null) {
+				robot.update(fieldRobot);
+			}
+			
+			command = Robot.STOP;
+			if (field.getCountDown() == 0) {
+				if (autonomous) {
+					if (System.currentTimeMillis() > nextMove) {
+						command = commandList.poll();
+						if (command == null) command = Robot.STOP;
+						nextMove = System.currentTimeMillis()+500;
+						Util.log("GameClient.gameLoop autonomous command:"+command);
+					}
+				} else {
+					command = getMove(field);	
+				}
+			}
 			
 			// send the move to the server
 			if (command != Robot.STOP) {
