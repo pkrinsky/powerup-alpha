@@ -121,7 +121,7 @@ public class GraphicsController extends Canvas  {
 		if (field.getCountDown() > 0)
 			drawCenterX(g,"Game starting in "+field.getCountDown(), SCORE_POSITION_Y+25,0);
 		
-		if (gameClient.isAutonomous())
+		if (gameClient.isAutonomous() && field.getCountDown() == 0)
 			drawCenterX(g,"Autonomous Mode", SCORE_POSITION_Y+50,0);
 		
 		if (field.getGameSecs() == 0 && (field.getBlueScore() > 0 || field.getRedScore() >0)) {

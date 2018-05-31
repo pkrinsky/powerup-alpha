@@ -33,7 +33,7 @@ public class Robot extends FieldObject  {
 	protected String alliance; 
 	protected boolean hasCube = true;
 	private boolean ai = false;
-	protected String gamedata = null;
+	protected String gameData = null;
 	protected char startPosition;
 	protected int shotsMade = 0;
 	protected int command = Robot.STOP;
@@ -41,10 +41,10 @@ public class Robot extends FieldObject  {
 	public Robot() {
 	}
 	
-	public Robot(String name, String alliance, String gamedata, char start) {
+	public Robot(String name, String alliance, String gameData, char start) {
 		this.name = name;
 		this.alliance = alliance;
-		this.gamedata = gamedata;
+		this.gameData = gameData;
 		this.startPosition = start;
 	}	
 	
@@ -80,20 +80,11 @@ public class Robot extends FieldObject  {
 			case Robot.STOP:
 				name = "STOP";
 				break;
-			case Robot.PAUSE:
-				name = "PAUSE";
-				break;
 			case Robot.PICKUP:
 				name = "PICKUP";
 				break;
 			case Robot.SHOOT:
 				name = "SHOOT";
-				break;
-			case Robot.PLAYER_1:
-				name = "PLAYER_1";
-				break;
-			case Robot.PLAYER_2:
-				name = "PLAYER_2";
 				break;
 		}
 		return name;
@@ -114,9 +105,6 @@ public class Robot extends FieldObject  {
 		if (e.getKeyChar() == 's' || e.getKeyCode() == 40) {
 			command = Robot.SOUTH;
 		}		
-		if (e.getKeyChar() == 'p') {
-			command = Robot.PAUSE;
-		}	
 		if (e.getKeyChar() == ' ') {
 			if (hasCube()) {
 				command = Robot.SHOOT;
@@ -124,37 +112,6 @@ public class Robot extends FieldObject  {
 				command = Robot.PICKUP;
 			}
 		}	
-		if (e.getKeyChar() == '1') {
-			command = Robot.PLAYER_1;
-		}		
-		if (e.getKeyChar() == '2') {
-			command = Robot.PLAYER_2;
-		}		
-		if (e.getKeyChar() == '3') {
-			command = Robot.PLAYER_3;
-		}		
-		if (e.getKeyChar() == '4') {
-			command = Robot.PLAYER_4;
-		}		
-		if (e.getKeyChar() == '5') {
-			command = Robot.PLAYER_5;
-		}		
-		if (e.getKeyChar() == '6') {
-			command = Robot.PLAYER_6;
-		}		
-		if (e.getKeyChar() == '7') {
-			command = Robot.ADD_AI;
-		}		
-		if (e.getKeyChar() == '8') {
-			command = Robot.INCREASE_AI_SPEED;
-		}		
-		if (e.getKeyChar() == '9') {
-			command = Robot.START;
-		}	
-		if (e.getKeyChar() == '0') {
-			command = Robot.RESTART;
-		}	
-		
 		Util.log("Robot.handleKey "+name+" command:"+command+ " "+getCommandName(command));
 	}
 
@@ -170,8 +127,8 @@ public class Robot extends FieldObject  {
 		this.alliance = alliance;
 	}
 
-	public void setGamedata(String gamedata) {
-		this.gamedata = gamedata;
+	public void setGameData(String gameData) {
+		this.gameData = gameData;
 	}
 
 	public void setStartPosition(char startPosition) {
@@ -194,8 +151,8 @@ public class Robot extends FieldObject  {
 		return shotsMade;
 	}
 
-	public String getGamedata() {
-		return gamedata;
+	public String getGameData() {
+		return gameData;
 	}
 	public boolean hasCube() {
 		return hasCube;
@@ -217,7 +174,7 @@ public class Robot extends FieldObject  {
 		setCol(fieldRobot.getCol());
 		setRow(fieldRobot.getRow());
 		setAlliance(fieldRobot.getAlliance());
-		setGamedata(fieldRobot.getGamedata());
+		setGameData(fieldRobot.getGameData());
 		setStartPosition(fieldRobot.getStartPosition());
 		setHasCube(fieldRobot.getHasCube());
 		setShotsMade(fieldRobot.getShotsMade());

@@ -23,8 +23,8 @@ public class Field {
 	private static final String ROW_DELIM = GameClient.ROW_DELIM;
 
 	public static final int GAME_SECS = 60;
-	public static final int COUNTDOWN = 3;
-	public static final int AUTONOMOUS = 10;
+	public static final int COUNTDOWN = 5;
+	public static final int AUTONOMOUS = 0;
 
 	private int redScore = 0;
 	private int blueScore = 0;
@@ -209,7 +209,7 @@ public class Field {
 				fo.setCol(col);
 				fo.setRow(row);
 				grid[col][row] = fo;
-				Util.log("Field.move was successful new position for "+fo.name+" col:"+col+" r:"+row);
+				Util.log("Field.move successful for "+fo.name+" now at col:"+col+" r:"+row);
 				grid[oldc][oldr] = null;
 				//Util.log("Field.move is now empty "+" col:"+oldc+" r:"+oldr);
 			} else {
@@ -439,7 +439,7 @@ public class Field {
 							sb.append(DELIM);
 							sb.append(((Robot)(grid[c][r])).getAlliance());
 							sb.append(DELIM);
-							sb.append(((Robot)(grid[c][r])).getGamedata());
+							sb.append(((Robot)(grid[c][r])).getGameData());
 							sb.append(DELIM);
 							sb.append(((Robot)(grid[c][r])).getStartPosition());
 							sb.append(DELIM);

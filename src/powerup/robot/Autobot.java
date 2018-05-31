@@ -33,7 +33,7 @@ public class Autobot extends Robot {
 			FieldObject[][] grid = field.getGrid();
 
 
-			if( gamedata == "RLR") {
+			if( gameData == "RLR") {
 				if(Field.RIGHT == startPosition){
 					target = field.find(alliance+"NS");
 

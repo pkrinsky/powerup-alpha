@@ -1,8 +1,5 @@
 package powerup.robot;
 
-import java.util.LinkedList;
-import java.util.Queue;
-
 import powerup.engine.Util;
 import powerup.field.Cube;
 import powerup.field.Field;
@@ -10,92 +7,17 @@ import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
 
-public class Paulbot extends Robot {
+public class PaulBot extends Robot {
 	
-	public Paulbot(String name, String alliance, String gamedata, char startPosition) {
+	public PaulBot() {
+		
+	};
+	
+	public PaulBot(String name, String alliance, String gamedata, char startPosition) {
 		super(name, alliance, gamedata, startPosition);
 	}
 	
-	public Queue<Integer> getAutonomousCommands() {
-		Queue<Integer> commandList = new LinkedList<Integer>();
-		
-		if (BLUE.equals(alliance)) {
-			if (Field.RIGHT == startPosition) {
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(NORTH);
-				commandList.add(SHOOT);
-			}
-			if (Field.LEFT == startPosition) {
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(SOUTH);
-				commandList.add(SOUTH);
-				commandList.add(SHOOT);
-			}
-			if (Field.MIDDLE == startPosition) {
-				commandList.add(NORTH);
-				commandList.add(NORTH);
-				commandList.add(NORTH);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(EAST);
-				commandList.add(SHOOT);
-			}
-		} else {
-			if (Field.RIGHT == startPosition) {
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(SOUTH);
-				commandList.add(SHOOT);
-			}
-			if (Field.LEFT == startPosition) {
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(NORTH);
-				commandList.add(NORTH);
-				commandList.add(SHOOT);
-			}
-			if (Field.MIDDLE == startPosition) {
-				commandList.add(SOUTH);
-				commandList.add(SOUTH);
-				commandList.add(SOUTH);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(WEST);
-				commandList.add(SHOOT);
-			}
-		}
-		
-		return commandList;
-		
-	}	
+
 
 	private FieldObject findCube(Field field) {
 		FieldObject fo = null;
@@ -191,7 +113,7 @@ public class Paulbot extends Robot {
 		int dist = 0;
 		if (getRow()-1>=0) {
 			dist = distance[getCol()][getRow()-1];
-			Util.log("Paulbot North distance is "+distance[getCol()][getRow()-1]);
+			Util.log("Paulbot North distance is "+distance[getCol()][getRow()-1],10);
 			if (dist > -1 && dist < shortest) {
 				nextmove = Robot.NORTH;
 				shortest = dist;
@@ -200,7 +122,7 @@ public class Paulbot extends Robot {
 		
 		if (getRow()+1<Field.ROWS) {
 			dist = distance[getCol()][getRow()+1];
-			Util.log("Paulbot South distance is "+distance[getCol()][getRow()+1]);
+			Util.log("Paulbot South distance is "+distance[getCol()][getRow()+1],10);
 			if (dist > -1 && dist < shortest) {
 				nextmove = Robot.SOUTH;
 				shortest = dist;
@@ -210,7 +132,7 @@ public class Paulbot extends Robot {
 		
 		if (getCol()-1>=0) {
 			dist = distance[getCol()-1][getRow()];
-			Util.log("Paulbot West distance is "+distance[getCol()-1][getRow()]);
+			Util.log("Paulbot West distance is "+distance[getCol()-1][getRow()],10);
 			if (dist > -1 && dist < shortest) {
 				nextmove = Robot.WEST;
 				shortest = dist;
@@ -219,7 +141,7 @@ public class Paulbot extends Robot {
 		
 		if (getCol()+1<Field.COLS) {
 			dist = distance[getCol()+1][getRow()];
-			Util.log("Paulbot East distance is "+distance[getCol()+1][getRow()]);
+			Util.log("Paulbot East distance is "+distance[getCol()+1][getRow()],10);
 			if (dist > -1 && dist < shortest) {
 				nextmove = Robot.EAST;
 				shortest = dist;
@@ -255,40 +177,45 @@ public class Paulbot extends Robot {
 		if (hasCube()) {
 			
 			Scale us = (Scale) field.find(alliance+"S");
+			Util.log(alliance+"S "+us);
 			Scale them = (Scale) field.find(otherAlliance+"S");
+			Util.log(otherAlliance+"S "+them);
 			
-			if (target == null && them.getNumCubes() >= us.getNumCubes()) {
-				target = us;
-			}
+			if (us != null && them != null) {
 			
-			us = (Scale) field.find(alliance+"NS");
-			them = (Scale) field.find(otherAlliance+"FS");
-			if (target == null && them.getNumCubes() >= us.getNumCubes()) {
-				target = us;
+				if (target == null && them.getNumCubes() >= us.getNumCubes()) {
+					target = us;
+				}
+				
+				us = (Scale) field.find(alliance+"NS");
+				them = (Scale) field.find(otherAlliance+"FS");
+				if (target == null && them.getNumCubes() >= us.getNumCubes()) {
+					target = us;
+				}
+				
+				us = (Scale) field.find(alliance+"FS");
+				them = (Scale) field.find(otherAlliance+"NS");
+				if (target == null && them.getNumCubes() >= us.getNumCubes()) {
+					target = us;
+				}
+				
+				if (target == null) 
+					target = field.find(alliance+"S");
+				
+				/*
+				if(Field.LEFT == startPosition){
+					target = field.find(alliance+"FS");
+				}
+	
+				if(Field.MIDDLE == startPosition){
+					target = field.find(alliance+"NS");
+				}
+				
+				if(Field.RIGHT == startPosition){
+					target = field.find(alliance+"S");
+				}
+				*/
 			}
-			
-			us = (Scale) field.find(alliance+"FS");
-			them = (Scale) field.find(otherAlliance+"NS");
-			if (target == null && them.getNumCubes() >= us.getNumCubes()) {
-				target = us;
-			}
-			
-			if (target == null) 
-				target = field.find(alliance+"S");
-			
-			/*
-			if(Field.LEFT == startPosition){
-				target = field.find(alliance+"FS");
-			}
-
-			if(Field.MIDDLE == startPosition){
-				target = field.find(alliance+"NS");
-			}
-			
-			if(Field.RIGHT == startPosition){
-				target = field.find(alliance+"S");
-			}
-			*/
 
 		} else {
 			target = findCube(field);

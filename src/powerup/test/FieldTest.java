@@ -10,7 +10,7 @@ import powerup.field.Field;
 import powerup.field.Robot;
 import powerup.field.Scale;
 import powerup.field.Wall;
-import powerup.robot.Paulbot;
+import powerup.robot.PaulBot;
 
 class FieldTest {
 	
@@ -29,7 +29,7 @@ class FieldTest {
 		// setup test field
 		Field field1 = getStaticField();
 		field1.set(1, 1, new Cube());
-		Robot robot = new Paulbot("004",Robot.RED,"LRL",Field.LEFT);
+		Robot robot = new PaulBot("004",Robot.RED,"LRL",Field.LEFT);
 		robot.setHasCube(true);
 		field1.setup(robot);
 		

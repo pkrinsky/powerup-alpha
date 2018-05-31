@@ -14,6 +14,7 @@ import powerup.engine.GraphicsController;
 import powerup.engine.Util;
 import powerup.field.Field;
 import powerup.field.Robot;
+import powerup.robot.BasicAutoBot;
 
 public class GameClient {
 	public static final String DELIM="|";
@@ -28,13 +29,17 @@ public class GameClient {
 	private PrintWriter out;
 	private GameServer server = null;
 	private String name = "000";
-	private Robot robot = new Robot();
+	private Robot robot = null;
 	boolean clientRunning = false;
 	boolean gameRunning = false;
 	boolean autonomous = false;
 
 	public boolean isAutonomous() {
 		return autonomous;
+	}
+	
+	protected Robot newRobot() {
+		return new BasicAutoBot();
 	}
 
 	public static void main(String[] args) {
@@ -69,20 +74,42 @@ public class GameClient {
 			System.exit(0);
 		}
 		
-		// disable key events during autonomous mode
-		if (clientRunning && !autonomous) {
-			robot.handleKey(e);
+		if (e.getKeyChar() == '1') {
+			sendRegister(1);
+		} else if (e.getKeyChar() == '2') {
+			sendRegister(2);
+		} else if (e.getKeyChar() == '3') {
+			sendRegister(3);
+		} else if (e.getKeyChar() == '4') {
+			sendRegister(4);
+		} else if (e.getKeyChar() == '5') {
+			sendRegister(5);
+		} else if (e.getKeyChar() == '6') {
+			sendRegister(6);
+		} else if (e.getKeyChar() == '7') {
+			sendRegister(7);
+		} else if (e.getKeyChar() == '8') {
+			sendAIHard();
+		} else if (e.getKeyChar() == '9') {
+			sendStart();
+		} else if (e.getKeyChar() == '0') {
+			sendRestart();
+		} else if (e.getKeyChar() == 'p') {
+			sendPause();
+		} else if (clientRunning && !autonomous) {
+				robot.handleKey(e);
 		} else {
-			Util.log("GameClient.keyEvent keys ignored in autonomous mode");
+			Util.log("GameClient.keyEvent ignored in autonomous mode");
 		}
+			
 	}
 	
-	public Robot getRobot(Field field, String robotName) {
+	private Robot getRobot(Field field, String robotName) {
 		Robot robot = (Robot) field.find(robotName);
 		return robot;
 	}
 	
-	public int getMove(Field field) {
+	private int getMove(Field field) {
 		int move = Robot.STOP;
 		
 		// get the next move
@@ -97,7 +124,13 @@ public class GameClient {
 	}	
 	
 	public void setup(String serverAddress, String serverPort, String name) {
-		if (name != null) this.name = name;
+		robot = newRobot();
+		
+		if (name != null) {
+			this.name = name;
+			robot.setName(name);
+		}
+		
 		if (serverAddress == null) {
 			Util.log("GameClient.setup local server");
 			server = new GameServer();
@@ -126,7 +159,7 @@ public class GameClient {
 
 	}	
 	
-	public String executeCommand(String request) {
+	private String executeCommand(String request) {
 		String returnString = null;
 		Util.log("GameClient.executeCommand robot:"+name+" sent:"+request,10);
 		if (server == null) {
@@ -259,7 +292,7 @@ public class GameClient {
 			if (field.getGameSecs() > 0) {
 				gameRunning = true;
 				if (commandList == null) commandList = robot.getAutonomousCommands();
-				if (field.getGameSecs() < (Field.GAME_SECS - Field.AUTONOMOUS)) {
+				if (field.getGameSecs() <= (Field.GAME_SECS - Field.AUTONOMOUS)) {
 					autonomous = false;
 				} else {
 					autonomous = true;
@@ -270,23 +303,24 @@ public class GameClient {
 				autonomous = false;
 			}
 			
-			//Util.log("GameClient.gameLoop autonomous:"+autonomous+ " running:"+gameRunning);
+			Util.log("GameClient.gameLoop autonomous:"+autonomous+ " running:"+gameRunning+" secs:"+field.getGameSecs(),10);
 			
-			Robot fieldRobot = getRobot(field, name);
 
 			// if the robot is on the field get the latest data
+			Robot fieldRobot = getRobot(field, name);
 			if (fieldRobot != null) {
 				robot.update(fieldRobot);
 			}
-			
+
+			// ask the robot what the next command is
 			command = Robot.STOP;
-			if (field.getCountDown() == 0) {
+			if (gameRunning && field.getCountDown() == 0) {
 				if (autonomous) {
 					if (System.currentTimeMillis() > nextMove) {
 						command = commandList.poll();
 						if (command == null) command = Robot.STOP;
 						nextMove = System.currentTimeMillis()+500;
-						Util.log("GameClient.gameLoop autonomous command:"+command);
+						Util.log("GameClient.gameLoop autonomous command:"+command+" queue:"+commandList.size());
 					}
 				} else {
 					command = getMove(field);	
@@ -296,31 +330,7 @@ public class GameClient {
 			// send the move to the server
 			if (command != Robot.STOP) {
 				Util.log("GameClient.gameLoop command:"+Robot.getCommandName(command));
-				if (Robot.PLAYER_1 == command) {
-					sendRegister(1);
-				} else if (Robot.PLAYER_2 == command) {
-					sendRegister(2);
-				} else if (Robot.PLAYER_3 == command) {
-					sendRegister(3);
-				} else if (Robot.PLAYER_4 == command) {
-					sendRegister(4);
-				} else if (Robot.PLAYER_5 == command) {
-					sendRegister(5);
-				} else if (Robot.PLAYER_6 == command) {
-					sendRegister(6);
-				} else if (Robot.ADD_AI == command) {
-					sendRegister(7);
-				} else if (Robot.INCREASE_AI_SPEED == command) {
-					sendAIHard();
-				} else if (Robot.START == command) {
-					sendStart();
-				} else if (Robot.RESTART == command) {
-					sendRestart();
-				} else if (Robot.PAUSE == command) {
-					sendPause();
-				} else {
-					sendMove(command);
-				}
+				sendMove(command);
 			}
 
 			// wait for a little then start again
@@ -328,12 +338,6 @@ public class GameClient {
 		}
 	}
 
-	public GraphicsController getController() {
-		return controller;
-	}
 
-	public void setController(GraphicsController controller) {
-		this.controller = controller;
-	}
 	
 }
