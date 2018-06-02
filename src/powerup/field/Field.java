@@ -293,14 +293,12 @@ public class Field {
 		FieldObject fo = getFieldObject(c, r);
 		if (fo != null && fo instanceof Scale) {
 			Scale scale = (Scale) fo;
-			Util.log("RobotController.found scale");
 			if(robot.hasCube() == true) {
 				robot.setHasCube(false);
 				robot.shotMade();
 				scale.setNumCubes(scale.getNumCubes()+1);
 				shot = true;
-				Util.log("NumCubes="+ scale.getNumCubes());
-				
+				//Util.log("NumCubes="+ scale.getNumCubes());
 			}else {
 				Util.log("you have no cube");
 			}

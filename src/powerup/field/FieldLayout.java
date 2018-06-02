@@ -4,9 +4,6 @@ import powerup.engine.Util;
 
 public class FieldLayout {
 	
-	private static int counter = 0;
-	
-	
 	public static Field getStaticField() {
 		Util.log("Field.getStaticField");
 		
@@ -67,36 +64,49 @@ public class FieldLayout {
 	
 	public static int getImageIndex(Field field, FieldObject fo) {
 		int r = 0;
-		counter++;
 
 		if (fo instanceof Wall && (field.getGameSecs() % 2 == 0)) {
 
 			// scale
 			Scale bs = (Scale) field.find("BS");
 			Scale rs = (Scale) field.find("RS");
-			if (fo.getCol() == Field.COL2 && (fo.getRow() == 4 ||fo.getRow() == 5 ||fo.getRow() == 6 || fo.getRow() == 7 || fo.getRow() == 8|| fo.getRow() == 9|| fo.getRow() == 10)) {
-				if (rs.getNumCubes() > bs.getNumCubes())
-					r = 1;
-				if (bs.getNumCubes() > rs.getNumCubes())
-					r = 2;
+			if (fo.getCol() == Field.COL2 && (fo.getRow() == 4 
+					|| fo.getRow() == 5 
+					|| fo.getRow() == 6 
+					|| fo.getRow() == 7 
+					|| fo.getRow() == 8
+					|| fo.getRow() == 9
+					|| fo.getRow() == 10)
+				) 
+			{
+				if (rs.getNumCubes() > bs.getNumCubes()) r = 1;
+				if (bs.getNumCubes() > rs.getNumCubes()) r = 2;
 			}
 
 			bs = (Scale) field.find("BNS");
 			rs = (Scale) field.find("RFS");
-			if (fo.getCol() == Field.COL1 && (fo.getRow() == 5 || fo.getRow() == 6 ||fo.getRow() == 7 || fo.getRow() == 8|| fo.getRow() == 9)) {
-				if (rs.getNumCubes() > bs.getNumCubes())
-					r = 1;
-				if (bs.getNumCubes() > rs.getNumCubes())
-					r = 2;
+			if (fo.getCol() == Field.COL1 && (fo.getRow() == 5 
+					|| fo.getRow() == 6 
+					|| fo.getRow() == 7 
+					|| fo.getRow() == 8
+					|| fo.getRow() == 9)
+				) 
+			{
+				if (rs.getNumCubes() > bs.getNumCubes()) r = 1;
+				if (bs.getNumCubes() > rs.getNumCubes()) r = 2;
 			}
 			
 			bs = (Scale) field.find("BFS");
 			rs = (Scale) field.find("RNS");
-			if (fo.getCol() == Field.COL3 && (fo.getRow() == 5 || fo.getRow() == 6 ||fo.getRow() == 7 || fo.getRow() == 8|| fo.getRow() == 9)) {
-				if (rs.getNumCubes() > bs.getNumCubes())
-					r = 1;
-				if (bs.getNumCubes() > rs.getNumCubes())
-					r = 2;
+			if (fo.getCol() == Field.COL3 && (fo.getRow() == 5 
+					|| fo.getRow() == 6 
+					|| fo.getRow() == 7 
+					|| fo.getRow() == 8
+					|| fo.getRow() == 9)
+				) 
+			{
+				if (rs.getNumCubes() > bs.getNumCubes()) r = 1;
+				if (bs.getNumCubes() > rs.getNumCubes()) r = 2;
 			}
 		}
 		

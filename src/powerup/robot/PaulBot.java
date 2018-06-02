@@ -177,9 +177,7 @@ public class PaulBot extends Robot {
 		if (hasCube()) {
 			
 			Scale us = (Scale) field.find(alliance+"S");
-			Util.log(alliance+"S "+us);
 			Scale them = (Scale) field.find(otherAlliance+"S");
-			Util.log(otherAlliance+"S "+them);
 			
 			if (us != null && them != null) {
 			

@@ -348,8 +348,6 @@ public class GraphicsController extends Canvas  {
 				b.setFieldObject(fo);
 				b.setImageIndex(FieldLayout.getImageIndex(field,fo));
 				b.draw(g);
-			} else {
-				Util.log("FO not found for block "+b.getFieldObject().getName());
 			}
 		}
 		
