@@ -32,6 +32,7 @@ public class GameServer {
 	public static final String COMMAND_AI_FASTER = "AI_FASTER";
 	
 	private long lastScoreSecs = 0;
+	private long nextAICheck = 0;
 	private int turn = 0;
 	private long nextAIMove = 0;
 
@@ -307,7 +308,11 @@ public class GameServer {
 
 	
 	private Field getField(String name) {
+		boolean blueHasAI = false;
+		boolean redHasAI = false;
+		
 		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs()+" turn:"+turn,10);
+		
 		if (running) {
 			
 			if (running && field.getCountDown() == 0) {
@@ -315,11 +320,17 @@ public class GameServer {
 				// check to see if we should spawn more cubes
 				spawnCornerCubes();
 				
+				
 				// move the ai
 				int move = Robot.STOP;
 				if (System.currentTimeMillis() > nextAIMove ) {
 					for (Robot r:field.getRobotList()) {
 						if (r.isAi()) {
+							if (Robot.BLUE.equals(r.getAlliance())) 
+								blueHasAI = true; 
+							else 
+								redHasAI = true;
+							
 							try {
 								Util.log("GameServer.move ai "+r.getName());
 								move = r.move(field);
@@ -330,6 +341,17 @@ public class GameServer {
 						}
 					}
 					nextAIMove = System.currentTimeMillis() + (525-(field.getRobotLevel()*50));
+					
+					if (System.currentTimeMillis() > nextAICheck && field.getRobotLevel() <= 6) {
+						if ((blueHasAI == true && redHasAI == false && field.getRedScore()-field.getBlueScore() > 2) 
+								|| (blueHasAI== false && redHasAI == true && field.getBlueScore()-field.getRedScore() > 2)) 
+						{
+							field.increaseRobotLevel();
+							Util.log("\n\n\n\n\nIncreasing AI level to "+field.getRobotLevel());
+						}
+						nextAICheck = System.currentTimeMillis() + 2500;
+						//Util.log("\n\n"+blueHasAI+" "+redHasAI+ " next "+nextAICheck+" diff "+Math.abs(field.getBlueScore()-field.getRedScore()));
+					}
 				}
 			}
 			

@@ -31,7 +31,7 @@ public class Field {
 	private int gameSecs = 0;
 	private int countDown = 0;
 	private long lastTick = 0;
-	private int robotLevel = 1;
+	private int robotLevel = 3;
 	
 	public int getRobotLevel() {
 		return robotLevel;
@@ -50,8 +50,10 @@ public class Field {
 	}
 
 	public void increaseRobotLevel() {
-		robotLevel++;
-		Util.log("Field.increaseRobotLevel to:"+robotLevel,1);
+		if (robotLevel <= 10) {
+			robotLevel++;
+			Util.log("Field.increaseRobotLevel to:"+robotLevel,1);
+		}
 	}
 
 	
