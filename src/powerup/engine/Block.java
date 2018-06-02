@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 import powerup.field.FieldObject;
 import powerup.field.Robot;
+import powerup.field.Wall;
 
 public class Block {
 	
@@ -18,6 +19,7 @@ public class Block {
 	private BufferedImage[] imageArray;
 	protected String name;
 	private FieldObject fieldObject;
+	private int imageIndex = 0;
 	
 	public Image setImage(BufferedImage sourceImage) {
 		GraphicsConfiguration gc = GraphicsEnvironment.getLocalGraphicsEnvironment().getDefaultScreenDevice().getDefaultConfiguration();
@@ -28,7 +30,7 @@ public class Block {
 
 	public Block(BufferedImage[] images, FieldObject fo) {
 		this.imageArray = images;
-		this.image = setImage(images[0]);
+		this.image = setImage(images[imageIndex]);
 		this.fieldObject = fo;
 	}
 	
@@ -37,6 +39,8 @@ public class Block {
 		int x=(fieldObject.getCol())*BLOCKSIZE;
 		int y=(fieldObject.getRow())*BLOCKSIZE;
 		
+		
+		// change image for block depending upon state of object
 		if (fieldObject != null && fieldObject instanceof Robot) {
 			Robot r = (Robot) fieldObject;
 			if (r.hasCube()) {
@@ -44,12 +48,16 @@ public class Block {
 			} else {
 				this.image = setImage(imageArray[1]);
 			}
-			
 		} 
+
+		if (fieldObject != null && fieldObject instanceof Wall) {
+			this.image = setImage(imageArray[imageIndex]);
+		}
+		
 		g.drawImage(image,x,y,null);
 		//System.out.println("draw "+fieldObject.getName()+" x:"+x+" y:"+y);
 	}
-	
+
 	
 	public FieldObject getFieldObject() {
 		return fieldObject;
@@ -57,6 +65,14 @@ public class Block {
 	
 	public void setFieldObject(FieldObject fieldObject) {
 		this.fieldObject = fieldObject;
+	}
+
+	public int getImageIndex() {
+		return imageIndex;
+	}
+
+	public void setImageIndex(int imageIndex) {
+		this.imageIndex = imageIndex;
 	}
 
 	

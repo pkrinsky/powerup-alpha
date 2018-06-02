@@ -14,6 +14,7 @@ import java.util.StringTokenizer;
 import powerup.engine.Util;
 import powerup.field.Cube;
 import powerup.field.Field;
+import powerup.field.FieldLayout;
 import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
@@ -208,7 +209,7 @@ public class GameServer {
 	private Field setupField() {
 		Util.log("GameServer.setupField");
 		
-		field = Field.getStaticField();
+		field = FieldLayout.getStaticField();
 		
 		for (int i=0;i<5;i++) {
 			field.set(Field.COL1+1,5+i,new Cube());

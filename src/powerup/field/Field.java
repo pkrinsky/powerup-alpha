@@ -105,7 +105,7 @@ public class Field {
 		}
 		
 		if (fo == null && (warn || (Util.getDebugLevel() >=20))) {
-			Util.log("WARNING: Field.find cannot find field object with name:"+name);
+			Util.log("WARNING: Field.find cannot find field object with name:"+name,20);
 			new Exception().printStackTrace(System.out);
 		}
 		return fo;
@@ -351,44 +351,7 @@ public class Field {
 		}
 
 	}
-	
-	public static Field getStaticField() {
-		Util.log("Field.getStaticField");
-		
-		Field field = new Field();
-		
-		int col2 = Field.COL2;
-		int col1 = Field.COL1;
-		int col3 = Field.COL3;
-				
-		field.set(col2,3,new Scale("RS",Robot.RED)); 
-		field.set(col2,4,new Wall());
-		field.set(col2,5,new Wall());
-		field.set(col2,6,new Wall());
-		field.set(col2,7,new Wall());
-		field.set(col2,8,new Wall());
-		field.set(col2,9,new Wall());
-		field.set(col2,10,new Wall());
-		field.set(col2,11,new Scale("BS",Robot.BLUE));
 
-		field.set(col1,4,new Scale("BNS",Robot.BLUE));
-		field.set(col1,5,new Wall());
-		field.set(col1,6,new Wall());
-		field.set(col1,7,new Wall());
-		field.set(col1,8,new Wall());
-		field.set(col1,9,new Wall());
-		field.set(col1,10,new Scale("RFS",Robot.RED));
-
-		field.set(col3,4,new Scale("BFS",Robot.BLUE));
-		field.set(col3,5,new Wall());
-		field.set(col3,6,new Wall());
-		field.set(col3,7,new Wall());
-		field.set(col3,8,new Wall());
-		field.set(col3,9,new Wall());
-		field.set(col3,10,new Scale("RNS",Robot.RED));
-		
-		return field;
-	}	
 	
 
 

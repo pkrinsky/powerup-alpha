@@ -13,6 +13,7 @@ import java.util.Queue;
 import powerup.engine.GraphicsController;
 import powerup.engine.Util;
 import powerup.field.Field;
+import powerup.field.FieldLayout;
 import powerup.field.Robot;
 import powerup.robot.BasicAutoBot;
 
@@ -274,7 +275,7 @@ public class GameClient {
 		Queue<Integer> commandList = null;
 		
 		
-		Field field = Field.getStaticField();
+		Field field = FieldLayout.getStaticField();
 		getFieldData(field);
 		
 		controller = new GraphicsController();

@@ -21,6 +21,7 @@ import javax.swing.JPanel;
 
 import powerup.field.Cube;
 import powerup.field.Field;
+import powerup.field.FieldLayout;
 import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
@@ -34,6 +35,16 @@ public class GraphicsController extends Canvas  {
 	private static final int HEIGHT = (Field.ROWS*Block.BLOCKSIZE)+SCORE_AREA;
 	private static final int WIDTH = Field.COLS*Block.BLOCKSIZE;
 	private static final int SCORE_POSITION_Y = HEIGHT-80;
+	
+	public static int IMAGE_ROBOT_RED = 0;
+	public static int IMAGE_ROBOT_RED_CUBE = 1;
+	public static int IMAGE_ROBOT_BLUE = 4;
+	public static int IMAGE_ROBOT_BLUE_CUBE = 5;
+	public static int IMAGE_BLOCK_RED = 2;
+	public static int IMAGE_BLOCK_BLUE = 3;
+	public static int IMAGE_BLOCK_YELLOW = 6;
+	public static int IMAGE_BLOCK_GRAY = 7;
+
 
 	private GameClient gameClient;
 	private BufferStrategy strategy;
@@ -149,19 +160,18 @@ public class GraphicsController extends Canvas  {
 		g.drawString(s,x,y);
 	}
 	
-
-
 	private void setupImages(Field field) {
 		Util.log("GraphicsController.setupImages");
 		
-		imageArray[0] = getImage("robot-red.png");
-		imageArray[1] = getImage("robot-red-cube.png");
-		imageArray[2] = getImage("block-red-50.png");
-		imageArray[3] = getImage("block-blue-50.png");
-		imageArray[4] = getImage("robot-blue.png");
-		imageArray[5] = getImage("robot-blue-cube.png");
-		imageArray[6] = getImage("block-yellow-50.png");
-		imageArray[7] = getImage("block-gray-50.png");
+		
+		imageArray[IMAGE_ROBOT_RED] = getImage("robot-red.png");
+		imageArray[IMAGE_ROBOT_RED_CUBE] = getImage("robot-red-cube.png");
+		imageArray[IMAGE_BLOCK_RED] = getImage("block-red-50.png");
+		imageArray[IMAGE_BLOCK_BLUE] = getImage("block-blue-50.png");
+		imageArray[IMAGE_ROBOT_BLUE] = getImage("robot-blue.png");
+		imageArray[IMAGE_ROBOT_BLUE_CUBE] = getImage("robot-blue-cube.png");
+		imageArray[IMAGE_BLOCK_YELLOW] = getImage("block-yellow-50.png");
+		imageArray[IMAGE_BLOCK_GRAY] = getImage("block-gray-50.png");
 		
 		// init all the blocks based on the field info
 		for (int r=0;r<Field.ROWS;r++) {
@@ -190,8 +200,10 @@ public class GraphicsController extends Canvas  {
 						addCube(s);
 					}
 					if (fo instanceof Wall) {
-						BufferedImage[] i = new BufferedImage[1];
-						i[0] = imageArray[7];
+						BufferedImage[] i = new BufferedImage[3];
+						i[0] = imageArray[IMAGE_BLOCK_GRAY];
+						i[1] = imageArray[IMAGE_BLOCK_RED];
+						i[2] = imageArray[IMAGE_BLOCK_BLUE];
 						blocks.add(new Block(i,fo));
 					}
 				}
@@ -203,12 +215,12 @@ public class GraphicsController extends Canvas  {
 		BufferedImage[] i;
 		if (s.getAlliance().equalsIgnoreCase(Robot.RED)) {
 			i = new BufferedImage[2];
-			i[0] = imageArray[1];
-			i[1] = imageArray[0];
+			i[0] = imageArray[IMAGE_ROBOT_RED_CUBE];
+			i[1] = imageArray[IMAGE_ROBOT_RED];
 		} else {
 			i = new BufferedImage[2];
-			i[0] = imageArray[5];
-			i[1] = imageArray[4];
+			i[0] = imageArray[IMAGE_ROBOT_BLUE_CUBE];
+			i[1] = imageArray[IMAGE_ROBOT_BLUE];
 		}
 		Block b = new Block(i,s);
 		blocks.add(b);
@@ -217,7 +229,7 @@ public class GraphicsController extends Canvas  {
 	
 	private void addCube(Cube s) {
 		BufferedImage[] i = new BufferedImage[1];
-		i[0] = imageArray[6];
+		i[0] = imageArray[IMAGE_BLOCK_YELLOW];
 		
 		Block b = new Block(i,s);
 		blocks.add(b);
@@ -334,9 +346,10 @@ public class GraphicsController extends Canvas  {
 			FieldObject fo = field.find(b.getFieldObject().getName());
 			if (fo != null) {
 				b.setFieldObject(fo);
+				b.setImageIndex(FieldLayout.getImageIndex(field,fo));
 				b.draw(g);
 			} else {
-				//Util.log("FO not found for block "+b.getFieldObject().getName());
+				Util.log("FO not found for block "+b.getFieldObject().getName());
 			}
 		}
 		

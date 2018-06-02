@@ -1,15 +1,14 @@
 package powerup.field;
 
 public class Scale extends FieldObject {
+	private String alliance;
+	private int numCubes = 0;
+
 	
 	public Scale(String name, String alliance) {
 		this.name = name;
 		this.alliance = alliance;
 	}	
-	
-	private String alliance;
-	private int numCubes = 0;
-	
 	
 	public int getNumCubes() {
 		return numCubes;
@@ -26,7 +25,5 @@ public class Scale extends FieldObject {
 	public void setAlliance(String alliance) {
 		this.alliance = alliance;
 	}
-	
-	
 
 }
