@@ -113,16 +113,16 @@ public class GameServer {
 						break;
 					case 7:
 						int players = field.getRobotList().size();
-						robot = newRobot("901",Robot.RED,gameData,Field.RIGHT);
+						robot = newRobot("AI1",Robot.RED,gameData,Field.RIGHT);
 						robot.setAi(true);
 						setup(robot);
 						if (players >1) {
-							robot = newRobot("902",Robot.RED,gameData,Field.MIDDLE);
+							robot = newRobot("AI2",Robot.RED,gameData,Field.MIDDLE);
 							robot.setAi(true);
 							setup(robot);
 						}
 						if (players >2) {
-							robot = newRobot("903",Robot.RED,gameData,Field.LEFT);
+							robot = newRobot("AI3",Robot.RED,gameData,Field.LEFT);
 							robot.setAi(true);
 							setup(robot);
 						}
@@ -349,7 +349,7 @@ public class GameServer {
 							field.increaseRobotLevel();
 							Util.log("\n\n\n\n\nIncreasing AI level to "+field.getRobotLevel());
 						}
-						nextAICheck = System.currentTimeMillis() + 2500;
+						nextAICheck = System.currentTimeMillis() + 5000;
 						//Util.log("\n\n"+blueHasAI+" "+redHasAI+ " next "+nextAICheck+" diff "+Math.abs(field.getBlueScore()-field.getRedScore()));
 					}
 				}

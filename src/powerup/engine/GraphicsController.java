@@ -99,7 +99,7 @@ public class GraphicsController extends Canvas  {
 		// draw numbers on robots
 		for (Robot robot:field.getRobotList()) {
 			stats = stats+robot.getName()+": cubes="+robot.getShotsMade()+"     ";
-			g.drawString(""+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
+			g.drawString(" "+robot.getName(),(robot.getCol()*Block.BLOCKSIZE+10),robot.getRow()*Block.BLOCKSIZE+20);
 		}
 		
 		
