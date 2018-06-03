@@ -1,5 +1,6 @@
 package powerup.robot;
 
+import powerup.engine.Util;
 import powerup.field.Cube;
 import powerup.field.Field;
 import powerup.field.FieldObject;
@@ -7,16 +8,17 @@ import powerup.field.Robot;
 
 public class Autobot extends Robot {
 
-	public Autobot(String name, String alliance, String gamedata, char startPosition) {
-		super(name, alliance, gamedata, startPosition);
+	public Autobot(String name, String alliance, String gameData, char startPosition) {
+		super(name, alliance, gameData, startPosition);
 	}
 
 	private FieldObject findCube(Field field) {
-		FieldObject[][] grid = field.getGrid();
+		FieldObject fo = null;
 		for (int c=0; c<Field.COLS; c++) {
 			for(int r=0; r<Field.ROWS; r++) {
-				if (grid[c][r] != null && grid[c][r] instanceof Cube){
-					return grid[c][r];
+				fo = field.getFieldObject(c, r);
+				if (fo != null && fo instanceof Cube){
+					return fo;
 				}
 			}
 		}
@@ -25,19 +27,21 @@ public class Autobot extends Robot {
 	}
 
 	public int move(Field field) {
+		Util.log("Autobot.move "+name);
 		int thismove = Robot.STOP;
 		FieldObject target = null;
 
+
 		// if we have a cube put it on the switch
 		if (hasCube()) {
-			FieldObject[][] grid = field.getGrid();
+
 
 
 			if( gameData == "RLR") {
 				if(Field.RIGHT == startPosition){
 					target = field.find(alliance+"NS");
 
-					System.out.println("Autobot.move "+name+" target scale:"+target.getCol()+" "+target.getRow());
+					Util.log("Autobot.move "+name+" target scale:"+target.getCol()+" "+target.getRow());
 
 				} else {
 					target = field.find(alliance+"S");
@@ -54,102 +58,134 @@ public class Autobot extends Robot {
 			if (thismove == Robot.STOP) {
 				thismove = Robot.SHOOT;
 			} 
-			if(getCol() >0) {
-				if (target.getCol()+1 < getCol() && grid[getCol()-1][getRow()] ==null) {
-					thismove = Robot.WEST;
-				}else {
-					if(grid[getCol() -1][getRow()] != null && target.getCol()+1 != getCol()) {
-						thismove = Robot.NORTH;
-					}	
-				}
-			}
-			if(getCol() <22) {
-				if (target.getCol()-1 > getCol() && grid[getCol()+1][getRow()] == null) {
-					thismove = Robot.EAST;
-
-				}else {
-					if(grid[getCol()+1][getRow()] != null && target.getCol()-1 != getCol()) {
-						thismove = Robot.NORTH;
-					}
-						if (target.getRow() < getRow() && grid[getCol()][getRow()-1] == null ) {
-							thismove = Robot.NORTH;
-						} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
-							thismove = Robot.EAST;
-						} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
-							thismove = Robot.WEST;
-						}
-						if (target.getRow() > getRow() && grid[getCol()][getRow()+1] == null) {
-							thismove = Robot.SOUTH;
-						} else if (target.getRow() > getRow() && grid[getCol()+1][getRow()]== null) {
-							thismove = Robot.EAST;
-						} else if (target.getRow() >getRow() && grid[getCol()-1][getRow()]== null) {
-							thismove = Robot.WEST;
-						}
-
-					
-
-				}
-
-			}
-
-
 
 		} else {
-			FieldObject[][] grid = field.getGrid();
 			FieldObject cube = findCube(field);
-			System.out.println("Getting cube at c:"+cube.getCol()+" r:"+cube.getRow());
+			Util.log("Getting cube at c:"+cube.getCol()+" r:"+cube.getRow());
+			target = cube;
 
-			if (cube.getRow()-1 > getRow() && cube.getCol() == getCol()) {
-				thismove = Robot.SOUTH;
-				if(grid[getCol()][getRow()+1] != null) {
-					thismove = Robot.WEST;
-				}
-			}
-			if (cube.getRow()+1 < getRow()) {
-				thismove = Robot.NORTH;
-				if(grid[getCol()][getRow()+1] != null) {
-					thismove = Robot.WEST;		
-				}else {
-					thismove = Robot.EAST;
-				}
-			}
-			if (cube.getCol()+1 <= getCol() && grid[getCol()-1][getRow()] ==null) {
-				thismove = Robot.WEST;
-			}else if (grid[getCol()-1][getRow()] != null && cube.getCol() != getCol()) {
-				thismove = Robot.NORTH;
-			}
-			if (cube.getCol()-1 >= getCol() && grid[getCol()+1][getRow()] == null) {
-				thismove = Robot.EAST;
-			}else if (grid[getCol()+1][getRow()] != null && cube.getCol() != getCol()) {
-				thismove = Robot.NORTH;
-			}
-			if (thismove == Robot.STOP) {
-				thismove = Robot.PICKUP;
-			}
+
 			if(getCol() != 0 && getRow() != 0) {
-				if(grid[getCol()+1][getRow()] instanceof Cube) {
+				if(field.getFieldObject(getCol()+1,getRow()) instanceof Cube) {
 					thismove = Robot.PICKUP;
 				}
-				if(grid[getCol()-1][getRow()] instanceof Cube) {
+				if(field.getFieldObject(getCol()-1,getRow()) instanceof Cube) {
 					thismove = Robot.PICKUP;
 				}
-				if(grid[getCol()][getRow()+1] instanceof Cube) {
+				if(field.getFieldObject(getCol(),getRow()+1) instanceof Cube) {
 					thismove = Robot.PICKUP;
 				}
-				if(grid[getCol()][getRow()-1] instanceof Cube) {
+				if(field.getFieldObject(getCol(),getRow()-1) instanceof Cube) {
 					thismove = Robot.PICKUP;
 				}
 			}
-
-
 
 
 
 		}
+		int loops = Field.ROWS* Field.COLS;
+		while (loops-- >0) {
+			for (int r=0;r<Field.ROWS;r++) {
+				for (int c=0;c<Field.COLS;c++) {
+					if (field.getFieldObject(c,r) == target) {
+						if (r-1>=0 && field.getFieldObject(c,r-1) == null) {
+							//grid[c][r-1] = 1;
+						}
 
+
+					}
+				}
+
+			}
+		}
+		int[][] distance = new int[Field.COLS][Field.ROWS];
+
+
+		for(int r = 0 ; r< Field.ROWS; r++) {
+			for(int c = 0 ; c <Field.COLS; c++) {
+				distance[c][r] =-1;
+			}
+		}
+
+
+		distance[target.getCol()][target.getRow()] = 0;
+
+		print(distance);
+
+		int loopies = Field.COLS*Field.ROWS;
+
+		while (loopies-- > 0)	{
+			for(int r = 0 ; r< Field.ROWS; r++) {
+				for(int c = 0 ; c <Field.COLS; c++) {
+					if(distance[c][r] != -1 ) {
+
+						// north
+						if (r-1 >=0 && distance[c][r-1] == -1 && field.getFieldObject(c,r-1) == null) {
+							distance[c][r-1] = distance[c][r] + 1;
+						}
+						// east
+						if (c+1 <Field.COLS && distance[c+1][r] == -1 && field.getFieldObject(c+1,r)== null) {
+							distance[c+1][r] = distance[c][r] + 1;
+						}
+						// south
+						if (r+1 <Field.ROWS && distance[c][r+1] == -1 && field.getFieldObject(c,r+1) == null) {
+							distance[c][r+1] = distance[c][r] + 1;
+						}
+						// west
+						if (c-1 >=0 && distance[c-1][r] == -1 && field.getFieldObject(c-1,r) == null) {
+							distance[c-1][r] = distance[c][r] + 1;
+						}
+					}
+				}
+			}
+			print(distance);
+		}
+
+		//		System.exit(1);
+		int smallest = 10000;
+		if(getCol() < 22) {
+			if(distance[getCol()+1][getRow()] < smallest && distance[getCol()+1][getRow()] != -1 ) {
+				smallest = distance[getCol()+1][getRow()];
+				thismove = Robot.EAST;
+			}
+		}
+		if(getCol()>1) {
+			if(distance[getCol()-1][getRow()] < smallest && distance[getCol()-1][getRow()] != -1) {
+				smallest = distance[getCol()-1][getRow()];
+				thismove = Robot.WEST;
+			}
+		}
+		if(distance[getCol()][getRow()+1] < smallest && distance[getCol()][getRow()+1] != -1) {
+			smallest = distance[getCol()][getRow()+1];
+			thismove = Robot.SOUTH;
+		}
+		if(distance[getCol()][getRow()-1] < smallest && distance[getCol()][getRow()-1] != -1) {
+			smallest = distance[getCol()][getRow()-1];
+			thismove = Robot.NORTH;
+		}
+		if(smallest == 0 && hasCube == true) {
+			thismove = Robot.SHOOT;
+		}
+		if(smallest == 0 && hasCube ==false) {
+			thismove = Robot.PICKUP;
+		}
+
+		Util.log("Autobot.move "+name+" complete");
 		// once the move has complete wait for next command
-		command = Robot.STOP;
 		return thismove;
 	}
+
+
+	private void print(int[][] distance) {
+		for(int r = 0 ; r< Field.ROWS; r++) {
+			for(int c = 0 ; c <Field.COLS; c++) {
+				Util.log(((distance[c][r]+" ").substring(0, 2)+ " "),10);
+			}
+			Util.log("",10);
+		}
+		Util.log("Autobot.print done",10);
+
+	}
+
 
 }

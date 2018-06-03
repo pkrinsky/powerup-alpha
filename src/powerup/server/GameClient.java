@@ -89,6 +89,8 @@ public class GameClient {
 			sendRegister(6);
 		} else if (e.getKeyChar() == '7') {
 			sendRegister(7);
+		} else if (e.getKeyChar() == 't') {
+			sendRegister(0);
 		} else if (e.getKeyChar() == '8') {
 			sendAIHard();
 		} else if (e.getKeyChar() == '9') {

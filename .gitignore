@@ -3,4 +3,8 @@ run_server.sh
 src/.DS_Store
 .DS_Store
 *.sh
+<<<<<<< HEAD
 run_client_PK.cmd
+=======
+run_client_MK.cmd
+>>>>>>> 61d31dc768ca075e483cba789e746fd6a08021ce

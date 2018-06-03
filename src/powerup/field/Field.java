@@ -33,6 +33,8 @@ public class Field {
 	private long lastTick = 0;
 	private int robotLevel = 3;
 	
+	private FieldObject[][] grid= new FieldObject[COLS][ROWS];
+	
 	public int getRobotLevel() {
 		return robotLevel;
 	}
@@ -58,12 +60,6 @@ public class Field {
 
 	
 
-	private FieldObject[][] grid= new FieldObject[COLS][ROWS];
-
-	public FieldObject[][] getGrid() {
-		return grid;
-	}
-	
 	public FieldObject getFieldObject(int c, int r) {
 		FieldObject fo = null;
 		if (inBounds(c,r)) {

@@ -18,6 +18,7 @@ import powerup.field.FieldLayout;
 import powerup.field.FieldObject;
 import powerup.field.Robot;
 import powerup.field.Scale;
+import powerup.robot.Autobot;
 import powerup.robot.PaulBot;
 
 public class GameServer {
@@ -32,7 +33,7 @@ public class GameServer {
 	public static final String COMMAND_AI_FASTER = "AI_FASTER";
 	
 	private long lastScoreSecs = 0;
-	private long nextAICheck = 0;
+	//private long nextAICheck = 0;
 	private int turn = 0;
 	private long nextAIMove = 0;
 
@@ -44,6 +45,10 @@ public class GameServer {
 	
 	private Robot newRobot(String name, String alliance, String gameData, char startingPosition) {
 		return new PaulBot(name,alliance,gameData,startingPosition);
+	}
+	
+	private Robot newAutobot(String name, String alliance, String gameData, char startingPosition) {
+		return new Autobot(name,alliance,gameData,startingPosition);
 	}
 	
 	public synchronized String executeCommand(String name, String request) {
@@ -87,6 +92,26 @@ public class GameServer {
 				int position = new Integer(fieldList.get(2));
 				Robot robot = null;
 				switch (position) {
+					case 0:
+						robot = newRobot("PK1",Robot.RED,gameData,Field.RIGHT);
+						robot.setAi(true);
+						setup(robot);
+						robot = newRobot("PK2",Robot.RED,gameData,Field.MIDDLE);
+						robot.setAi(true);
+						setup(robot);
+						robot = newRobot("PK3",Robot.RED,gameData,Field.LEFT);
+						robot.setAi(true);
+						setup(robot);
+						robot = newAutobot("MK1",Robot.BLUE,gameData,Field.RIGHT);
+						robot.setAi(true);
+						setup(robot);
+						robot = newAutobot("MK2",Robot.BLUE,gameData,Field.MIDDLE);
+						robot.setAi(true);
+						setup(robot);
+						robot = newAutobot("MK3",Robot.BLUE,gameData,Field.LEFT);
+						robot.setAi(true);
+						setup(robot);
+						break;
 					case 1:
 						robot = newRobot(fieldList.get(1),Robot.BLUE,gameData,Field.RIGHT);
 						setup(robot);
@@ -308,8 +333,8 @@ public class GameServer {
 
 	
 	private Field getField(String name) {
-		boolean blueHasAI = false;
-		boolean redHasAI = false;
+		// boolean blueHasAI = false;
+		// boolean redHasAI = false;
 		
 		Util.log("GameServer.getField name:"+name+" secs:"+field.getGameSecs()+" turn:"+turn,10);
 		
@@ -326,10 +351,9 @@ public class GameServer {
 				if (System.currentTimeMillis() > nextAIMove ) {
 					for (Robot r:field.getRobotList()) {
 						if (r.isAi()) {
-							if (Robot.BLUE.equals(r.getAlliance())) 
-								blueHasAI = true; 
-							else 
-								redHasAI = true;
+							
+							//if (Robot.BLUE.equals(r.getAlliance())) blueHasAI = true; 
+							//else redHasAI = true;
 							
 							try {
 								Util.log("GameServer.move ai "+r.getName());
@@ -342,6 +366,7 @@ public class GameServer {
 					}
 					nextAIMove = System.currentTimeMillis() + (525-(field.getRobotLevel()*50));
 					
+					/*
 					if (System.currentTimeMillis() > nextAICheck && field.getRobotLevel() <= 6) {
 						if ((blueHasAI == true && redHasAI == false && field.getRedScore()-field.getBlueScore() > 2) 
 								|| (blueHasAI== false && redHasAI == true && field.getBlueScore()-field.getRedScore() > 2)) 
@@ -352,6 +377,7 @@ public class GameServer {
 						nextAICheck = System.currentTimeMillis() + 5000;
 						//Util.log("\n\n"+blueHasAI+" "+redHasAI+ " next "+nextAICheck+" diff "+Math.abs(field.getBlueScore()-field.getRedScore()));
 					}
+					*/
 				}
 			}
 			
