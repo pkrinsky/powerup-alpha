@@ -7,8 +7,8 @@ import powerup.field.Robot;
 
 public class Autobot extends Robot {
 
-	public Autobot(String name, String alliance, String gamedata, char startPosition) {
-		super(name, alliance, gamedata, startPosition);
+	public Autobot(String name, String alliance, String gameData, char startPosition) {
+		super(name, alliance, gameData, startPosition);
 	}
 
 	private FieldObject findCube(Field field) {
@@ -35,7 +35,7 @@ public class Autobot extends Robot {
 
 
 
-			if( gameData == "RLR") {
+			if( gamedata == "RLR") {
 				if(Field.RIGHT == startPosition){
 					target = field.find(alliance+"NS");
 
@@ -121,22 +121,21 @@ public class Autobot extends Robot {
 					if(distance[c][r] != -1 ) {
 
 						// north
-						if (r-1 >=0 && distance[c][r-1] == -1) {
+						if (r-1 >=0 && distance[c][r-1] == -1 && grid[c][r-1] == null) {
 							distance[c][r-1] = distance[c][r] + 1;
 						}
 						// east
-						if (c+1 <Field.COLS && distance[c+1][r] == -1) {
+						if (c+1 <Field.COLS && distance[c+1][r] == -1 && grid[c+1][r]== null) {
 							distance[c+1][r] = distance[c][r] + 1;
 						}
 						// south
-						if (r+1 <Field.ROWS && distance[c][r+1] == -1) {
+						if (r+1 <Field.ROWS && distance[c][r+1] == -1 && grid[c][r+1] == null) {
 							distance[c][r+1] = distance[c][r] + 1;
 						}
 						// west
-						if (c-1 >=0 && distance[c-1][r] == -1) {
+						if (c-1 >=0 && distance[c-1][r] == -1 && grid[c-1][r] == null) {
 							distance[c-1][r] = distance[c][r] + 1;
 						}
-
 					}
 				}
 			}
@@ -146,22 +145,22 @@ public class Autobot extends Robot {
 		//		System.exit(1);
 		int smallest = 10000;
 		if(getCol() < 22) {
-			if(distance[getCol()+1][getRow()] < smallest) {
+			if(distance[getCol()+1][getRow()] < smallest && distance[getCol()+1][getRow()] != -1 ) {
 				smallest = distance[getCol()+1][getRow()];
 				thismove = Robot.EAST;
 			}
 		}
 		if(getCol()>1) {
-			if(distance[getCol()-1][getRow()] < smallest) {
+			if(distance[getCol()-1][getRow()] < smallest && distance[getCol()-1][getRow()] != -1) {
 				smallest = distance[getCol()-1][getRow()];
 				thismove = Robot.WEST;
 			}
 		}
-		if(distance[getCol()][getRow()+1] < smallest) {
+		if(distance[getCol()][getRow()+1] < smallest && distance[getCol()][getRow()+1] != -1) {
 			smallest = distance[getCol()][getRow()+1];
 			thismove = Robot.SOUTH;
 		}
-		if(distance[getCol()][getRow()-1] < smallest) {
+		if(distance[getCol()][getRow()-1] < smallest && distance[getCol()][getRow()-1] != -1) {
 			smallest = distance[getCol()][getRow()-1];
 			thismove = Robot.NORTH;
 		}
