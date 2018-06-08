@@ -26,7 +26,7 @@ public class Autobot extends Robot {
 
 	}
 
-	public int move(Field field) {
+	public int getMove(Field field) {
 		Util.log("Autobot.move "+name);
 		int thismove = Robot.STOP;
 		FieldObject target = null;

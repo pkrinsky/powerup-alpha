@@ -20,7 +20,7 @@ import powerup.robot.BasicAutoBot;
 public class GameClient {
 	public static final String DELIM="|";
 	public static final String ROW_DELIM="~";
-	public static final int DELAY = 200;
+	public static final int DELAY = 100;
 	
 	private GraphicsController controller = null;
 	private String serverAddress = null;
@@ -100,7 +100,7 @@ public class GameClient {
 		} else if (e.getKeyChar() == 'p') {
 			sendPause();
 		} else if (clientRunning && !autonomous) {
-				robot.handleKey(e);
+				robot.handleKey(e.getKeyChar(),e.getKeyCode());
 		} else {
 			Util.log("GameClient.keyEvent ignored in autonomous mode");
 		}
@@ -116,7 +116,7 @@ public class GameClient {
 		int move = Robot.STOP;
 		
 		// get the next move
-		move = robot.move(field);
+		move = robot.getMove(field);
 		
 		// send to the server if needed
 		if (move != Robot.STOP) {
@@ -268,10 +268,14 @@ public class GameClient {
 		sb.append(name);
 		sb.append(DELIM);
 		executeCommand(sb.toString());
-	}		
+	}
 	
 	public void gameLoop() {
-		int delay = DELAY;
+		gameLoop(DELAY);
+	}
+	
+	public void gameLoop(int delay) {
+	
 		Integer command = Robot.STOP;
 		long nextMove = 0;
 		Queue<Integer> commandList = null;

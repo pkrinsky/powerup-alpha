@@ -357,7 +357,7 @@ public class GameServer {
 							
 							try {
 								Util.log("GameServer.move ai "+r.getName());
-								move = r.move(field);
+								move = r.getMove(field);
 								field.move(r.getName(),move);
 							} catch (Exception e) {
 								Util.log(e);
