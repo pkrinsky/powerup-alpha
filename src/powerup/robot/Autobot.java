@@ -131,7 +131,7 @@ public class Autobot extends Robot {
 						if (r+1 <Field.ROWS && distance[c][r+1] == -1 && field.getFieldObject(c,r+1) == null) {
 							distance[c][r+1] = distance[c][r] + 1;
 						}
-						// west
+						// west  
 						if (c-1 >=0 && distance[c-1][r] == -1 && field.getFieldObject(c-1,r) == null) {
 							distance[c-1][r] = distance[c][r] + 1;
 						}
@@ -143,23 +143,19 @@ public class Autobot extends Robot {
 
 		//		System.exit(1);
 		int smallest = 10000;
-		if(getCol() < 22) {
-			if(distance[getCol()+1][getRow()] < smallest && distance[getCol()+1][getRow()] != -1 ) {
-				smallest = distance[getCol()+1][getRow()];
-				thismove = Robot.EAST;
-			}
+		if( getCol()< Field.ROWS &&distance[getCol()+1][getRow()] < smallest && distance[getCol()+1][getRow()] != -1 ) {
+			smallest = distance[getCol()+1][getRow()];
+			thismove = Robot.EAST;
 		}
-		if(getCol()>1) {
-			if(distance[getCol()-1][getRow()] < smallest && distance[getCol()-1][getRow()] != -1) {
-				smallest = distance[getCol()-1][getRow()];
-				thismove = Robot.WEST;
-			}
+		if( getCol() > 0 && distance[getCol()-1][getRow()] < smallest && distance[getCol()-1][getRow()] != -1) {
+			smallest = distance[getCol()-1][getRow()];
+			thismove = Robot.WEST;
 		}
-		if(distance[getCol()][getRow()+1] < smallest && distance[getCol()][getRow()+1] != -1) {
+		if( getRow()<Field.ROWS && distance[getCol()][getRow()+1] < smallest && distance[getCol()][getRow()+1] != -1) {
 			smallest = distance[getCol()][getRow()+1];
 			thismove = Robot.SOUTH;
 		}
-		if(distance[getCol()][getRow()-1] < smallest && distance[getCol()][getRow()-1] != -1) {
+		if( getRow()>0  && distance[getCol()][getRow()-1] < smallest && distance[getCol()][getRow()-1] != -1) {
 			smallest = distance[getCol()][getRow()-1];
 			thismove = Robot.NORTH;
 		}
