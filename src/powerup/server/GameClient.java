@@ -20,7 +20,7 @@ import powerup.robot.BasicAutoBot;
 public class GameClient {
 	public static final String DELIM="|";
 	public static final String ROW_DELIM="~";
-	public static final int DELAY = 100;
+	public static final int DELAY = 200;
 	
 	private GraphicsController controller = null;
 	private String serverAddress = null;
@@ -270,7 +270,7 @@ public class GameClient {
 		executeCommand(sb.toString());
 	}		
 	
-	private void gameLoop() {
+	public void gameLoop() {
 		int delay = DELAY;
 		Integer command = Robot.STOP;
 		long nextMove = 0;
