@@ -153,6 +153,7 @@ public class PaulBot extends Robot {
 	}
 	
 	@SuppressWarnings("unused")
+	/*
 	private void print(int[][] distance) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("\n");
@@ -164,6 +165,7 @@ public class PaulBot extends Robot {
 		}
 		Util.log(sb.toString());
 	}
+	*/
 	
 	public int move(Field field) {
 		Util.log("Paulbot.move "+name);
