@@ -167,7 +167,7 @@ public class PaulBot extends Robot {
 	}
 	*/
 	
-	public int move(Field field) {
+	public int getMove(Field field) {
 		Util.log("Paulbot.move "+name);
 		FieldObject target = null;
 		int thismove = Robot.STOP;

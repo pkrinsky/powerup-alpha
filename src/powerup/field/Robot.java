@@ -1,6 +1,5 @@
 package powerup.field;
 
-import java.awt.event.KeyEvent;
 import java.util.LinkedList;
 import java.util.Queue;
 
@@ -48,12 +47,7 @@ public class Robot extends FieldObject  {
 		this.startPosition = start;
 	}	
 	
-	public Queue<Integer> getAutonomousCommands() {
-		Queue<Integer> commandList = new LinkedList<Integer>();
-		return commandList;
-	}
-	
-	public int move(Field info) {
+	public int getMove(Field field) {
 		int thismove = command;
 		
 		// once the move has completed STOP and wait for next command
@@ -90,22 +84,23 @@ public class Robot extends FieldObject  {
 		return name;
 	}
 
-	public void handleKey(KeyEvent e) {
-		Util.log("Robot.handleKey "+name+" key:"+e.getKeyChar());
+	public void handleKey(char keyChar, int keyCode) {
+		Util.log("Robot.handleKey "+name+" key:"+keyChar+" code:"+keyCode);
 		
-		if (e.getKeyChar() == 'd' || e.getKeyCode() == 39) {
+		
+		if (keyChar == 'd' || keyCode == 39) {
 			command = Robot.EAST;
 		}		
-		if (e.getKeyChar() == 'a' || e.getKeyCode() == 37) {
+		if (keyChar == 'a' || keyCode == 37) {
 			command = Robot.WEST;
 		}		
-		if (e.getKeyChar() == 'w' || e.getKeyCode() == 38) {
+		if (keyChar == 'w' || keyCode == 38) {
 			command = Robot.NORTH;
 		}		
-		if (e.getKeyChar() == 's' || e.getKeyCode() == 40) {
+		if (keyChar == 's' || keyCode == 40) {
 			command = Robot.SOUTH;
 		}		
-		if (e.getKeyChar() == ' ') {
+		if (keyChar == ' ') {
 			if (hasCube()) {
 				command = Robot.SHOOT;
 			} else {
@@ -178,6 +173,11 @@ public class Robot extends FieldObject  {
 		setStartPosition(fieldRobot.getStartPosition());
 		setHasCube(fieldRobot.getHasCube());
 		setShotsMade(fieldRobot.getShotsMade());
+	}
+	
+	public Queue<Integer> getAutonomousCommands() {
+		Queue<Integer> commandList = new LinkedList<Integer>();
+		return commandList;
 	}
 	
 

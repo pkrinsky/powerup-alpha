@@ -76,10 +76,6 @@ public class Field {
 		return returnValue;
 	}
 
-	public void setGrid(FieldObject[][] grid) {
-		this.grid = grid;
-	}
-	
 	public FieldObject find(String name) {
 		return find(name,false);
 	}

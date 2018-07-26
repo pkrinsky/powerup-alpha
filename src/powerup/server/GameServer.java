@@ -163,10 +163,14 @@ public class GameServer {
 		}
 		
 		if (GameServer.COMMAND_START.equals(command)) {
-			Util.log("ServerThread.execute start");
-			running = true;
-			field.setGameSecs(Field.GAME_SECS);
-			field.setCountDown(Field.COUNTDOWN);
+			if (field.getBlueScore() == 0 && field.getRedScore() == 0) {
+				Util.log("ServerThread.execute start");
+				running = true;
+				field.setGameSecs(Field.GAME_SECS);
+				field.setCountDown(Field.COUNTDOWN);
+			} else {
+				Util.log("ServerThread.execute cannot start until field reset");
+			}
 		}
 		
 		if (GameServer.COMMAND_RESTART.equals(command)) {
@@ -357,7 +361,7 @@ public class GameServer {
 							
 							try {
 								Util.log("GameServer.move ai "+r.getName());
-								move = r.move(field);
+								move = r.getMove(field);
 								field.move(r.getName(),move);
 							} catch (Exception e) {
 								Util.log(e);
