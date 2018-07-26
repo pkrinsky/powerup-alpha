@@ -32,25 +32,25 @@ public class Autobot extends Robot {
 				for(int r = 1 ; r< Field.ROWS; r++) {
 					for(int c = 1 ; c <Field.COLS; c++) {
 						if(distance[c][r] != -1) {
-							if(field.getFieldObject(c-1, r) instanceof Cube && c>1) {
+							if(field.getFieldObject(c-1, r) instanceof Cube && c>1 && found == false) {
 								found = true;
 								cube = field.getFieldObject(c-1,r);
 							}else if(c>1){
 								distance[c-1][r]=1;
 							}
-							if(field.getFieldObject(c+1,r) instanceof Cube && c< Field.COLS) {
+							if(field.getFieldObject(c+1,r) instanceof Cube && c< Field.COLS && found == false) {
 								found = true;
 								cube = field.getFieldObject(c+1,r);
 							}else if(c+1< Field.COLS){
 								distance[c+1][r]=1;
 							}
-							if(field.getFieldObject(c, r+1) instanceof Cube && r<Field.ROWS) {
+							if(field.getFieldObject(c, r+1) instanceof Cube && r<Field.ROWS && found == false) {
 								found = true;
 								cube = field.getFieldObject(c, r+1);
 							}else if(r+1<Field.ROWS){
 								distance[c][r+1]=1;
 							}
-							if(field.getFieldObject(c,r-1) instanceof Cube && r>1) {
+							if(field.getFieldObject(c,r-1) instanceof Cube && r>1 && found == false) {
 								found = true;
 								cube = field.getFieldObject(c, r-1);
 							}else if (r>1){
@@ -101,6 +101,18 @@ public class Autobot extends Robot {
 			if ( me.getNumCubes() <= them.getNumCubes() ) {
 				target = field.find(alliance+"S");
 			}
+			them = (Scale) field.find(otherAlliance+"FS");
+			if(them.getNumCubes() < 1) {
+				target = field.find(otherAlliance+"FS"); 
+			}
+			
+			me = (Scale) field.find(alliance+"NS");
+			them = (Scale) field.find(otherAlliance+"FS");
+
+			if ( me.getNumCubes() <= them.getNumCubes() ) {
+				target = field.find(alliance+"NS");
+			}
+
 
 
 
